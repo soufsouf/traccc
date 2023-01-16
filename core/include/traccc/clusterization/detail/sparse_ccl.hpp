@@ -116,7 +116,8 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
     unsigned int labels = 0;
 
     // The number of cells.
-    const unsigned int n_cells = cumulsize[idx+1] - cumulsize[idx];
+    unsigned int doffset = cumulsize[idx];
+    const unsigned int n_cells = cumulsize[idx+1] - doffset;
 
     // first scan: pixel association
     unsigned int start_j = 0;
@@ -125,9 +126,10 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
         int ai = i;
         if (i > 0) {
             for (unsigned int j = start_j; j < i; ++j) {
-                if (is_adjacent(channel0[i], channel1[i], channel0[j], channel1[j])) {
+                if (is_adjacent(channel0[i+doffset], channel1[i+doffset],
+                                channel0[j+doffset], channel1[j+doffset])) {
                     ai = make_union(L, ai, find_root(L, j));
-                } else if (is_far_enough(channel1[i], channel1[j])) {
+                } else if (is_far_enough(channel1[i+doffset], channel1[j+doffset])) {
                     ++start_j;
                 }
             }
