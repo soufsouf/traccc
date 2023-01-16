@@ -25,15 +25,58 @@
 // System include(s).
 #include <algorithm>
 
+std::size_t cellcount;
+
 namespace traccc::cuda {
 namespace kernels {
 
+__global__ void fill_buffers(const cell_container_types::const_view cells_view,
+                             vecmem::data::vector_view<unsigned int> channel0,
+                             vecmem::data::vector_view<unsigned int> channel1,
+                             vecmem::data::vector_view<unsigned int> cumulsize,
+                             vecmem::data::vector_view<unsigned int> moduleidx) {
+
+    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<unsigned int> ch0(channel0);
+    vecmem::device_vector<unsigned int> ch1(channel1);
+    vecmem::device_vector<unsigned int> sum(cumulsize);
+    vecmem::device_vector<unsigned int> midx(moduleidx);
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    if (idx >= cells_device.size())
+        return;
+
+    const auto& cells = cells_device.at(idx).items;
+    
+    unsigned int doffset = 0;
+    for (int i=0; i < idx; i++) {
+        doffset+= cells_device.at(i).items.size();
+    }
+    sum.at(idx) = doffset;
+
+    if (idx == cells_device.size() - 1) {
+        sum.at(idx+1) = doffset + cells_device.at(idx).items.size();
+    }
+
+    std::size_t n_cells = cells.size();
+    for (int i=0; i < n_cells; i++) {
+        ch0.at(i+doffset) = cells[i].channel0;
+        ch1.at(i+doffset) = cells[i].channel1;
+        midx.at(i+doffset) = idx;
+    }
+}
+
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int> cumulsize,
+    vecmem::data::vector_view<unsigned int> moduleidx,
     vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
+                          channel0, channel1, cumulsize, moduleidx,
                           sparse_ccl_indices_view, clusters_per_module_view);
 }
 
@@ -106,6 +149,25 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         cell_container_types::const_device::item_vector::value_type::size_type>
         cell_sizes = m_copy.get_sizes(cells_view.items);
 
+    cellcount = 0;
+    for (int i=0; i < cell_sizes.size(); i++) {
+        cellcount += cell_sizes[i];
+    }
+
+    //cellvec cells;
+    vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
+    m_copy.setup(channel0);
+    vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
+    m_copy.setup(channel1);
+    vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
+    m_copy.setup(moduleidx);
+    vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules+1, m_mr.main);
+    m_copy.setup(prefixsum);
+
+    std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
+    kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
+                            (cells_view, channel0, channel1, prefixsum, moduleidx);
+
     /*
      * Helper container for sparse CCL calculations.
      * Each inner vector corresponds to 1 module.
@@ -151,12 +213,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(cl_per_module_prefix_buff);
 
     // Calculating grid size for cluster finding kernel
-    std::size_t blocksPerGrid =
+    blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
 
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, sparse_ccl_indices_buff, cl_per_module_prefix_buff);
+        cells_view, channel0, channel1, prefixsum, moduleidx,
+        sparse_ccl_indices_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Create prefix sum buffer

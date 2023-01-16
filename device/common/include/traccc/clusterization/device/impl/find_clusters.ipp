@@ -12,14 +12,22 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int> cumulsize,
+    vecmem::data::vector_view<unsigned int> moduleidx,
     vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     // Initialize the device container for cells
     cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<unsigned int> ch0(channel0);
+    vecmem::device_vector<unsigned int> ch1(channel1);
+    vecmem::device_vector<unsigned int> sum(cumulsize);
+    vecmem::device_vector<unsigned int> midx(moduleidx);
 
     // Ignore if idx is out of range
-    if (globalIndex >= cells_device.size())
+    if (globalIndex >= cumulsize.size()-1)
         return;
 
     // Get the cells for the current module
@@ -31,7 +39,8 @@ inline void find_clusters(
     auto cluster_indices = device_sparse_ccl_indices[globalIndex];
 
     // Run the sparse CCL algorithm
-    unsigned int n_clusters = detail::sparse_ccl(cells, cluster_indices);
+    unsigned int n_clusters = detail::sparse_ccl(cells, globalIndex, ch0, ch1,
+                                        sum, midx, cluster_indices);
 
     // Fill the "number of clusters per
     // module" vector

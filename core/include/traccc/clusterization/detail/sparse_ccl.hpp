@@ -77,6 +77,12 @@ TRACCC_HOST_DEVICE inline bool is_adjacent(traccc::cell a, traccc::cell b) {
            (a.channel1 - b.channel1) * (a.channel1 - b.channel1) <= 1;
 }
 
+TRACCC_HOST_DEVICE inline bool is_adjacent(unsigned int i0, unsigned int i1, 
+                                           unsigned int j0, unsigned int j1) {
+    return (i0 - j0) * (i0 - j0) <= 1 and
+           (i1 - j1) * (i1 - j1) <= 1;
+}
+
 /// Helper method to find define distance,
 /// does not need abs, as channels are sorted in
 /// column major
@@ -89,6 +95,10 @@ TRACCC_HOST_DEVICE inline bool is_far_enough(traccc::cell a, traccc::cell b) {
     return (a.channel1 - b.channel1) > 1;
 }
 
+TRACCC_HOST_DEVICE inline bool is_far_enough(unsigned int i1, unsigned int j1) {
+    return (i1 - j1) > 1;
+}
+
 /// Sparce CCL algorithm
 ///
 /// @param cells is the cell collection
@@ -96,8 +106,51 @@ TRACCC_HOST_DEVICE inline bool is_far_enough(traccc::cell a, traccc::cell b) {
 /// belongs to)
 /// @param labels is the number of clusters found
 /// @return number of clusters
-template <typename cell_container_t, typename ccl_vector_t>
+template <typename cell_container_t, typename ccl_vector_t,
+            typename VV>
 TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
+                        std::size_t idx,
+                        VV& channel0, VV& channel1, VV& cumulsize, VV& moduleidx,
+                                                  ccl_vector_t& L) {
+
+    unsigned int labels = 0;
+
+    // The number of cells.
+    const unsigned int n_cells = cumulsize[idx+1] - cumulsize[idx];
+
+    // first scan: pixel association
+    unsigned int start_j = 0;
+    for (unsigned int i = 0; i < n_cells; ++i) {
+        L[i] = i;
+        int ai = i;
+        if (i > 0) {
+            for (unsigned int j = start_j; j < i; ++j) {
+                if (is_adjacent(channel0[i], channel1[i], channel0[j], channel1[j])) {
+                    ai = make_union(L, ai, find_root(L, j));
+                } else if (is_far_enough(channel1[i], channel1[j])) {
+                    ++start_j;
+                }
+            }
+        }
+    }
+
+    // second scan: transitive closure
+    for (unsigned int i = 0; i < n_cells; ++i) {
+        unsigned int l = 0;
+        if (L[i] == i) {
+            ++labels;
+            l = labels;
+        } else {
+            l = L[L[i]];
+        }
+        L[i] = l;
+    }
+
+    return labels;
+}
+
+template <typename cell_container_t, typename ccl_vector_t>
+TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t cells,
                                                   ccl_vector_t& L) {
 
     unsigned int labels = 0;
@@ -135,6 +188,7 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
 
     return labels;
 }
+
 }  // namespace detail
 
 }  // namespace traccc
