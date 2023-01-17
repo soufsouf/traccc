@@ -43,6 +43,21 @@ TRACCC_HOST_DEVICE inline unsigned int find_root(const ccl_vector_t& L,
     return r;
 }
 
+template <typename ccl_vector_t>
+TRACCC_HOST_DEVICE inline unsigned int find_root(const ccl_vector_t& L,
+                                                 unsigned int o,
+                                                 unsigned int N,
+                                                 unsigned int e) {
+
+    unsigned int r = e;
+    assert(r < N);
+    while (L[r+o] != r) {
+        r = L[r+o];
+        assert(r < N);
+    }
+    return r;
+}
+
 /// Create a union of two entries @param e1 and @param e2
 ///
 /// @param L an equivalance table
@@ -62,6 +77,26 @@ TRACCC_HOST_DEVICE inline unsigned int make_union(ccl_vector_t& L,
         e = e2;
         assert(e1 < L.size());
         L[e1] = e;
+    }
+    return e;
+}
+
+template <typename ccl_vector_t>
+TRACCC_HOST_DEVICE inline unsigned int make_union(ccl_vector_t& L,
+                                                  unsigned int o,
+                                                  unsigned int N,
+                                                  unsigned int e1,
+                                                  unsigned int e2) {
+
+    int e;
+    if (e1 < e2) {
+        e = e1;
+        assert(e2 < N);
+        L[e2+o] = e;
+    } else {
+        e = e2;
+        assert(e1 < N);
+        L[e1+o] = e;
     }
     return e;
 }
@@ -106,12 +141,11 @@ TRACCC_HOST_DEVICE inline bool is_far_enough(unsigned int i1, unsigned int j1) {
 /// belongs to)
 /// @param labels is the number of clusters found
 /// @return number of clusters
-template <typename cell_container_t, typename ccl_vector_t,
-            typename VV>
+template <typename cell_container_t, typename VV>
 TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
                         std::size_t idx,
-                        VV& channel0, VV& channel1, VV& cumulsize, VV& moduleidx,
-                                                  ccl_vector_t& L) {
+                        VV& channel0, VV& channel1,
+                        VV& cumulsize, VV& moduleidx, VV& L) {
 
     unsigned int labels = 0;
 
@@ -122,13 +156,13 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
     // first scan: pixel association
     unsigned int start_j = 0;
     for (unsigned int i = 0; i < n_cells; ++i) {
-        L[i] = i;
+        L[i+doffset] = i;
         int ai = i;
         if (i > 0) {
             for (unsigned int j = start_j; j < i; ++j) {
                 if (is_adjacent(channel0[i+doffset], channel1[i+doffset],
                                 channel0[j+doffset], channel1[j+doffset])) {
-                    ai = make_union(L, ai, find_root(L, j));
+                    ai = make_union(L, doffset, n_cells, ai, find_root(L, doffset, n_cells, j));
                 } else if (is_far_enough(channel1[i+doffset], channel1[j+doffset])) {
                     ++start_j;
                 }
@@ -139,13 +173,13 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
     // second scan: transitive closure
     for (unsigned int i = 0; i < n_cells; ++i) {
         unsigned int l = 0;
-        if (L[i] == i) {
+        if (L[i+doffset] == i) {
             ++labels;
             l = labels;
         } else {
-            l = L[L[i]];
+            l = L[L[i+doffset]+doffset];
         }
-        L[i] = l;
+        L[i+doffset] = l;
     }
 
     return labels;

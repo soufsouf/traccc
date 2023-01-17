@@ -72,12 +72,32 @@ __global__ void find_clusters(
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int> cumulsize,
     vecmem::data::vector_view<unsigned int> moduleidx,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
                           channel0, channel1, cumulsize, moduleidx,
-                          sparse_ccl_indices_view, clusters_per_module_view);
+                          label_view, clusters_per_module_view);
+}
+
+__global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
+                      vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+                      vecmem::data::vector_view<unsigned int> cumulsize) {
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    if (idx >= cumulsize.size()-1)
+        return;
+    
+    vecmem::device_vector<unsigned int> labels(label_view);
+    vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
+        sparse_ccl_indices_view);
+    vecmem::device_vector<unsigned int> sum(cumulsize);
+
+    unsigned int doffset = sum[idx];
+    const unsigned int n_cells = sum[idx+1] - doffset;
+    for (int i=0; i < n_cells; i++) {
+        device_sparse_ccl_indices[idx][i] = labels[i+doffset];
+    }
 }
 
 __global__ void count_cluster_cells(
@@ -180,6 +200,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_mr.main, m_mr.host);
     m_copy.setup(sparse_ccl_indices_buff);
 
+    vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
+    m_copy.setup(label_buff);
+
     /*
      * cl_per_module_prefix_buff is a vector buffer with numbers of found
      * clusters in each module. Later it will be transformed into prefix sum
@@ -219,7 +242,11 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, channel0, channel1, prefixsum, moduleidx,
-        sparse_ccl_indices_buff, cl_per_module_prefix_buff);
+        label_buff, cl_per_module_prefix_buff);
+    CUDA_ERROR_CHECK(cudaGetLastError());
+
+    kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        label_buff, sparse_ccl_indices_buff, prefixsum);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Create prefix sum buffer

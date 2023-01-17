@@ -16,7 +16,7 @@ inline void find_clusters(
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int> cumulsize,
     vecmem::data::vector_view<unsigned int> moduleidx,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     // Initialize the device container for cells
@@ -25,22 +25,23 @@ inline void find_clusters(
     vecmem::device_vector<unsigned int> ch1(channel1);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
+    vecmem::device_vector<unsigned int> labels(label_view);
 
     // Ignore if idx is out of range
-    if (globalIndex >= cumulsize.size()-1)
+    if (globalIndex >= sum.size()-1)
         return;
 
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
 
     // Vectors used for cluster indices found by sparse CCL
-    vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
-        sparse_ccl_indices_view);
-    auto cluster_indices = device_sparse_ccl_indices[globalIndex];
+    //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
+    //    sparse_ccl_indices_view);
+    //auto cluster_indices = device_sparse_ccl_indices[globalIndex];
 
     // Run the sparse CCL algorithm
     unsigned int n_clusters = detail::sparse_ccl(cells, globalIndex, ch0, ch1,
-                                        sum, midx, cluster_indices);
+                                        sum, midx, labels);
 
     // Fill the "number of clusters per
     // module" vector
