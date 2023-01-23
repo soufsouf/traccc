@@ -27,22 +27,23 @@ namespace traccc::device {
 /// component connection
 ///
 /// @param[in] globalIndex              The index of the current thread
-/// @param[in] sparse_ccl_indices_view  Jagged vector that maps cells to
+/// @param[in] label_view  Jagged vector that maps cells to
 /// corresponding clusters
 /// @param[in] cluster_prefix_sum_view  Prefix sum vector made out of number of
 /// clusters in each module
-/// @param[in] cells_prefix_sum_view    Prefix sum for iterating over all the
+/// @param[in] moduleidx   Prefix sum for iterating over all the
 /// cells
+/// @param[out] cells_cl_prefix_sum
 /// @param[out] cluster_sizes_view      Container storing the number of cells
 /// for each cluster
 ///
 TRACCC_HOST_DEVICE
 inline void count_cluster_cells(
     std::size_t globalIndex,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+   vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> moduleidx,
+   vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view);
 
 }  // namespace traccc::device

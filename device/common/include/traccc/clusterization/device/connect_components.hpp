@@ -29,23 +29,24 @@ namespace traccc::device {
 /// cluster_idx, there can be multiple same module_idx next to each other
 ///
 /// @param[in] globalIndex              The index for the current thread
-/// @param[in] cells_view               The cells for each module
-/// @param[in] sparse_ccl_indices_view  Jagged vector that maps cells to
+/// @param[in] moduleidx               The cells for each module
+/// @param[in] label_view     Jagged vector that maps cells to
 /// corresponding clusters
 /// @param[in] cluster_prefix_sum_view  Prefix sum vector made out of number of
 /// clusters in each module
-/// @param[in] cells_prefix_sum_view    Prefix sum for iterating over all the
+/// @param[in] cluster_idx_atomic    Prefix sum for iterating over all the
 /// cells
+/// @param[in] cells_cl_prefix_sum
 /// @param[out] clusters_view           Container storing the cells for every
 /// cluster
 ///
 TRACCC_HOST_DEVICE
-inline void connect_components(
-    std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
+__forceinline__ void connect_components(
+    std::size_t globalIndex, vecmem::data::vector_view<unsigned int> moduleidx,
+     vecmem::data::vector_view<unsigned int> label_view,
+     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
+     vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     cluster_container_types::view clusters_view);
 
 }  // namespace traccc::device

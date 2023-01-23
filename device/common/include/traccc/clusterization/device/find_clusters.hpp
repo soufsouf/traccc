@@ -28,15 +28,25 @@ namespace traccc::device {
 ///
 /// @param[in] globalIndex                  The index of the current thread
 /// @param[in] cells_view                   The cells for each module
-/// @param[out] sparse_ccl_indices_view     Jagged vector that maps cells to
+
 /// corresponding clusters
+/// @param[in] channel0
+/// @param[in] channel1
+/// @param[in] cumulsize
+/// @param[in] moduleidx
+/// @param[out] label_view
+
 /// @param[out] clusters_per_module_view    Vector of numbers of clusters found
 /// in each module
 ///
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int> cumulsize,
+    vecmem::data::vector_view<unsigned int> moduleidx,
+    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view);
 
 }  // namespace traccc::device

@@ -101,28 +101,28 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
 }
 
 __global__ void count_cluster_cells(
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> moduleidx,
+   vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view) {
 
     device::count_cluster_cells(
-        threadIdx.x + blockIdx.x * blockDim.x, sparse_ccl_indices_view,
-        cluster_prefix_sum_view, cells_prefix_sum_view, cluster_sizes_view);
+        threadIdx.x + blockIdx.x * blockDim.x, label_view,
+        cluster_prefix_sum_view,moduleidx, cells_cl_prefix_sum, cluster_sizes_view);
 }
 
 __global__ void connect_components(
-    const cell_container_types::const_view cells_view,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
-    cluster_container_types::view clusters_view) {
+     vecmem::data::vector_view<unsigned int> moduleidx,
+     vecmem::data::vector_view<unsigned int> label_view,
+     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
+     vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
+    vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
-                               cells_view, sparse_ccl_indices_view,
-                               cluster_prefix_sum_view, cells_prefix_sum_view,
+                               moduleidx, label_view,
+                               cluster_prefix_sum_view, cluster_idx_atomic,cells_cl_prefix_sum,
                                clusters_view);
 }
 __global__ void create_measurements(
@@ -285,9 +285,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
-    kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        sparse_ccl_indices_buff, cl_per_module_prefix_buff,
-        cells_prefix_sum_buff, cluster_sizes_buffer);
+    vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);//prefix sum cells per cluster 
+    kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(label_buff,
+         cl_per_module_prefix_buff,moduleidx,cells_cluster_ps, cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
     CUDA_ERROR_CHECK(cudaGetLastError());
@@ -308,11 +308,12 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
+ vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
+ vecmem::data::vector_buffer<unsigned int> clusters_ordre(cellcount, m_mr.main);
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
-    kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, sparse_ccl_indices_buff, cl_per_module_prefix_buff,
-        cells_prefix_sum_buff, clusters_buffer);
+    kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>( moduleidx,label_buff,
+     cl_per_module_prefix_buff, cluster_index_atomic, cells_cluster_ps, clusters_ordre);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Resizable buffer for the measurements
