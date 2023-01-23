@@ -14,7 +14,7 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void create_measurements(
-    std::size_t globalIndex, cluster_container_types::const_view clusters_view,  // clusters_view = cluster container 
+    std::size_t globalIndex, cluster_container_types::const_view clusters_view,
     const cell_container_types::const_view& cells_view,
     measurement_container_types::view measurements_view) {
 
@@ -31,9 +31,9 @@ inline void create_measurements(
 
     // items: cluster of cells at current idx
     // header: module idx
-    const auto& cluster = clusters_device[globalIndex].items;   ///  = device_cluster 
-    const auto& module_link = clusters_device[globalIndex].header;  /// = which module this cluster belong to 
-    const auto& module = cells_device.at(mo(dule_link).header;    /// = 
+    const auto& cluster = clusters_device[globalIndex].items;
+    const auto& module_link = clusters_device[globalIndex].header;
+    const auto& module = cells_device.at(module_link).header;
 
     // Should not happen
     assert(cluster.empty() == false);
