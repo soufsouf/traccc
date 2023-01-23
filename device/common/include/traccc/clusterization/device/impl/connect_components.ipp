@@ -40,7 +40,6 @@ inline void connect_components(
 
     // Vectors used for cluster indices found by sparse CCL
     unsigned int cindex = labels[globalIndex];
-    auto cluster_indice = device_cluster_prefix_sum[module_idx -1]+ cindex;
 
     // Get the cluster prefix sum for this module idx
     
