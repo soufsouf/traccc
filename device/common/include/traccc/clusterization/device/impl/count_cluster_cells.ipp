@@ -12,7 +12,7 @@
 
 namespace traccc::device {
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void count_cluster_cells(
     std::size_t globalIndex,
     vecmem::data::vector_view<unsigned int > celllabel,
@@ -66,8 +66,11 @@ auto cluster_indice = prefix_sum + cindex;
         vecmem::device_atomic_ref<unsigned int>(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);
+        
     }
-   __syncthreads();
+    
+    
+    __syncthreads();
    if(globalIndex == 0)
    {
      cells_cluster_prefix_sum[0] = device_cluster_sizes[0];

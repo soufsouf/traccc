@@ -62,8 +62,11 @@ inline void connect_components(
     
     if (cindex < n_clusters)
     {
-      idx= atomicAdd(&cluster_index_atomic[cluster_indice], 1);
-      clusters_device[lb + idx ] = globalIndex;
+      vecmem::device_atomic_ref<unsigned int>(
+            cluster_index_atomic[cluster_indice])
+            .fetch_add(1);
+      clusters_device[cluster_index_atomic[cluster_indice] + idx ] = globalIndex;
+      
     }
 }
 
