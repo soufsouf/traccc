@@ -44,8 +44,8 @@ inline void connect_components(
 
     // Get the cluster prefix sum for this module idx
     
-    const std::size_t prefix_sum = 
-        (module_idx == 0 ? 0 : device_cluster_prefix_sum[module_idx - 1]);
+    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
+    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
@@ -57,7 +57,7 @@ inline void connect_components(
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
    
-    unsigned int idx = 0;
+    
     unsigned int lb = cells_per_cluster_prefix_sum[cluster_indice - 1] ;
     
     if (cindex < n_clusters)
@@ -65,7 +65,7 @@ inline void connect_components(
       vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);
-      clusters_device[cluster_index_atomic[cluster_indice] + idx ] = globalIndex;
+      clusters_device[cluster_index_atomic[cluster_indice] +lb ] = globalIndex;
       
     }
 }
