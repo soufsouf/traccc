@@ -47,7 +47,7 @@ __forceinline__ void connect_components(
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
      vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
-    cluster_container_types::view clusters_view);
+    vecmem::data::vector_view<unsigned int> clusters_view);
 
 }  // namespace traccc::device
 

@@ -37,7 +37,7 @@ namespace traccc::device {
 /// @param[out] cluster_sizes_view      Container storing the number of cells
 /// for each cluster
 ///
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void count_cluster_cells(
     std::size_t globalIndex,
    vecmem::data::vector_view<unsigned int> label_view,
