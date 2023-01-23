@@ -125,6 +125,10 @@ __global__ void connect_components(
                                cluster_prefix_sum_view, cluster_idx_atomic,cells_cl_prefix_sum,
                                clusters_view);
 }
+
+
+
+
 __global__ void create_measurements(
     const cell_container_types::const_view cells_view,
     cluster_container_types::const_view clusters_view,
@@ -285,7 +289,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
-    vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);//prefix sum cells per cluster 
+    vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
+    m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(label_buff,
          cl_per_module_prefix_buff,moduleidx,cells_cluster_ps, cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
@@ -309,11 +314,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.items);
 
  vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
- vecmem::data::vector_buffer<unsigned int> clusters_ordre(cellcount, m_mr.main);
+ m_copy.setup(cluster_index_atomic);
+ vecmem::data::vector_buffer<unsigned int> clusters_buff(cellcount, m_mr.main);
+ m_copy.setup(clusters_buff);
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>( moduleidx,label_buff,
-     cl_per_module_prefix_buff, cluster_index_atomic, cells_cluster_ps, clusters_ordre);
+     cl_per_module_prefix_buff, cluster_index_atomic, cells_cluster_ps, clusters_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Resizable buffer for the measurements
