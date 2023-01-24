@@ -26,8 +26,8 @@ inline scalar signal_cell_modelling(scalar signal_in,
 /// Function for pixel segmentation
 TRACCC_HOST_DEVICE
 inline vector2 position_from_cell(
-    unsigned int channel0,
-    unsigned int channel1,
+    const std::size_t channel0,
+    const std::size_t channel1,
     const cell_module& module) {
     // Retrieve the specific values based on module idx
     return {module.pixel.min_center_x + channel0 * module.pixel.pitch_x,
@@ -46,14 +46,15 @@ inline vector2 position_from_cell(
 ///
 
 
-template <typename cell_collection_t>
-TRACCC_HOST_DEVICE inline void calc_cluster_properties(
-    vecmem::data::vector_view<unsigned int> clusters_device,
-    unsigned int index_cluster, 
-    vecmem::data::vector_view<scalar> activation,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    unsigned int nbr_cell_per_cluster,
+template <typename cell_collection_t , typename VV , typename SS >
+TRACCC_HOST_DEVICE
+ inline void calc_cluster_properties(
+    VV& clusters_device,
+    const std::size_t index_cluster, 
+    SS& activation,
+    VV& channel0,
+    VV& channel1,
+    const std::size_t nbr_cell_per_cluster,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
@@ -95,17 +96,17 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
 
 
 
-template <typename measurement_container_t, typename cell_collection_t>
+template <typename measurement_container_t, typename cell_collection_t , typename VV , typename SS>
 TRACCC_HOST_DEVICE inline void fill_measurement(
     measurement_container_t& measurements, 
-    vecmem::data::vector_view<unsigned int> clusters_device,
-    unsigned int indice_cluster,//indice de cluster dans clusters view 
-    unsigned int nbr_cell_per_cluster,
-    vecmem::data::vector_view<scalar> activation,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
+    VV& clusters_device,
+    const std::size_t indice_cluster,//indice de cluster dans clusters view 
+    const std::size_t nbr_cell_per_cluster,
+    SS& activation,
+    VV& channel0,
+    VV& channel1,
     const cell_module& module, 
-    unsigned int module_link,
+    const std::size_t module_link,
     const std::size_t cl_link /*global index*/) {
 
     // To calculate the mean and variance with high numerical stability

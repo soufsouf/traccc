@@ -357,7 +357,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Invoke measurements creation will call create measurements kernel
    kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        moduleidx, activation ,channel0, channel1,clusters_buffer,cells_cluster_ps,cells_view, measurements_buffer);
+        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view, measurements_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Create prefix sum buffer
