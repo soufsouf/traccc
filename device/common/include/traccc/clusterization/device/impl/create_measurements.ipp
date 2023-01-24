@@ -49,7 +49,7 @@ inline void create_measurements(
     //et dans le deuxieme prefix sum on peut obtenir le nombre de cells par cluster 
     std::size_t idx_cluster = (globalIndex == 0 ? 0 : cells_per_cluster_prefix_sum[globalIndex - 1]  );; // l'indice debut cluster dans le vecteur device_cluster
     unsigned int idx_cell = clusters_device[idx_cluster];
-    unsigned int module_link = midx[idx_cell];
+    std::size_t module_link = midx[idx_cell];
     std::size_t nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex]- idx_cluster;
     const auto& module = cells_device.at(module_link).header; // c quoi header
 
