@@ -14,33 +14,54 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void create_measurements(
-    std::size_t globalIndex, cluster_container_types::const_view clusters_view,
+    std::size_t globalIndex, 
+    vecmem::data::vector_view<unsigned int > moduleidx,
+    vecmem::data::vector_view<scalar> activation_cell,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int > clusters_view,
+    vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
+    vecmem::data::vector_view<unsigned int > emplacement, //nouveau tableau de taille n_clusters : chaque case contient l'indice de debut de cluster
     const cell_container_types::const_view& cells_view,
     measurement_container_types::view measurements_view) {
 
     // Initialize device vector that gives us the execution range
-    const cluster_container_types::const_device clusters_device(clusters_view);
-
+    vecmem::device_vector<unsigned int> midx(moduleidx);
+    vecmem::device_vector<scalar> activation(activation_cell);
+    vecmem::device_vector<unsigned int> ch0(channel0);
+    vecmem::device_vector<unsigned int> ch1(channel1);
+    vecmem::device_vector<unsigned int> clusters_device(clusters_view);
+    vecmem::device_vector<unsigned int> cells_per_cluster_prefix_sum(cel_cl_ps);
+    vecmem::device_vector<unsigned int> idx_emplacement_cluster(emplacement);
+    cell_container_types::const_device cells_device(cells_view);
+    measurement_container_types::device measurements_device(measurements_view);
+    
+    
     // Ignore if idx is out of range
     if (globalIndex >= clusters_device.size())
         return;
 
     // Create other device containers
-    measurement_container_types::device measurements_device(measurements_view);
-    cell_container_types::const_device cells_device(cells_view);
+    
 
     // items: cluster of cells at current idx
     // header: module idx
-    const auto& cluster = clusters_device[globalIndex].items;
-    const auto& module_link = clusters_device[globalIndex].header;
-    const auto& module = cells_device.at(module_link).header;
+    //obtenir les cells de cluster: remplacer par deux vec: 
+    //on met dans le premier l'indice de debut des cells d'un cluster dans le vecteur device_clusters 
+    //et dans le deuxieme prefix sum on peut obtenir le nombre de cells par cluster 
+    unsigned int idx_cluster = cells_per_cluster_prefix_sum[globalIndex - 1]; // l'indice debut cluster dans le vecteur device_cluster
+    idx_emplacement_cluster[globalIndex] = idx_cluster;
+    unsigned int idx_cell = clusters_device[idx_cluster];
+    unsigned int module_link = midx[idx_cell];
+    unsigned int nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex]-cells_per_cluster_prefix_sum[globalIndex - 1];
+    const auto& module = cells_device.at(module_link).header; // c quoi header
 
     // Should not happen
     assert(cluster.empty() == false);
 
     // Fill measurement from cluster
-    detail::fill_measurement(measurements_device, cluster, module, module_link,
-                             globalIndex);
+    detail::fill_measurement(measurements_device, clusters_device, idx_cluster, 
+     nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link,globalIndex);
 }
 
 }  // namespace traccc::device

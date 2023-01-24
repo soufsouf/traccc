@@ -33,7 +33,14 @@ namespace traccc::device {
 ///
 TRACCC_HOST_DEVICE
 inline void create_measurements(
-    std::size_t globalIndex, cluster_container_types::const_view clusters_view,
+    std::size_t globalIndex, 
+    vecmem::data::vector_view<unsigned int > moduleidx,
+    vecmem::data::vector_view<scalar> activation_cell,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int > clusters_view,
+    vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
+    vecmem::data::vector_view<unsigned int > emplacement, //nouveau tableau de taille n_clusters : chaque case contient l'indice de debut de cluster
     const cell_container_types::const_view& cells_view,
     measurement_container_types::view measurements_view);
 

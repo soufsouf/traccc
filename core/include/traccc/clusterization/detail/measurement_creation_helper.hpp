@@ -25,10 +25,13 @@ inline scalar signal_cell_modelling(scalar signal_in,
 
 /// Function for pixel segmentation
 TRACCC_HOST_DEVICE
-inline vector2 position_from_cell(const cell& c, const cell_module& module) {
+inline vector2 position_from_cell(
+    unsigned int channel0,
+    unsigned int channel1,
+    const cell_module& module) {
     // Retrieve the specific values based on module idx
-    return {module.pixel.min_center_x + c.channel0 * module.pixel.pitch_x,
-            module.pixel.min_center_y + c.channel1 * module.pixel.pitch_y};
+    return {module.pixel.min_center_x + channel0 * module.pixel.pitch_x,
+            module.pixel.min_center_y + channel1 * module.pixel.pitch_y};
 }
 
 /// Function used for calculating the properties of the cluster during
@@ -41,23 +44,32 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 ///                    cluster/measurement
 /// @param[out] totalWeight The total weight of the cluster/measurement
 ///
+
+
 template <typename cell_collection_t>
 TRACCC_HOST_DEVICE inline void calc_cluster_properties(
-    const cell_collection_t& cluster, const cell_module& module, point2& mean,
+    vecmem::data::vector_view<unsigned int> clusters_device,
+    unsigned int index_cluster,//indice de cluster dans clusters view 
+    vecmem::data::vector_view<scalar> activation;
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    unsigned int nbr_cell_per_cluster,
+    const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
     // Loop over the cells of the cluster.
-    for (const cell& cell : cluster) {
-
+    for (unsigned int i = 0; i < nbr_cell_per_cluster ; i++ ) {
+        // obtenir l'indice global de cell 
+        unsigned int cell_index = clusters_device[index_cluster + i];
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation, module);
+        const scalar weight = signal_cell_modelling(activation[cell_index], module);
 
         // Only consider cells over a minimum threshold.
         if (weight > module.threshold) {
 
             // Update all output properties with this cell.
-            totalWeight += cell.activation;
-            const point2 cell_position = position_from_cell(cell, module);
+            totalWeight += activation[cell_index];
+            const point2 cell_position = position_from_cell(ch0[cell_index], ch1[cell_index], module);
             const point2 prev = mean;
             const point2 diff = cell_position - prev;
 
@@ -80,11 +92,21 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
 /// @param[in] module_link is the module index of the cell container
 /// @param[in] cluster_link is the cluster index of the cluster container
 ///
+
+
+
 template <typename measurement_container_t, typename cell_collection_t>
 TRACCC_HOST_DEVICE inline void fill_measurement(
-    measurement_container_t& measurements, const cell_collection_t& cluster,
-    const cell_module& module, const std::size_t module_link,
-    const std::size_t cl_link) {
+    measurement_container_t& measurements, 
+    vecmem::data::vector_view<unsigned int> clusters_device,
+    unsigned int indice_cluster,//indice de cluster dans clusters view 
+    unsigned int nbr_cell_per_cluster,
+    vecmem::data::vector_view<scalar> activation,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    const cell_module& module, 
+    unsigned int module_link,
+    const std::size_t cl_link /*global index*/) {
 
     // To calculate the mean and variance with high numerical stability
     // we use a weighted variant of Welford's algorithm. This is a
@@ -99,7 +121,8 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight);
+    detail::calc_cluster_properties(clusters_device, indice_cluster,  nbr_cell_per_cluster,
+     activation , ch0, ch1, module, mean, var, totalWeight);
 
     if (totalWeight > 0.) {
         measurement m;
@@ -122,3 +145,4 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
 }
 
 }  // namespace traccc::detail
+
