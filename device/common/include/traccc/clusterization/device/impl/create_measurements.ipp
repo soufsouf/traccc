@@ -29,7 +29,6 @@ inline void create_measurements(
     vecmem::device_vector<scalar> activation(activation_cell);
     vecmem::device_vector<unsigned int> ch0(channel0);
     vecmem::device_vector<unsigned int> ch1(channel1);
-   
  vecmem::device_vector<unsigned int> clusters_device(clusters_view);
     vecmem::device_vector<unsigned int> cells_per_cluster_prefix_sum(cel_cl_ps);
     cell_container_types::const_device cells_device(cells_view);
@@ -48,10 +47,10 @@ inline void create_measurements(
     //obtenir les cells de cluster: remplacer par deux vec: 
     //on met dans le premier l'indice de debut des cells d'un cluster dans le vecteur device_clusters 
     //et dans le deuxieme prefix sum on peut obtenir le nombre de cells par cluster 
-    unsigned int idx_cluster = (globalIndex == 0 ? 0 : cells_per_cluster_prefix_sum[globalIndex - 1]  );; // l'indice debut cluster dans le vecteur device_cluster
+    std::size_t idx_cluster = (globalIndex == 0 ? 0 : cells_per_cluster_prefix_sum[globalIndex - 1]  );; // l'indice debut cluster dans le vecteur device_cluster
     unsigned int idx_cell = clusters_device[idx_cluster];
     unsigned int module_link = midx[idx_cell];
-    unsigned int nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex]- idx_cluster;
+    std::size_t nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex]- idx_cluster;
     const auto& module = cells_device.at(module_link).header; // c quoi header
 
     // Should not happen
