@@ -12,7 +12,7 @@
 
 namespace traccc::device {
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void create_measurements(
     std::size_t globalIndex, 
     vecmem::data::vector_view<unsigned int > moduleidx,
@@ -55,9 +55,9 @@ inline void create_measurements(
 
     // Should not happen
     assert(cluster.empty() == false);
-
+   
     // Fill measurement from cluster
-    detail::fill_measurement(measurements_device, clusters_device, idx_cluster, 
+    detail::fill_measurement_2(measurements_device, clusters_device, idx_cluster, 
      nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link,globalIndex);
 }
 

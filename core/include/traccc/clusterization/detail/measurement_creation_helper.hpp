@@ -97,7 +97,7 @@ TRACCC_DEVICE
 
 
 template <typename measurement_container_t, typename cell_collection_t , typename VV , typename SS>
-TRACCC_DEVICE inline void fill_measurement(
+TRACCC_DEVICE inline void fill_measurement_2(
     measurement_container_t& measurements, 
     VV& clusters_device,
     const std::size_t indice_cluster,//indice de cluster dans clusters view 
