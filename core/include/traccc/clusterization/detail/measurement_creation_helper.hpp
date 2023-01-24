@@ -49,8 +49,8 @@ inline vector2 position_from_cell(
 template <typename cell_collection_t>
 TRACCC_HOST_DEVICE inline void calc_cluster_properties(
     vecmem::data::vector_view<unsigned int> clusters_device,
-    unsigned int index_cluster,//indice de cluster dans clusters view 
-    vecmem::data::vector_view<scalar> activation;
+    unsigned int index_cluster, 
+    vecmem::data::vector_view<scalar> activation,
     vecmem::data::vector_view<unsigned int> channel0,
     vecmem::data::vector_view<unsigned int> channel1,
     unsigned int nbr_cell_per_cluster,
@@ -69,7 +69,7 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
 
             // Update all output properties with this cell.
             totalWeight += activation[cell_index];
-            const point2 cell_position = position_from_cell(ch0[cell_index], ch1[cell_index], module);
+            const point2 cell_position = position_from_cell(channel0[cell_index], channel1[cell_index], module);
             const point2 prev = mean;
             const point2 diff = cell_position - prev;
 
@@ -122,7 +122,7 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
     detail::calc_cluster_properties(clusters_device, indice_cluster,  nbr_cell_per_cluster,
-     activation , ch0, ch1, module, mean, var, totalWeight);
+     activation , channel0, channel1, module, mean, var, totalWeight);
 
     if (totalWeight > 0.) {
         measurement m;

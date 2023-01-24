@@ -29,7 +29,8 @@ inline void create_measurements(
     vecmem::device_vector<scalar> activation(activation_cell);
     vecmem::device_vector<unsigned int> ch0(channel0);
     vecmem::device_vector<unsigned int> ch1(channel1);
-    vecmem::device_vector<unsigned int> clusters_device(clusters_view);
+   
+ vecmem::device_vector<unsigned int> clusters_device(clusters_view);
     vecmem::device_vector<unsigned int> cells_per_cluster_prefix_sum(cel_cl_ps);
     cell_container_types::const_device cells_device(cells_view);
     measurement_container_types::device measurements_device(measurements_view);
