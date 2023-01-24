@@ -133,12 +133,18 @@ __global__ void connect_components(
 
 
 __global__ void create_measurements(
-    const cell_container_types::const_view cells_view,
-    cluster_container_types::const_view clusters_view,
-    measurement_container_types::view measurements_view) {
+    vecmem::data::vector_view<unsigned int > moduleidx,
+    vecmem::data::vector_view<scalar> activation_cell,
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<unsigned int > clusters_view,
+    vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
+    const cell_container_types::const_view& cells_view,
+    measurement_container_types::view measurements_view ) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
-                                clusters_view, cells_view, measurements_view);
+                              moduleidx ,activation_cell,channel0, channel1,
+                                clusters_view,cel_cl_ps, cells_view, measurements_view);
 }
 
 __global__ void form_spacepoints(
@@ -350,8 +356,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
                     threadsPerBlock;
 
     // Invoke measurements creation will call create measurements kernel
-    kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, clusters_buffer, measurements_buffer);
+   kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        moduleidx, activation ,channel0, channel1,clusters_buffer,cells_cluster_ps,cells_view, measurements_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Create prefix sum buffer

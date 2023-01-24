@@ -39,8 +39,7 @@ inline void create_measurements(
     vecmem::data::vector_view<unsigned int> channel0,
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int > clusters_view,
-    vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
-    vecmem::data::vector_view<unsigned int > emplacement, //nouveau tableau de taille n_clusters : chaque case contient l'indice de debut de cluster
+    vecmem::data::vector_view<unsigned int > cel_cl_ps, 
     const cell_container_types::const_view& cells_view,
     measurement_container_types::view measurements_view);
 
