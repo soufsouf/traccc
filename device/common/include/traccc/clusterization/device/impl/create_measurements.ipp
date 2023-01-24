@@ -57,7 +57,7 @@ inline void create_measurements(
     assert(cluster.empty() == false);
    
     // Fill measurement from cluster
-    detail::fill_measurement_2(measurements_device, clusters_device, idx_cluster, 
+    traccc::detail::fill_measurement_2(measurements_device, clusters_device, idx_cluster, 
      nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link,globalIndex);
 }
 
