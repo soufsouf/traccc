@@ -24,7 +24,7 @@ inline scalar signal_cell_modelling(scalar signal_in,
 }
 
 /// Function for pixel segmentation
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline vector2 position_from_cell(
     const std::size_t channel0,
     const std::size_t channel1,
@@ -47,7 +47,7 @@ inline vector2 position_from_cell(
 
 
 template <typename cell_collection_t , typename VV , typename SS >
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
  inline void calc_cluster_properties(
     VV& clusters_device,
     const std::size_t index_cluster, 
@@ -97,7 +97,7 @@ TRACCC_HOST_DEVICE
 
 
 template <typename measurement_container_t, typename cell_collection_t , typename VV , typename SS>
-TRACCC_HOST_DEVICE inline void fill_measurement(
+TRACCC_DEVICE inline void fill_measurement(
     measurement_container_t& measurements, 
     VV& clusters_device,
     const std::size_t indice_cluster,//indice de cluster dans clusters view 
@@ -145,7 +145,7 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
     }
 }
 /// Function for pixel segmentation
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 inline vector2 position_from_cell(const cell& c, const cell_module& module) {
     // Retrieve the specific values based on module idx
     return {module.pixel.min_center_x + c.channel0 * module.pixel.pitch_x,
@@ -153,7 +153,7 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 }
 
 template <typename cell_collection_t>
-TRACCC_HOST_DEVICE inline void calc_cluster_properties(
+TRACCC_HOST inline void calc_cluster_properties(
     const cell_collection_t& cluster, const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
@@ -192,7 +192,7 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
 /// @param[in] cluster_link is the cluster index of the cluster container
 ///
 template <typename measurement_container_t, typename cell_collection_t>
-TRACCC_HOST_DEVICE inline void fill_measurement(
+TRACCC_HOST inline void fill_measurement(
     measurement_container_t& measurements, const cell_collection_t& cluster,
     const cell_module& module, const std::size_t module_link,
     const std::size_t cl_link) {
