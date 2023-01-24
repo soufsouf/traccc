@@ -31,7 +31,7 @@ namespace traccc::device {
 /// @param[out] measurements_view   Container storing the created measurements
 /// for each module
 ///
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void create_measurements(
     std::size_t globalIndex, 
     vecmem::data::vector_view<unsigned int > moduleidx,
