@@ -19,7 +19,7 @@ namespace traccc::detail {
 /// Function used for retrieving the cell signal based on the module id
 TRACCC_HOST_DEVICE
 inline scalar signal_cell_modelling(scalar signal_in,
-                                    const cell_module& /*module*/) {
+                                    const cell_module& module) {
     return signal_in;
 }
 
@@ -135,14 +135,14 @@ template <typename measurement_container_t, typename VV , typename SS>
 TRACCC_DEVICE inline void fill_measurement(
     measurement_container_t& measurements, 
     VV& clusters_device,
-     std::size_t idx_cluster,//indice de cluster dans clusters view 
-     std::size_t nbr_cell_per_cluster,
+    std::size_t idx_cluster,//indice de cluster dans clusters view 
+    std::size_t nbr_cell_per_cluster,
     SS& activation,
     VV& channel0,
     VV& channel1,
-     cell_module& module, 
-      std::size_t module_link,
-     std::size_t cl_link /*global index*/) {
+    const cell_module& module, 
+    std::size_t module_link,
+    std::size_t cl_link /*global index*/) {
 
     // To calculate the mean and variance with high numerical stability
     // we use a weighted variant of Welford's algorithm. This is a
