@@ -351,10 +351,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
 
-/// afficher clusters_buff
-   unsigned int clusters_buff_x = clusters_buff[1]
-   unsigned int clusters_buff_y = clusters_buff[2]
-   std::cout<< clusters_buff[1] << " " <<  clusters_buff[2] << endl; 
+ 
 
 
     // Calculating grid size for measurements creation kernel (block size 64)
