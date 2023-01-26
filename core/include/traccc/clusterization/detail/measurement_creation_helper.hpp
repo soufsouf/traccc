@@ -56,12 +56,12 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 template < typename VV , typename SS >
 TRACCC_DEVICE
  inline void calc_cluster_properties(
-    VV& clusters_device,
+    VV clusters_device,
     const std::size_t idx_cluster, 
     const std::size_t nbr_cell_per_cluster,
-    SS& activation,
-    VV& channel0,
-    VV& channel1,
+    SS activation,
+    VV channel0,
+    VV channel1,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
