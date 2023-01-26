@@ -57,7 +57,7 @@ template < typename VV , typename SS >
 TRACCC_DEVICE
  inline void calc_cluster_properties(
     VV clusters_device,
-    const std::size_t index_cluster, 
+    const std::size_t idx_cluster, 
     SS activation,
     VV channel0,
     VV channel1,
@@ -68,7 +68,7 @@ TRACCC_DEVICE
     // Loop over the cells of the cluster.
     for (unsigned int i = 0; i < nbr_cell_per_cluster ; i++ ) {
         // obtenir l'indice global de cell 
-        unsigned int cell_index = clusters_device[index_cluster + i];
+        unsigned int cell_index = clusters_device[idx_cluster + i];
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(activation[cell_index], module);
 
@@ -135,7 +135,7 @@ template <typename measurement_container_t, typename VV , typename SS>
 TRACCC_DEVICE inline void fill_measurement(
     measurement_container_t& measurements, 
     VV clusters_device,
-     std::size_t indice_cluster,//indice de cluster dans clusters view 
+     std::size_t idx_cluster,//indice de cluster dans clusters view 
      std::size_t nbr_cell_per_cluster,
     SS activation,
     VV channel0,
@@ -157,7 +157,7 @@ TRACCC_DEVICE inline void fill_measurement(
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    detail::calc_cluster_properties(clusters_device, indice_cluster,  nbr_cell_per_cluster,
+    detail::calc_cluster_properties(clusters_device, idx_cluster,  nbr_cell_per_cluster,
      activation , channel0, channel1, module, mean, var, totalWeight);
 
     if (totalWeight > 0.) {
