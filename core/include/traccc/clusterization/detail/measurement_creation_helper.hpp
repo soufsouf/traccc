@@ -56,12 +56,12 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 template < typename VV , typename SS >
 TRACCC_DEVICE
  inline void calc_cluster_properties(
-    VV clusters_device,
+    VV& clusters_device,
     const std::size_t idx_cluster, 
-    SS activation,
-    VV channel0,
-    VV channel1,
     const std::size_t nbr_cell_per_cluster,
+    SS& activation,
+    VV& channel0,
+    VV& channel1,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
@@ -134,12 +134,12 @@ TRACCC_HOST inline void calc_cluster_properties(
 template <typename measurement_container_t, typename VV , typename SS>
 TRACCC_DEVICE inline void fill_measurement(
     measurement_container_t& measurements, 
-    VV clusters_device,
+    VV& clusters_device,
      std::size_t idx_cluster,//indice de cluster dans clusters view 
      std::size_t nbr_cell_per_cluster,
-    SS activation,
-    VV channel0,
-    VV channel1,
+    SS& activation,
+    VV& channel0,
+    VV& channel1,
      cell_module& module, 
       std::size_t module_link,
      std::size_t cl_link /*global index*/) {
