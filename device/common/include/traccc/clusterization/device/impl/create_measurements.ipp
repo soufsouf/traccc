@@ -11,7 +11,7 @@
 #include <cassert>
 
 namespace traccc::device {
-
+using scalar = TRACCC_CUSTOM_SCALARTYPE;
 TRACCC_DEVICE
 inline void create_measurements(
     std::size_t globalIndex, 
@@ -59,6 +59,9 @@ inline void create_measurements(
     // Fill measurement from cluster
     detail::fill_measurement(measurements_device, clusters_device, idx_cluster, 
      nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link,globalIndex);
+
+
+
 }
 
 }  // namespace traccc::device
