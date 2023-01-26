@@ -36,7 +36,7 @@ inline void create_measurements(
     
     
     // Ignore if idx is out of range
-    if (globalIndex >= clusters_device.size()) /// faux 
+    if (globalIndex >= cells_per_cluster_prefix_sum.size()) /// faux 
         return;
 
     // Create other device containers

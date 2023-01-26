@@ -74,7 +74,7 @@ auto cluster_indice = prefix_sum + cindex;
    if(globalIndex == 0)
    {
      cells_cluster_prefix_sum[0] = device_cluster_sizes[0];
-     for(unsigned int i = 1; i < device_cluster_prefix_sum.back() /*n_clusters*/  ; i++)
+     for(unsigned int i = 1; i < device_cluster_sizes.size() /*n_clusters*/  ; i++)
      {
         cells_cluster_prefix_sum[i] = device_cluster_sizes[i ] + cells_cluster_prefix_sum[i - 1];
      }
