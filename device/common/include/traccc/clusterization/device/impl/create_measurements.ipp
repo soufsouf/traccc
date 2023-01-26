@@ -36,7 +36,7 @@ inline void create_measurements(
     
     
     // Ignore if idx is out of range
-    if (globalIndex >= clusters_device.size())
+    if (globalIndex >= clusters_device.size()) /// faux 
         return;
 
     // Create other device containers
@@ -47,8 +47,8 @@ inline void create_measurements(
     //obtenir les cells de cluster: remplacer par deux vec: 
     //on met dans le premier l'indice de debut des cells d'un cluster dans le vecteur device_clusters 
     //et dans le deuxieme prefix sum on peut obtenir le nombre de cells par cluster 
-    std::size_t idx_cluster = (globalIndex == 0 ? 0 : cells_per_cluster_prefix_sum[globalIndex - 1]  );; // l'indice debut cluster dans le vecteur device_cluster
-    unsigned int idx_cell = clusters_device[idx_cluster];
+    std::size_t idx_cluster = (globalIndex == 0 ? 0 : cells_per_cluster_prefix_sum[globalIndex - 1]  ); // l'indice debut cluster dans le vecteur device_cluster
+    unsigned int idx_cell = clusters_device[idx_cluster];   //esq idx_cluster = idx_cell (checkout)
     std::size_t module_link = midx[idx_cell];
     std::size_t nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex]- idx_cluster;
     const auto& module = cells_device.at(module_link).header; // c quoi header
