@@ -26,7 +26,7 @@
 #include <algorithm>
 
 std::size_t cellcount;
-
+using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
 namespace kernels {
 
@@ -40,7 +40,7 @@ vecmem::data::vector_view<scalar> activat,
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> ch0(channel0);
     vecmem::device_vector<unsigned int> ch1(channel1);
-vecmem::device_vector<scalar> activation(activat);
+    vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
 
@@ -192,7 +192,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(channel0);
     vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
     m_copy.setup(channel1);
- vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
+    vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
     m_copy.setup(activation);
     vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
     m_copy.setup(moduleidx);
@@ -350,6 +350,12 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
          m_mr.main, m_mr.host}};
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
+
+/// afficher clusters_buff
+   unsigned int clusters_buff_x = clusters_buff[1]
+   unsigned int clusters_buff_y = clusters_buff[2]
+   std::cout<< clusters_buff[1] << " " <<  clusters_buff[2] << endl; 
+
 
     // Calculating grid size for measurements creation kernel (block size 64)
     blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
