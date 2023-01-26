@@ -133,16 +133,16 @@ TRACCC_HOST inline void calc_cluster_properties(
 
 template <typename measurement_container_t, typename cell_collection_t , typename VV , typename SS>
 TRACCC_DEVICE inline void fill_measurement_2(
-    measurement_container_t measurements, 
+    measurement_container_t& measurements, 
     VV clusters_device,
-    const std::size_t indice_cluster,//indice de cluster dans clusters view 
-    const std::size_t nbr_cell_per_cluster,
+     std::size_t indice_cluster,//indice de cluster dans clusters view 
+     std::size_t nbr_cell_per_cluster,
     SS activation,
     VV channel0,
     VV channel1,
-    const cell_module module, 
-    const std::size_t module_link,
-    const std::size_t cl_link /*global index*/) {
+     cell_module& module, 
+      std::size_t module_link,
+     std::size_t cl_link /*global index*/) {
 
     // To calculate the mean and variance with high numerical stability
     // we use a weighted variant of Welford's algorithm. This is a
