@@ -54,10 +54,10 @@ inline void create_measurements(
     const auto& module = cells_device.at(module_link).header; // c quoi header
 
     // Should not happen
-    assert(cluster.empty() == false);
+    assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    traccc::detail::fill_measurement_2(measurements_device, clusters_device, idx_cluster, 
+    detail::fill_measurement(measurements_device, clusters_device, idx_cluster, 
      nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link,globalIndex);
 }
 
