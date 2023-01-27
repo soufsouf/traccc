@@ -26,8 +26,8 @@ inline scalar signal_cell_modelling(scalar signal_in,
 /// Function for pixel segmentation
 TRACCC_DEVICE
 inline vector2 position_from_cell(
-    const std::size_t channel0,
-    const std::size_t channel1,
+    const unsigned int/*const std::size_t */ channel0,
+    const unsigned int/*const std::size_t */ channel1,
     const cell_module& module) {
     // Retrieve the specific values based on module idx
     return {module.pixel.min_center_x + channel0 * module.pixel.pitch_x,
