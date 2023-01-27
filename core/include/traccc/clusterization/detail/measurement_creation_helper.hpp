@@ -56,12 +56,12 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 template < typename VV , typename SS >
 TRACCC_DEVICE
  inline void calc_cluster_properties(
-    VV clusters_device,
-    const std::size_t idx_cluster, 
-    const std::size_t nbr_cell_per_cluster,
-    SS activation,
-    VV channel0,
-    VV channel1,
+    VV& clusters_device,
+    const std::size_t& idx_cluster, 
+    const std::size_t& nbr_cell_per_cluster,
+    SS& activation,
+    VV& channel0,
+    VV& channel1,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
@@ -82,9 +82,9 @@ TRACCC_DEVICE
             const point2 diff = cell_position - prev;
 
             mean = prev + (weight / totalWeight) * diff;
-            for (std::size_t i = 0; i < 2; ++i) {
-                var[i] =
-                    var[i] + weight * (diff[i]) * (cell_position[i] - mean[i]);
+            for (std::size_t j = 0; j < 2; ++j) {
+                var[j] =
+                    var[j] + weight * (diff[j]) * (cell_position[j] - mean[j]);
             }
         }
     }
