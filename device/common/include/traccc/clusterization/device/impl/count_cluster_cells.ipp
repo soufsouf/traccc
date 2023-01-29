@@ -61,27 +61,32 @@ inline void count_cluster_cells(
     // Count the cluster sizes for each position
    
     if (cindex < n_clusters) {
-        //atomicAdd(&device_cluster_sizes[cluster_indice], 1);
-        vecmem::device_atomic_ref<unsigned int>(
+        atomicAdd(&device_cluster_sizes[cluster_indice], 1);
+        /*vecmem::device_atomic_ref<unsigned int>(
             device_cluster_sizes[cluster_indice])
-            .fetch_add(1);
+            .fetch_add(1);*/
     }
     
     
     __syncthreads();
 
-    /*printf("th %llu cluster sum of module %u is %llu, label %u cluster size %llu d_cl_size %u \n",
-        globalIndex, module_idx, device_cluster_prefix_sum[module_idx], cindex, n_clusters,
-        device_cluster_sizes[cluster_indice]);*/
+    if(globalIndex == 0)
+    {
+        cells_cluster_prefix_sum[0] = device_cluster_sizes[0];
+        for(unsigned int i = 1; i < device_cluster_sizes.size() /*n_clusters*/  ; i++)
+        {
+            cells_cluster_prefix_sum[i] = device_cluster_sizes[i ] + cells_cluster_prefix_sum[i - 1];
+        }
+    }
 
-   if(globalIndex == 0)
-   {
-     cells_cluster_prefix_sum[0] = device_cluster_sizes[0];
-     for(unsigned int i = 1; i < device_cluster_sizes.size() /*n_clusters*/  ; i++)
-     {
-        cells_cluster_prefix_sum[i] = device_cluster_sizes[i ] + cells_cluster_prefix_sum[i - 1];
-     }
-   }
+
+    /*if (globalIndex < 64) {
+        printf("th %llu  module %u nbr cluster in module %llu module_lb %llu, "
+                "label %u cl_size %u cluster_prefix_sum %u \n", globalIndex, module_idx,
+                n_clusters, prefix_sum, cindex,
+                device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]);
+    }*/
+
 }
 
 }  // namespace traccc::device

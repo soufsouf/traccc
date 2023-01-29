@@ -21,7 +21,7 @@ inline void create_measurements(
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
-    const cell_container_types::const_view cells_view,
+    const cell_container_types::const_view& cells_view,
     measurement_container_types::view measurements_view) {
 
     // Initialize device vector that gives us the execution range
@@ -51,12 +51,11 @@ inline void create_measurements(
     unsigned int idx_cell = clusters_device[idx_cluster];   //esq idx_cluster = idx_cell (checkout)
     std::size_t module_link = midx[idx_cell];
     std::size_t nbr_cell_per_cluster = cells_per_cluster_prefix_sum[globalIndex] - idx_cluster;
-    auto module = cells_device.at(module_link).header; // c quoi header
+    auto &module = cells_device.at(module_link).header; // c quoi header
 
-    printf("th %llu cluster %llu cell %u module %llu nbr cell per cluster %llu\n",
-            globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);
+    /*printf("th %llu cluster %llu cell %u module %llu nbr cell per cluster %llu\n",
+            globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
-    __syncthreads();
     // Should not happen
     assert(clusters_device.empty() == false);
    

@@ -262,8 +262,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());*/
 
     // Create prefix sum buffer
-    /*vecmem::data::vector_buffer cells_prefix_sum_buff =
-        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);*/
+    vecmem::data::vector_buffer cells_prefix_sum_buff =
+        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);
 
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
@@ -293,14 +293,16 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(cluster_sizes_buffer);
     m_copy.memset(cluster_sizes_buffer, 0);
 
+    printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cellcount + threadsPerBlock - 1) /
+    blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
-    kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(label_buff,
-         cl_per_module_prefix_buff,moduleidx,cells_cluster_ps, cluster_sizes_buffer);
+    kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        label_buff, cl_per_module_prefix_buff, moduleidx, cells_cluster_ps,
+        cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
     CUDA_ERROR_CHECK(cudaGetLastError());
@@ -323,13 +325,15 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
     m_copy.setup(cluster_index_atomic);
+    m_copy.memset(cluster_index_atomic, 0);
     vecmem::data::vector_buffer<unsigned int> clusters_buff(cellcount, m_mr.main);
     m_copy.setup(clusters_buff);
 
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
-    kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>( moduleidx,label_buff,
-     cl_per_module_prefix_buff, cluster_index_atomic, cells_cluster_ps, clusters_buff);
+    kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
+        cells_cluster_ps, clusters_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Resizable buffer for the measurements
@@ -349,13 +353,15 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
 
+    printf("clusters_buff %llu\n", clusters_buffer.headers.size());
     // Calculating grid size for measurements creation kernel (block size 64)
-    blocksPerGrid = (total_clusters - 1 + threadsPerBlock) /
+    blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
                     threadsPerBlock;
 
     // Invoke measurements creation will call create measurements kernel
    kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view, measurements_buffer);
+        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view,
+        measurements_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Create prefix sum buffer

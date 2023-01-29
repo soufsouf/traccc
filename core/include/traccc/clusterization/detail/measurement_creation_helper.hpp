@@ -14,6 +14,7 @@
 #include "traccc/edm/cluster.hpp"
 #include "traccc/edm/measurement.hpp"
 
+
 namespace traccc::detail {
 
 /// Function used for retrieving the cell signal based on the module id
@@ -167,9 +168,13 @@ TRACCC_DEVICE inline void fill_measurement(
                      point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
         // @todo add variance estimation
 
+        /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,
+            module_link, module.threshold, pitch[0], pitch[1]);*/
+
         measurements[module_link].header = module;
         measurements[module_link].items.push_back(std::move(m));
     }
+
 }
 
 

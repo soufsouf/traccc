@@ -17,7 +17,7 @@ inline void connect_components(
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
     vecmem::data::vector_view<unsigned int > cel_cl_ps,
-    vecmem::data::vector_view<unsigned int > clusters_view, int eee) {
+    vecmem::data::vector_view<unsigned int >& clusters_view, int eee) {
 
     // Get device vector of the cells prefix sum
     vecmem::device_vector<unsigned int> midx(moduleidx);
@@ -42,9 +42,9 @@ inline void connect_components(
     unsigned int cindex = labels[globalIndex] - 1;
 
     // Get the cluster prefix sum for this module idx
-    
-    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
-    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
+    const std::size_t prefix_sum = ( module_idx == 0 ?
+                        0 : device_cluster_prefix_sum[module_idx - 1]);
+    auto cluster_indice = prefix_sum + cindex;
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
@@ -58,24 +58,23 @@ inline void connect_components(
    
     unsigned int idx = 
         (cluster_indice == 0 ? 0 : cluster_indice - 1);
-    unsigned int lb = cells_per_cluster_prefix_sum[idx] ;
+    unsigned int lb = cells_per_cluster_prefix_sum[idx];
     
-    unsigned int ii = 9999999;
+    unsigned int ii = 0;
     //if (cindex < n_clusters)
-    {
+
         ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
         /*vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);*/
-        clusters_device[ii +lb ] = globalIndex;
+        clusters_device[ii +lb] = globalIndex;
+
+    if (globalIndex < 64) {
+        /*printf("th %llu cluster[%llu] starts %u cluster device %u,"
+        " lb %u ii %u\n", globalIndex, idx, clusters_device[ii+lb], lb, ii);*/
+        /*printf("th %llu cluster_prefix_sum %u\n", globalIndex,
+                    cells_per_cluster_prefix_sum[cluster_indice]);*/
     }
-    __syncthreads();
-
-    /*printf("th %llu module %u, module starts at cluster %llu cluster starts at %llu"
-        " label %u lb+ii %u size of cluster %u th %u\n",
-        globalIndex, module_idx, device_cluster_prefix_sum[prefix_sum], cluster_indice,
-        cindex, lb+ii, n_clusters, clusters_device[ii+lb]);*/
-
 }
 
 TRACCC_HOST
