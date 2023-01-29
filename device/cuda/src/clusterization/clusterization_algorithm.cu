@@ -126,11 +126,8 @@ __global__ void connect_components(
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
                                moduleidx, label_view,
                                cluster_prefix_sum_view, cluster_idx_atomic,cells_cl_prefix_sum,
-                               clusters_view);
+                               clusters_view, 0);
 }
-
-
-
 
 __global__ void create_measurements(
     vecmem::data::vector_view<unsigned int > moduleidx,
@@ -139,7 +136,7 @@ __global__ void create_measurements(
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
-    const cell_container_types::const_view& cells_view,
+    const cell_container_types::const_view cells_view,
     measurement_container_types::view measurements_view ) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
@@ -210,10 +207,10 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
      * and will indicate to which cluster, a particular cell in the module
      * belongs to.
      */
-    vecmem::data::jagged_vector_buffer<unsigned int> sparse_ccl_indices_buff(
+    /*vecmem::data::jagged_vector_buffer<unsigned int> sparse_ccl_indices_buff(
         std::vector<std::size_t>(cell_sizes.begin(), cell_sizes.end()),
         m_mr.main, m_mr.host);
-    m_copy.setup(sparse_ccl_indices_buff);
+    m_copy.setup(sparse_ccl_indices_buff);*/
 
     vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
     m_copy.setup(label_buff);
@@ -260,13 +257,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
-    kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         label_buff, sparse_ccl_indices_buff, prefixsum);
-    CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());*/
 
     // Create prefix sum buffer
-    vecmem::data::vector_buffer cells_prefix_sum_buff =
-        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);
+    /*vecmem::data::vector_buffer cells_prefix_sum_buff =
+        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);*/
 
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
@@ -297,7 +294,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.memset(cluster_sizes_buffer, 0);
 
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
+    blocksPerGrid = (cellcount + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
@@ -324,10 +321,11 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
- vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
- m_copy.setup(cluster_index_atomic);
- vecmem::data::vector_buffer<unsigned int> clusters_buff(cellcount, m_mr.main);
- m_copy.setup(clusters_buff);
+    vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
+    m_copy.setup(cluster_index_atomic);
+    vecmem::data::vector_buffer<unsigned int> clusters_buff(cellcount, m_mr.main);
+    m_copy.setup(clusters_buff);
+
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>( moduleidx,label_buff,
@@ -351,11 +349,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
 
- 
-
-
     // Calculating grid size for measurements creation kernel (block size 64)
-    blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
+    blocksPerGrid = (total_clusters - 1 + threadsPerBlock) /
                     threadsPerBlock;
 
     // Invoke measurements creation will call create measurements kernel

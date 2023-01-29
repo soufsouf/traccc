@@ -35,7 +35,7 @@ inline void count_cluster_cells(
     // module, from the prefix sum
    auto module_idx = midx[globalIndex];
     
-   unsigned int cindex = labels[globalIndex];
+   unsigned int cindex = labels[globalIndex] - 1;
     // Vectors used for cluster indices found by sparse CCL
    
     
@@ -45,14 +45,12 @@ inline void count_cluster_cells(
     vecmem::device_vector<std::size_t> device_cluster_prefix_sum(
         cluster_prefix_sum_view);
      
-     
-
-    const std::size_t prefix_sum =
+    std::size_t prefix_sum =
         (module_idx == 0 ? 0 : device_cluster_prefix_sum[module_idx - 1]);
-auto cluster_indice = prefix_sum + cindex;
+    std::size_t cluster_indice = prefix_sum + cindex;
     // Calculate the number of clusters found for this module from the prefix
     // sums
-    const unsigned int n_clusters =
+    std::size_t n_clusters =
         (module_idx == 0 ? device_cluster_prefix_sum[0]
                          : device_cluster_prefix_sum[module_idx] - prefix_sum);
 
@@ -63,14 +61,19 @@ auto cluster_indice = prefix_sum + cindex;
     // Count the cluster sizes for each position
    
     if (cindex < n_clusters) {
+        //atomicAdd(&device_cluster_sizes[cluster_indice], 1);
         vecmem::device_atomic_ref<unsigned int>(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);
-        
     }
     
     
     __syncthreads();
+
+    /*printf("th %llu cluster sum of module %u is %llu, label %u cluster size %llu d_cl_size %u \n",
+        globalIndex, module_idx, device_cluster_prefix_sum[module_idx], cindex, n_clusters,
+        device_cluster_sizes[cluster_indice]);*/
+
    if(globalIndex == 0)
    {
      cells_cluster_prefix_sum[0] = device_cluster_sizes[0];

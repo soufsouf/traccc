@@ -55,13 +55,13 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 
 template < typename VV , typename SS >
 TRACCC_DEVICE
- inline void calc_cluster_properties(
-    VV& clusters_device,
+void calc_cluster_properties(
+    VV clusters_device,
     const unsigned int/* const std::size_t& */ idx_cluster, 
     const unsigned int/*const std::size_t& */ nbr_cell_per_cluster,
-    SS& activation,
-    VV& channel0,
-    VV& channel1,
+    SS activation,
+    VV channel0,
+    VV channel1,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
@@ -82,13 +82,14 @@ TRACCC_DEVICE
             const point2 diff = cell_position - prev;
 
             mean = prev + (weight / totalWeight) * diff;
-            for (std::size_t j = 0; j < 2; ++j) {
+            for (unsigned int j = 0; j < 2; ++j) {
                 var[j] =
                     var[j] + weight * (diff[j]) * (cell_position[j] - mean[j]);
             }
         }
     }
 }
+
 template <typename cell_collection_t>
 TRACCC_HOST inline void calc_cluster_properties(
     const cell_collection_t& cluster, const cell_module& module, point2& mean,
@@ -133,26 +134,16 @@ TRACCC_HOST inline void calc_cluster_properties(
 
 template <typename measurement_container_t, typename VV , typename SS>
 TRACCC_DEVICE inline void fill_measurement(
-    measurement_container_t& measurements, 
-    VV& clusters_device,
+    measurement_container_t &measurements, 
+    VV clusters_device,
     std::size_t idx_cluster,//indice de cluster dans clusters view 
     std::size_t nbr_cell_per_cluster,
-    SS& activation,
-    VV& channel0,
-    VV& channel1,
+    SS activation,
+    VV channel0,
+    VV channel1,
     const cell_module& module, 
     std::size_t module_link,
     std::size_t cl_link /*global index*/) {
-
-    // To calculate the mean and variance with high numerical stability
-    // we use a weighted variant of Welford's algorithm. This is a
-    // single-pass online algorithm that works well for large numbers
-    // of samples, as well as samples with very high values.
-    //
-    // To learn more about this algorithm please refer to:
-    // [1] https://doi.org/10.1080/00401706.1962.10490022
-    // [2] The Art of Computer Programming, Donald E. Knuth, second
-    //     edition, chapter 4.2.2.
 
     // Calculate the cluster properties
     scalar totalWeight = 0.;
@@ -160,7 +151,8 @@ TRACCC_DEVICE inline void fill_measurement(
     detail::calc_cluster_properties(clusters_device, idx_cluster,  nbr_cell_per_cluster,
      activation , channel0, channel1, module, mean, var, totalWeight);
 
-    if (totalWeight > 0.) {
+    if (totalWeight > 0.)
+    {
         measurement m;
         // cluster link
         m.cluster_link = cl_link;
