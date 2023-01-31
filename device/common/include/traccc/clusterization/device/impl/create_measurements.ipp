@@ -22,7 +22,6 @@ inline void create_measurements(
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
     const cell_container_types::const_view& cells_view,
-    measurement_container_types::view measurements_view,
      vecmem::data::vector_view<unsigned int >& Clusters_module_link,
      vecmem::data::vector_view<point2 > &measurement_local,
       vecmem::data::vector_view<variance2 >& measurement_variance) {
@@ -35,7 +34,6 @@ inline void create_measurements(
     vecmem::device_vector<unsigned int> clusters_device(clusters_view);
     vecmem::device_vector<unsigned int> cells_per_cluster_prefix_sum(cel_cl_ps);
     cell_container_types::const_device cells_device(cells_view);
-    measurement_container_types::device measurements_device(measurements_view);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<variance2> variance_measurement(measurement_variance);
@@ -67,7 +65,7 @@ inline void create_measurements(
     assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    detail::fill_measurement(measurements_device,local_measurement,variance_measurement, clusters_device, idx_cluster, 
+    detail::fill_measurement(local_measurement,variance_measurement, clusters_device, idx_cluster, 
         nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link, globalIndex);
 }
 

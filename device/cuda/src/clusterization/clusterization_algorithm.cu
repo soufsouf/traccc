@@ -164,7 +164,6 @@ __global__ void create_measurements(
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
     const cell_container_types::const_view cells_view,
-    measurement_container_types::view measurements_view ,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<variance2 > measurement_variance) {
@@ -172,7 +171,7 @@ __global__ void create_measurements(
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
                               moduleidx ,activation_cell,channel0, channel1,
                                 clusters_view,cel_cl_ps, cells_view,
-                                 measurements_view,Clusters_module_link, measurement_local, measurement_variance);
+                                 Clusters_module_link, measurement_local, measurement_variance);
 }
 
 __global__ void form_spacepoints(
@@ -368,12 +367,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Resizable buffer for the measurements
-    measurement_container_types::buffer measurements_buffer{
-        {num_modules, m_mr.main},
-        {std::vector<std::size_t>(num_modules, 0), clusters_per_module_host,
-         m_mr.main, m_mr.host}};
-    m_copy.setup(measurements_buffer.headers);
-    m_copy.setup(measurements_buffer.items);
+   
 
     // Spacepoint container buffer to fill inside the spacepoint formation
     // kernel
@@ -406,8 +400,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view,
-        measurements_buffer, Clusters_module_link,measurement_local, measurement_variance);
+        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view, Clusters_module_link,measurement_local, measurement_variance);
     CUDA_ERROR_CHECK(cudaGetLastError());
    
    
