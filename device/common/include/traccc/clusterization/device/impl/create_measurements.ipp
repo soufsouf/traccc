@@ -65,11 +65,7 @@ inline void create_measurements(
     assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-     argument types are: (vecmem::device_vector<traccc::point2>, vecmem:: device_vector<traccc::point2>,
-      vecmem::device_vector<unsigned int>, std::size_t, 
-       std::size_t, vecmem::device_vector<traccc::device::scalar>, vecmem::device_vector<unsigned int>, 
-       vecmem::device_vector<unsigned int>,
-        const traccc::cell_module , std::size_t, std::size_t)
+    
 
     detail::fill_measurement(local_measurement,variance_measurement, clusters_device, idx_cluster, 
         nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link, globalIndex);
