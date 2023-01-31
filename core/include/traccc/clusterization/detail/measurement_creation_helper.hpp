@@ -133,9 +133,11 @@ TRACCC_HOST inline void calc_cluster_properties(
 
 
 
-template <typename measurement_container_t, typename VV , typename SS>
+template <typename measurement_container_t, typename VV , typename SS, typename PP, typename VR>
 TRACCC_DEVICE inline void fill_measurement(
     measurement_container_t &measurements, 
+    PP& local_measurement, 
+    VR& variance_measurement,
     VV clusters_device,
     std::size_t idx_cluster,//indice de cluster dans clusters view 
     std::size_t nbr_cell_per_cluster,
@@ -148,7 +150,7 @@ TRACCC_DEVICE inline void fill_measurement(
 
     // Calculate the cluster properties
     scalar totalWeight = 0.;
-    point2 mean{0., 0.}, var{0., 0.};
+    point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
     detail::calc_cluster_properties(clusters_device, idx_cluster,  nbr_cell_per_cluster,
      activation , channel0, channel1, module, mean, var, totalWeight);
 
@@ -159,15 +161,19 @@ TRACCC_DEVICE inline void fill_measurement(
         m.cluster_link = cl_link;
         // normalize the cell position
         m.local = mean;
+        local_measurement[cl_link]= mean;
         // normalize the variance
         m.variance[0] = var[0] / totalWeight;
         m.variance[1] = var[1] / totalWeight;
+        variance[0]=var[0] / totalWeight;
+        variance[1] = var[1] / totalWeight;
         // plus pitch^2 / 12
         const auto pitch = module.pixel.get_pitch();
         m.variance = m.variance +
                      point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
-        // @todo add variance estimation
 
+        // @todo add variance estimation
+        variance_measurement[cl_link]= variance + point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
         /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,
             module_link, module.threshold, pitch[0], pitch[1]);*/
 
@@ -233,4 +239,3 @@ TRACCC_HOST inline void fill_measurement(
 
 
 }  // namespace traccc::detail
-

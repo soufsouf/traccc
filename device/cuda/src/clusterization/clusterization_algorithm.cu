@@ -103,6 +103,33 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
     }
 }
 
+ __global__ void fill3(const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<variance2 > measurement_variance,
+    measurement_container_types::view measurements_view )
+    {
+       int idx = threadIdx.x + blockIdx.x * blockDim.x;
+       if (idx >= Clusters_module_link.size())
+         return;
+    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
+    vecmem::device_vector<point2> local_measurement(measurement_local);
+    vecmem::device_vector<variance2> variance_measurement(measurement_variance);
+    measurement_container_types::device measurements_device(measurements_view);
+    
+    std::size_t module_link_ = Cl_module_link[idx];
+    point2 local_ = local_measurement[idx];
+    variance2 variance_ = variance_measurement[idx];
+    measurement m;
+    m.cluster_link = module_link_;
+    m.local = local_;
+    m.variance = variance_;
+    auto &module = cells_device.at(module_link_).header;
+    measurements_device[module_link_].header = module;
+    measurements_device[module_link_].items.push_back(std::move(m));
+    }
+
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
@@ -137,11 +164,15 @@ __global__ void create_measurements(
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
     const cell_container_types::const_view cells_view,
-    measurement_container_types::view measurements_view ) {
+    measurement_container_types::view measurements_view ,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<variance2 > measurement_variance) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
                               moduleidx ,activation_cell,channel0, channel1,
-                                clusters_view,cel_cl_ps, cells_view, measurements_view);
+                                clusters_view,cel_cl_ps, cells_view,
+                                 measurements_view,Clusters_module_link, measurement_local, measurement_variance);
 }
 
 __global__ void form_spacepoints(
@@ -357,13 +388,40 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Calculating grid size for measurements creation kernel (block size 64)
     blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
                     threadsPerBlock;
+    
+    
+    //measurement struct 
+    vecmem::data::vector_buffer<unsigned int> Clusters_module_link(total_clusters, m_mr.main);
+    m_copy.setup(Clusters_module_link);
+    m_copy.memset(Clusters_module_link, 0);
+
+    vecmem::data::vector_buffer<point2> measurement_local(total_clusters, m_mr.main);
+    m_copy.setup(measurement_local);
+    //m_copy.memset(measurement_local, 0);
+
+    vecmem::data::vector_buffer<variance2> measurement_variance(total_clusters, m_mr.main);
+    m_copy.setup(measurement_variance);
+    //m_copy.memset(measurement_variance, 0);
+
 
     // Invoke measurements creation will call create measurements kernel
-   kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view,
-        measurements_buffer);
+        measurements_buffer, Clusters_module_link,measurement_local, measurement_variance);
     CUDA_ERROR_CHECK(cudaGetLastError());
+   
+   
+   //kernel fill 3 
+   
+    measurement_container_types::buffer measurement_buff{
+        {num_modules, m_mr.main},
+        {std::vector<std::size_t>(num_modules, 0), clusters_per_module_host,
+         m_mr.main, m_mr.host}};
+    m_copy.setup(measurement_buff.headers);
+    m_copy.setup(measurement_buff.items);
 
+    kernels::fill3<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+       cells_view, Clusters_module_link,measurement_local, measurement_variance,measurement_buff );
     // Create prefix sum buffer
     vecmem::data::vector_buffer meas_prefix_sum_buff = make_prefix_sum_buff(
         std::vector<device::prefix_sum_size_t>{clusters_per_module_host.begin(),
@@ -373,7 +431,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Using the same grid size as before
     // Invoke spacepoint formation will call form_spacepoints kernel
     kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        measurements_buffer, meas_prefix_sum_buff, spacepoints_buffer);
+        measurement_buff, meas_prefix_sum_buff, spacepoints_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     // Return the buffer. Which may very well not be filled at this point yet.
