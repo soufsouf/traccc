@@ -24,7 +24,7 @@ inline void create_measurements(
     const cell_container_types::const_view& cells_view,
      vecmem::data::vector_view<unsigned int >& Clusters_module_link,
      vecmem::data::vector_view<point2 > &measurement_local,
-      vecmem::data::vector_view<variance2 >& measurement_variance) {
+      vecmem::data::vector_view<point2 >& measurement_variance) {
 
     // Initialize device vector that gives us the execution range
     vecmem::device_vector<unsigned int> midx(moduleidx);
@@ -36,7 +36,7 @@ inline void create_measurements(
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
-    vecmem::device_vector<variance2> variance_measurement(measurement_variance);
+    vecmem::device_vector<point2> variance_measurement(measurement_variance);
     
     
     // Ignore if idx is out of range
@@ -65,6 +65,12 @@ inline void create_measurements(
     assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
+     argument types are: (vecmem::device_vector<traccc::point2>, vecmem:: device_vector<traccc::point2>,
+      vecmem::device_vector<unsigned int>, std::size_t, 
+       std::size_t, vecmem::device_vector<traccc::device::scalar>, vecmem::device_vector<unsigned int>, 
+       vecmem::device_vector<unsigned int>,
+        const traccc::cell_module , std::size_t, std::size_t)
+
     detail::fill_measurement(local_measurement,variance_measurement, clusters_device, idx_cluster, 
         nbr_cell_per_cluster, activation,ch0 , ch1 , module, module_link, globalIndex);
 }

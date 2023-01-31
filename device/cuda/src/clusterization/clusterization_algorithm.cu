@@ -106,7 +106,7 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
  __global__ void fill3(const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<variance2 > measurement_variance,
+    vecmem::data::vector_view<point2 > measurement_variance,
     measurement_container_types::view measurements_view )
     {
        int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -115,7 +115,7 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
-    vecmem::device_vector<variance2> variance_measurement(measurement_variance);
+    vecmem::device_vector<point2> variance_measurement(measurement_variance);
     measurement_container_types::device measurements_device(measurements_view);
     
     std::size_t module_link_ = Cl_module_link[idx];
@@ -166,7 +166,7 @@ __global__ void create_measurements(
     const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<variance2 > measurement_variance) {
+    vecmem::data::vector_view<point2 > measurement_variance) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
                               moduleidx ,activation_cell,channel0, channel1,
@@ -393,7 +393,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(measurement_local);
     //m_copy.memset(measurement_local, 0);
 
-    vecmem::data::vector_buffer<variance2> measurement_variance(total_clusters, m_mr.main);
+    vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
     //m_copy.memset(measurement_variance, 0);
 
