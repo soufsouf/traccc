@@ -71,8 +71,8 @@ inline void count_cluster_cells(
     
     __syncthreads();
     // brust prefix sum (scan operation)
-
-    thrust::inclusive_scan(thrust::device , cells_cluster_prefix_sum.begin(), cells_cluster_prefix_sum.end(), cells_cluster_prefix_sum.begin()); // in-place scan
+    
+    thrust::inclusive_scan(thrust::device , cells_cluster_prefix_sum, cells_cluster_prefix_sum + cells_cluster_prefix_sum.size() , cells_cluster_prefix_sum); // in-place scan
    
 
     /*if(globalIndex == 0)
@@ -86,7 +86,7 @@ inline void count_cluster_cells(
     
 
  __syncthreads();
- 
+
     if (globalIndex < 64) {
         printf("cl_size %u cluster_prefix_sum %u \n", 
                 device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]);
