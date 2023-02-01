@@ -136,11 +136,12 @@ __global__ void count_cluster_cells(
      vecmem::data::vector_view<unsigned int> moduleidx,
    vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view,
+    vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
     vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
         threadIdx.x + blockIdx.x * blockDim.x, label_view,
-        cluster_prefix_sum_view,moduleidx, cells_cl_prefix_sum, cluster_sizes_view , clusters_view );
+        cluster_prefix_sum_view,moduleidx, cells_cl_prefix_sum, cluster_sizes_view ,cluster_idx_atomic, clusters_view );
 }
 
 __global__ void connect_components(
