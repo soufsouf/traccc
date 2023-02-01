@@ -21,13 +21,17 @@ inline void count_cluster_cells(
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,   /// not used 
     vecmem::data::vector_view<unsigned int > moduleidx,
     vecmem::data::vector_view<unsigned int> cells_cl_ps,
-    vecmem::data::vector_view<unsigned int> cluster_sizes_view) {
+    vecmem::data::vector_view<unsigned int> cluster_sizes_view,
+    vecmem::data::vector_view<unsigned int > cluster_atomic,
+    vecmem::data::vector_view<unsigned int >& clusters_view) {
 
     // Get the device vector of the cell prefix sum
    
     vecmem::device_vector<unsigned int> midx(moduleidx);
     vecmem::device_vector<unsigned int> labels(celllabel);
     vecmem::device_vector<unsigned int> cells_cluster_prefix_sum(cells_cl_ps);
+    vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
+    vecmem::device_vector<unsigned int> clusters_device(clusters_view);
 
     // Ignore if idx is out of range
     if (globalIndex >= labels.size())
@@ -88,11 +92,27 @@ inline void count_cluster_cells(
 
  __syncthreads();
 
-    if (globalIndex < 64) {
+   /* if (globalIndex < 64) {
         printf("cl_size %u cluster_prefix_sum %u \n", 
-                device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]);
-    }
+                device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]); } */
+    
 
+///// connect components : 
+
+unsigned int idx = 
+        (cluster_indice == 0 ? 0 : cluster_indice - 1);
+    unsigned int lb = cells_cluster_prefix_sum[idx];
+    
+    unsigned int ii = 0;
+    //if (cindex < n_clusters)
+
+        ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
+        /*vecmem::device_atomic_ref<unsigned int>(
+            cluster_index_atomic[cluster_indice])
+            .fetch_add(1);*/
+        clusters_device[ii +lb] = globalIndex;
 }
+
+
 
 }  // namespace traccc::device
