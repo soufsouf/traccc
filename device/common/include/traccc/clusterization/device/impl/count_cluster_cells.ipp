@@ -9,6 +9,7 @@
 
 // VecMem include(s).
 #include <vecmem/memory/device_atomic_ref.hpp>
+#include <thrust/scan.h>
 
 namespace traccc::device {
 
@@ -69,23 +70,26 @@ inline void count_cluster_cells(
     
     
     __syncthreads();
+    // brust prefix sum (scan operation)
 
-    if(globalIndex == 0)
+    thrust::inclusive_scan(cells_cluster_prefix_sum.begin(), cells_cluster_prefix_sum.end(), cells_cluster_prefix_sum); // in-place scan
+   
+
+    /*if(globalIndex == 0)
     {
         cells_cluster_prefix_sum[0] = device_cluster_sizes[0];
-        for(unsigned int i = 1; i < device_cluster_sizes.size() /*n_clusters*/  ; i++)
+        for(unsigned int i = 1; i < device_cluster_sizes.size()   ; i++)
         {
             cells_cluster_prefix_sum[i] = device_cluster_sizes[i ] + cells_cluster_prefix_sum[i - 1];
         }
-    }
-
-
-    /*if (globalIndex < 64) {
-        printf("th %llu  module %u nbr cluster in module %llu module_lb %llu, "
-                "label %u cl_size %u cluster_prefix_sum %u \n", globalIndex, module_idx,
-                n_clusters, prefix_sum, cindex,
-                device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]);
     }*/
+    
+
+
+    if (globalIndex < 64) {
+        printf("cl_size %u cluster_prefix_sum %u \n", 
+                device_cluster_sizes[cluster_indice], cells_cluster_prefix_sum[globalIndex]);
+    }
 
 }
 
