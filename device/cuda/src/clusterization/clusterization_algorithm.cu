@@ -158,7 +158,7 @@ const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<point3 > global_spacepoint) {
 
     device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x, cells_view,Clusters_module_link,
-     measurement_local, measurement_variance,global_spacepoint);
+     measurement_local, ,global_spacepoint);
         
         
 }
@@ -179,20 +179,20 @@ const cell_container_types::const_view cells_view,
     vecmem::device_vector<point3> global(global_spacepoint);
     spacepoint_container_types::device spacepoints_device(spacepoints_view);
 
-    std::size_t module_link_ = Cl_module_link[idx];
+    std::size_t module_link = Cl_module_link[idx];
     point2 local_ = local_measurement[idx];
     variance2 variance_ = variance_measurement[idx];
     measurement m;
-    m.cluster_link = module_link_;
+    m.cluster_link = module_link;
     m.local = local_;
     m.variance = variance_;
-    auto &module = cells_device.at(module_link_).header;
+    auto &module = cells_device.at(module_link).header;
     spacepoint s({global[idx], m});
     // Push the speacpoint into the container at the appropriate
     // module idx
-    spacepoints_device[module_index].header = module.module;
+    spacepoints_device[module_link].header = module.module;
 
-    spacepoints_device[module_index].items.push_back(s);
+    spacepoints_device[module_link].items.push_back(s);
     }
 
 }  // namespace kernels
