@@ -177,12 +177,17 @@ __global__ void create_measurements(
 }
 
 __global__ void form_spacepoints(
+const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point2 > measurement_variance,
     measurement_container_types::const_view measurements_view,
     vecmem::data::vector_view<const device::prefix_sum_element_t>
         measurements_prefix_sum_view,
     spacepoint_container_types::view spacepoints_view) {
 
     device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x,
+cells_view,Clusters_module_link, measurement_local, measurement_variance,
                              measurements_view, measurements_prefix_sum_view,
                              spacepoints_view);
 }
@@ -426,7 +431,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Using the same grid size as before
     // Invoke spacepoint formation will call form_spacepoints kernel
-    kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(cells_view, Clusters_module_link,measurement_local, measurement_variance,
         measurement_buff, meas_prefix_sum_buff, spacepoints_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
