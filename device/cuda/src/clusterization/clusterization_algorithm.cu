@@ -155,13 +155,45 @@ __global__ void form_spacepoints(
 const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point2 > measurement_variance,
-    spacepoint_container_types::view spacepoints_view) {
+    vecmem::data::vector_view<point3 > global_spacepoint) {
 
-    device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x,
-cells_view,Clusters_module_link, measurement_local, measurement_variance,
-                                                      spacepoints_view);
+    device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x, cells_view,Clusters_module_link,
+     measurement_local, measurement_variance,global_spacepoint);
+        
+        
 }
+ __global__ void fill4(const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point2 > measurement_variance,
+    vecmem::data::vector_view<point3 > global_spacepoint,
+    spacepoint_container_types::view spacepoints_view )
+    {
+       int idx = threadIdx.x + blockIdx.x * blockDim.x;
+       if (idx >= Clusters_module_link.size())
+         return;
+    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
+    vecmem::device_vector<point2> local_measurement(measurement_local);
+    vecmem::device_vector<point2> variance_measurement(measurement_variance);
+    vecmem::device_vector<point3> global(global_spacepoint);
+    spacepoint_container_types::device spacepoints_device(spacepoints_view);
+
+    std::size_t module_link_ = Cl_module_link[idx];
+    point2 local_ = local_measurement[idx];
+    variance2 variance_ = variance_measurement[idx];
+    measurement m;
+    m.cluster_link = module_link_;
+    m.local = local_;
+    m.variance = variance_;
+    auto &module = cells_device.at(module_link_).header;
+    spacepoint s({global[idx], m});
+    // Push the speacpoint into the container at the appropriate
+    // module idx
+    spacepoints_device[module_index].header = module.module;
+
+    spacepoints_device[module_index].items.push_back(s);
+    }
 
 }  // namespace kernels
 
@@ -374,6 +406,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
+
+    vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
+    m_copy.setup(global);
     //m_copy.memset(measurement_variance, 0);
 
 
@@ -383,19 +418,16 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());
    
    
-   //kernel fill 3 
-   
-    
-
-   
-
     // Using the same grid size as before
     // Invoke spacepoint formation will call form_spacepoints kernel
 
     kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-       cells_view, Clusters_module_link,measurement_local, measurement_variance, spacepoints_buffer);
+       cells_view, Clusters_module_link,measurement_local,global);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
+ kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    cells_view, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
+    
     // Return the buffer. Which may very well not be filled at this point yet.
     return spacepoints_buffer;
 }
