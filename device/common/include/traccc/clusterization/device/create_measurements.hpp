@@ -40,7 +40,7 @@ inline void create_measurements(
     vecmem::data::vector_view<unsigned int> channel1,
     vecmem::data::vector_view<unsigned int > clusters_view,
     vecmem::data::vector_view<unsigned int > cel_cl_ps, 
-    const cell_container_types::const_view& cells_view,
+    const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
     vecmem::data::vector_view<point2 >& measurement_local,
     vecmem::data::vector_view<point2>& measurement_variance);

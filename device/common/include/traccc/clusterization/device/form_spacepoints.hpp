@@ -36,9 +36,9 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void form_spacepoints(
     std::size_t globalIndex,
-    const cell_container_types::const_view& cells_view,
-     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
-     vecmem::data::vector_view<point2 > &measurement_local,
+    const cell_container_types::const_view cells_view,
+     vecmem::data::vector_view<unsigned int > Clusters_module_link,
+     vecmem::data::vector_view<point2 > measurement_local,
       vecmem::data::vector_view<point3 >& global_spacepoint);
 
 }  // namespace traccc::device
