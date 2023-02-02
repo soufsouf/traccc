@@ -103,32 +103,7 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
     }
 }
 
- __global__ void fill3(const cell_container_types::const_view cells_view,
-    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
-    vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point2 > measurement_variance,
-    measurement_container_types::view measurements_view )
-    {
-       int idx = threadIdx.x + blockIdx.x * blockDim.x;
-       if (idx >= Clusters_module_link.size())
-         return;
-    cell_container_types::const_device cells_device(cells_view);
-    vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
-    vecmem::device_vector<point2> local_measurement(measurement_local);
-    vecmem::device_vector<point2> variance_measurement(measurement_variance);
-    measurement_container_types::device measurements_device(measurements_view);
-    
-    std::size_t module_link_ = Cl_module_link[idx];
-    point2 local_ = local_measurement[idx];
-    variance2 variance_ = variance_measurement[idx];
-    measurement m;
-    m.cluster_link = module_link_;
-    m.local = local_;
-    m.variance = variance_;
-    auto &module = cells_device.at(module_link_).header;
-    measurements_device[module_link_].header = module;
-    measurements_device[module_link_].items.push_back(std::move(m));
-    }
+ 
 
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
@@ -410,20 +385,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
    //kernel fill 3 
    
-    measurement_container_types::buffer measurement_buff{
-        {num_modules, m_mr.main},
-        {std::vector<std::size_t>(num_modules, 0), clusters_per_module_host,
-         m_mr.main, m_mr.host}};
-    m_copy.setup(measurement_buff.headers);
-    m_copy.setup(measurement_buff.items);
+    
 
-    kernels::fill3<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-       cells_view, Clusters_module_link,measurement_local, measurement_variance,measurement_buff );
-    // Create prefix sum buffer
-    vecmem::data::vector_buffer meas_prefix_sum_buff = make_prefix_sum_buff(
-        std::vector<device::prefix_sum_size_t>{clusters_per_module_host.begin(),
-                                               clusters_per_module_host.end()},
-        m_copy, m_mr, m_stream);
+   
 
     // Using the same grid size as before
     // Invoke spacepoint formation will call form_spacepoints kernel
