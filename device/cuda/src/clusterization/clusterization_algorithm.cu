@@ -158,7 +158,7 @@ const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<point3 > global_spacepoint) {
 
     device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x, cells_view,Clusters_module_link,
-     measurement_local, ,global_spacepoint);
+     measurement_local ,global_spacepoint);
         
         
 }
