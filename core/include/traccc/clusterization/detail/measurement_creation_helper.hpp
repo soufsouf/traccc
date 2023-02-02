@@ -133,7 +133,7 @@ TRACCC_HOST inline void calc_cluster_properties(
 
 
 
-template <typename measurement_container_t, typename VV , typename SS, typename PP>
+template <typename VV , typename SS, typename PP>
 TRACCC_DEVICE inline void fill_measurement( 
     PP& local_measurement, 
     PP& variance_measurement,
