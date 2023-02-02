@@ -40,12 +40,6 @@ inline void form_spacepoints(
      vecmem::data::vector_view<unsigned int >& Clusters_module_link,
      vecmem::data::vector_view<point2 > &measurement_local,
       vecmem::data::vector_view<point2 >& measurement_variance,
-<<<<<<< HEAD
-=======
-    measurement_container_types::const_view measurements_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        measurements_prefix_sum_view,
->>>>>>> 75b755426e95a3e36f94b52f6f64689c492efbce
     spacepoint_container_types::view spacepoints_view);
 
 }  // namespace traccc::device
