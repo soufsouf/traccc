@@ -31,7 +31,7 @@ std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-    struct cell {
+    struct cell_struct {
     channel_id channel0 = 0;
     channel_id channel1 = 0;
     scalar activation = 0.;
@@ -384,7 +384,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.items);
 
    vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
-        std::vector<cell>(cluster_sizes.begin(), cluster_sizes.end()),
+        std::vector<cell_struct>(cluster_sizes.begin(), cluster_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(clusters_buff);
 
