@@ -9,42 +9,43 @@
 
 namespace traccc::device {
 
-TRACCC_DEVICE
+TRACCC_HOST 
 inline void connect_components(
-    std::size_t globalIndex, 
-    vecmem::data::vector_view<unsigned int > moduleidx,
-    vecmem::data::vector_view<unsigned int > celllabel,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
-    vecmem::data::vector_view<unsigned int > cluster_atomic,
-    vecmem::data::vector_view<unsigned int > cel_cl_ps,
-    vecmem::data::jagged_vector_view<unsigned int> clusters_view, int eee) {
+    std::size_t globalIndex, const cell_container_types::const_view& cells_view,
+    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
+    vecmem::data::vector_view<const device::prefix_sum_element_t>
+        cells_prefix_sum_view,
+    cluster_container_types::view clusters_view) {
 
     // Get device vector of the cells prefix sum
-    vecmem::device_vector<unsigned int> midx(moduleidx);
-    vecmem::device_vector<unsigned int> clusters_device(clusters_view);
-    vecmem::device_vector<unsigned int> labels(celllabel);
-    vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
-    vecmem::device_vector<unsigned int> cells_per_cluster_prefix_sum(cel_cl_ps);
-    vecmem::device_vector<std::size_t> device_cluster_prefix_sum(cluster_prefix_sum_view);
-    
-   
+    vecmem::device_vector<const device::prefix_sum_element_t> cells_prefix_sum(
+        cells_prefix_sum_view);
 
-    if (globalIndex >= labels.size())
+    if (globalIndex >= cells_prefix_sum.size())
         return;
 
     // Get the indices for the module idx and the cell idx
-    auto module_idx = midx[globalIndex];
+    auto module_idx = cells_prefix_sum[globalIndex].first;
+    auto cell_idx = cells_prefix_sum[globalIndex].second;
+
+    // Initialize the device containers for cells and clusters
+    cell_container_types::const_device cells_device(cells_view);
+    cluster_container_types::device clusters_device(clusters_view);
 
     // Get the cells for the current module idx
-    
+    const auto& cells = cells_device.at(module_idx).items;
 
     // Vectors used for cluster indices found by sparse CCL
-    unsigned int cindex = labels[globalIndex] - 1;
+    vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
+        sparse_ccl_indices_view);
+    const auto& cluster_indices = device_sparse_ccl_indices.at(module_idx);
 
     // Get the cluster prefix sum for this module idx
-    const std::size_t prefix_sum = ( module_idx == 0 ?
-                        0 : device_cluster_prefix_sum[module_idx - 1]);
-    auto cluster_indice = prefix_sum + cindex;
+    vecmem::device_vector<std::size_t> device_cluster_prefix_sum(
+        cluster_prefix_sum_view);
+    const std::size_t prefix_sum =
+        (module_idx == 0 ? 0 : device_cluster_prefix_sum[module_idx - 1]);
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
@@ -54,30 +55,15 @@ inline void connect_components(
                                device_cluster_prefix_sum[module_idx - 1]);
 
     // Push back the cells to the correct item vector indicated
-    // by the cluster prefix sum  -
-   
-    unsigned int idx = 
-        (cluster_indice == 0 ? 0 : cluster_indice - 1);
-    unsigned int lb = cells_per_cluster_prefix_sum[idx];
-    
-    unsigned int ii = 0;
-    //if (cindex < n_clusters)
-
-        ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
-        /*vecmem::device_atomic_ref<unsigned int>(
-            cluster_index_atomic[cluster_indice])
-            .fetch_add(1);*/
-        clusters_device[ii +lb] = globalIndex;
-
-    if (globalIndex < 64) {
-        /*printf("th %llu cluster[%llu] starts %u cluster device %u,"
-        " lb %u ii %u\n", globalIndex, idx, clusters_device[ii+lb], lb, ii);*/
-        /*printf("th %llu cluster_prefix_sum %u\n", globalIndex,
-                    cells_per_cluster_prefix_sum[cluster_indice]);*/
+    // by the cluster prefix sum
+    unsigned int cindex = cluster_indices[cell_idx] - 1;
+    if (cindex < n_clusters) {
+        clusters_device[prefix_sum + cindex].header = module_idx;
+        clusters_device[prefix_sum + cindex].items.push_back(cells[cell_idx]);  
     }
 }
 
-TRACCC_HOST
+TRACCC_DEVICE
 inline void connect_components(
     std::size_t globalIndex,
     vecmem::data::vector_view<unsigned int> channel0,
@@ -85,7 +71,7 @@ inline void connect_components(
     vecmem::data::vector_view<scalar> activation_cell, 
     vecmem::data::vector_view<unsigned int > moduleidx,
     vecmem::data::vector_view<unsigned int > celllabel,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view, //cluster per module
+    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
     vecmem::data::vector_view<cell > clusters_view) {
 
@@ -138,7 +124,7 @@ inline void connect_components(
       vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);
-
+            
       clusters_device[cluster_indice ].header = module_idx;
       clusters_device[cluster_indice ].items.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
       clusters_device[cluster_indice ].items.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
