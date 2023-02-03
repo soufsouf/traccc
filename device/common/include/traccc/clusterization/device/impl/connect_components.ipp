@@ -121,10 +121,10 @@ inline void connect_components(
       vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);
-            
-      clusters_device[cluster_indice ][cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
-      clusters_device[cluster_indice ][cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
-      clusters_device[cluster_indice ][cluster_index_atomic[cluster_indice]].activation = activation[globalIndex];
+ 
+      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
+      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
+      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex];
     }
 }
 
