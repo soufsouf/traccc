@@ -25,9 +25,18 @@
 // System include(s).
 #include <algorithm>
 
+
+
 std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
+    
+    struct cell {
+    channel_id channel0 = 0;
+    channel_id channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
+};
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
@@ -332,10 +341,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(cluster_sizes_buffer);
     m_copy.memset(cluster_sizes_buffer, 0);
 
+/////////struct
+
+
      vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
     m_copy.setup(cluster_index_atomic);
     m_copy.memset(cluster_index_atomic, 0);
-    vecmem::data::vector_buffer<unsigned int> clusters_buff(cellcount, m_mr.main);
+    vecmem::data::vector_buffer<cell> clusters_buff(cellcount, m_mr.main);
     m_copy.setup(clusters_buff);
 
     printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
@@ -345,6 +357,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
+
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         label_buff, cl_per_module_prefix_buff, moduleidx, cells_cluster_ps,
         cluster_sizes_buffer , cluster_index_atomic, clusters_buff);

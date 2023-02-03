@@ -23,7 +23,8 @@ inline void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> cells_cl_ps,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view,
     vecmem::data::vector_view<unsigned int > cluster_atomic,
-    vecmem::data::vector_view<unsigned int >& clusters_view) {
+    vecmem::data::vector_view<unsigned int >& clusters_view
+    ) {
 
     // Get the device vector of the cell prefix sum
    
@@ -32,6 +33,7 @@ inline void count_cluster_cells(
     vecmem::device_vector<unsigned int> cells_cluster_prefix_sum(cells_cl_ps);
     vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
     vecmem::device_vector<unsigned int> clusters_device(clusters_view);
+    
 
     // Ignore if idx is out of range
     if (globalIndex >= labels.size())
@@ -53,7 +55,7 @@ inline void count_cluster_cells(
      
     std::size_t prefix_sum =
         (module_idx == 0 ? 0 : device_cluster_prefix_sum[module_idx - 1]);
-    std::size_t cluster_indice = prefix_sum + cindex;
+    std::size_t cluster_indice = prefix_sum + cindex;  
     // Calculate the number of clusters found for this module from the prefix
     // sums
     std::size_t n_clusters =
@@ -111,6 +113,8 @@ unsigned int idx =
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);*/
         clusters_device[ii +lb] = globalIndex;
+
+        /// i have to put the data in struct so i can send them , maybe i have to create my own device cluster array of struct 
 }
 
 
