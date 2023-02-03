@@ -114,9 +114,6 @@ inline void connect_components(
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
    
-    unsigned int idx = 
-        (cluster_indice == 0 ? 0 : cluster_indice - 1);
-    unsigned int lb = cells_per_cluster_prefix_sum[idx] ;
     
     if (cindex < n_clusters)
     {
