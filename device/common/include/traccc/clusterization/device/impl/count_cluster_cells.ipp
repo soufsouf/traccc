@@ -23,7 +23,7 @@ inline void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> cells_cl_ps,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view,
     vecmem::data::vector_view<unsigned int > cluster_atomic,
-    vecmem::data::vector_view<unsigned int >& clusters_view
+    vecmem::data::vector_view<cell >& clusters_view
     ) {
 
     // Get the device vector of the cell prefix sum
@@ -32,7 +32,7 @@ inline void count_cluster_cells(
     vecmem::device_vector<unsigned int> labels(celllabel);
     vecmem::device_vector<unsigned int> cells_cluster_prefix_sum(cells_cl_ps);
     vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
-    vecmem::device_vector<unsigned int> clusters_device(clusters_view);
+    vecmem::device_vector<cell> clusters_device(clusters_view);
     
 
     // Ignore if idx is out of range
