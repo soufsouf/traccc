@@ -117,28 +117,28 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-     vecmem::data::vector_view<unsigned int> moduleidx,
-   vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
-    vecmem::data::vector_view<unsigned int> cluster_sizes_view,
-    vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
+    vecmem::data::vector_view<unsigned int> moduleidx,
     vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
         threadIdx.x + blockIdx.x * blockDim.x, label_view,
-        cluster_prefix_sum_view,moduleidx, cells_cl_prefix_sum, cluster_sizes_view ,cluster_idx_atomic, clusters_view );
+        cluster_prefix_sum_view , moduleidx , clusters_view );
 }
 
 __global__ void connect_components(
+     vecmem::data::vector_view<unsigned int> channel0,
+     vecmem::data::vector_view<unsigned int> channel1,
+     vecmem::data::vector_view<scalar> activation_cell,
      vecmem::data::vector_view<unsigned int> moduleidx,
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
-     vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
-    vecmem::data::vector_view<unsigned int> clusters_view) {
+     vecmem::data::jagged_vector_view<unsigned int> clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
+                               channel0, channel1, activation_cell,
                                moduleidx, label_view,
-                               cluster_prefix_sum_view, cluster_idx_atomic,cells_cl_prefix_sum,
+                               cluster_prefix_sum_view, cluster_idx_atomic,
                                clusters_view, 0);
 }
 
@@ -347,8 +347,10 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
      vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
     m_copy.setup(cluster_index_atomic);
     m_copy.memset(cluster_index_atomic, 0);
-    vecmem::data::vector_buffer<cell> clusters_buff(cellcount, m_mr.main);
-    m_copy.setup(clusters_buff);
+
+   /* vecmem::data::vector_buffer<cell> clusters_buff(cellcount, m_mr.main);
+    m_copy.setup(clusters_buff);*/
+
 
     printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
@@ -359,8 +361,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
 
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        label_buff, cl_per_module_prefix_buff, moduleidx, cells_cluster_ps,
-        cluster_sizes_buffer , cluster_index_atomic, clusters_buff);
+        label_buff, cl_per_module_prefix_buff, moduleidx,
+        cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
     CUDA_ERROR_CHECK(cudaGetLastError());
@@ -381,14 +383,17 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
-   
+   vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
+        std::vector<cell>(cluster_sizes.begin(), cluster_sizes.end()),
+        m_mr.main, m_mr.host);
+    m_copy.setup(clusters_buff);
 
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
-   /* kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
-        cells_cluster_ps, clusters_buff);
-    CUDA_ERROR_CHECK(cudaGetLastError()); */
+   /kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+        channel0, channel1, activation , moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
+         clusters_buff);
+    CUDA_ERROR_CHECK(cudaGetLastError()); 
 
     // Resizable buffer for the measurements
    
