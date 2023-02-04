@@ -137,6 +137,12 @@ inline void connect_components(
       cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; 
     }
+
+    __syncthreads();
+
+   /if (globalIndex < 64) {
+        printf("channel 0 of cluster device %u activation of cluster device %u \n", 
+                cluster_cells[cluster_index_atomic[cluster_indice]].channel0, cluster_cells[cluster_index_atomic[cluster_indice]].activation); } 
 }
 
 }  // namespace traccc::device
