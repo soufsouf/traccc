@@ -34,12 +34,7 @@ namespace traccc::device {
 TRACCC_DEVICE
 inline void create_measurements(
     std::size_t globalIndex, 
-    vecmem::data::vector_view<unsigned int > moduleidx,
-    vecmem::data::vector_view<scalar> activation_cell,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    vecmem::data::vector_view<unsigned int > clusters_view,
-    vecmem::data::vector_view<unsigned int > cel_cl_ps, 
+    cluster_container_types::const_view clusters_view,
     const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
     vecmem::data::vector_view<point2 >& measurement_local,
