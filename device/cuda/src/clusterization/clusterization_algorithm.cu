@@ -139,7 +139,7 @@ __global__ void connect_components(
                                channel0, channel1, activation_cell,
                                moduleidx, label_view,
                                cluster_prefix_sum_view, cluster_idx_atomic,
-                               clusters_view, 0);
+                               clusters_view);
 }
 
 __global__ void create_measurements(
