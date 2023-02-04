@@ -21,7 +21,7 @@ inline void count_cluster_cells(
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,   /// not used 
     vecmem::data::vector_view<unsigned int > moduleidx,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view
-    ) {
+    )   {
 
     // Get the device vector of the cell prefix sum
    

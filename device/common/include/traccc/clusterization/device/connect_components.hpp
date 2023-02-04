@@ -68,7 +68,7 @@ inline void connect_components(
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
-    vecmem::data::jagged_vector_view<cell_struct> clusters_view);
+    vecmem::data::jagged_vector_view<unsigned int> clusters_view);
 
 // Include the implementation.
 #include "traccc/clusterization/device/impl/connect_components.ipp"
