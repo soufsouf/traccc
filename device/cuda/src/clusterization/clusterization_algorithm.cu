@@ -133,7 +133,7 @@ __global__ void connect_components(
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
-     vecmem::data::jagged_vector_view<unsigned int> clusters_view) {
+     cluster_container_types::view  clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
                                channel0, channel1, activation_cell,
@@ -383,16 +383,16 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
-   vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
+  /* vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
         std::vector<unsigned int>(cluster_sizes.begin(), cluster_sizes.end()),
         m_mr.main, m_mr.host);
-    m_copy.setup(clusters_buff);
+    m_copy.setup(clusters_buff); */
 
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         channel0, channel1, activation , moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
-         clusters_buff);
+         clusters_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError()); 
 
     // Resizable buffer for the measurements
