@@ -56,7 +56,7 @@ inline void connect_components(
      vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> clusters_view);
 
-
+}  // namespace traccc::device
 
 TRACCC_DEVICE
 inline void connect_components(
@@ -73,4 +73,3 @@ inline void connect_components(
 // Include the implementation.
 #include "traccc/clusterization/device/impl/connect_components.ipp"
 
-}  // namespace traccc::device
