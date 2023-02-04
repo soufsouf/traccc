@@ -384,7 +384,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.items);
 
    vecmem::data::jagged_vector_buffer<cell_struct> clusters_buff(
-        std::vector<cell_struct>(cluster_sizes.begin(), cluster_sizes.end()),
+        std::vector<unsigned int>(cluster_sizes.begin(), cluster_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(clusters_buff);
 
