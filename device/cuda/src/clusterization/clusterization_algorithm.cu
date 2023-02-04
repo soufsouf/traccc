@@ -143,20 +143,14 @@ __global__ void connect_components(
 }
 
 __global__ void create_measurements(
-    vecmem::data::vector_view<unsigned int > moduleidx,
-    vecmem::data::vector_view<scalar> activation_cell,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    vecmem::data::vector_view<unsigned int > clusters_view,
-    vecmem::data::vector_view<unsigned int > cel_cl_ps, // cell_cluster_prefix_sum
+    cluster_container_types::const_view clusters_view,
     const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point2 > measurement_variance) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
-                              moduleidx ,activation_cell,channel0, channel1,
-                                clusters_view,cel_cl_ps, cells_view,
+                                clusters_view, cells_view,
                                  Clusters_module_link, measurement_local, measurement_variance);
 }
 
@@ -432,7 +426,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        moduleidx, activation ,channel0, channel1,clusters_buff,cells_cluster_ps,cells_view, Clusters_module_link,measurement_local, measurement_variance);
+        clusters_buffer,cells_view, Clusters_module_link,measurement_local, measurement_variance);
     CUDA_ERROR_CHECK(cudaGetLastError());
    
    

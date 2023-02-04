@@ -26,13 +26,10 @@ inline scalar signal_cell_modelling(scalar signal_in,
 
 /// Function for pixel segmentation
 TRACCC_DEVICE
-inline vector2 position_from_cell(
-    const unsigned int/*const std::size_t */ channel0,
-    const unsigned int/*const std::size_t */ channel1,
-    const cell_module& module) {
+inline vector2 position_from_cell( const cell& c , const cell_module& module) {
     // Retrieve the specific values based on module idx
-    return {module.pixel.min_center_x + channel0 * module.pixel.pitch_x,
-            module.pixel.min_center_y + channel1 * module.pixel.pitch_y};
+    return {module.pixel.min_center_x + c.channel0 * module.pixel.pitch_x,
+            module.pixel.min_center_y + c.channel1 * module.pixel.pitch_y};
 }
 /// Function for pixel segmentation
 TRACCC_HOST
@@ -54,31 +51,27 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 ///
 
 
-template < typename VV , typename SS >
+template <typename cell_collection_t>
 TRACCC_DEVICE
 void calc_cluster_properties(
-    VV clusters_device,
-    const unsigned int/* const std::size_t& */ idx_cluster, 
-    const unsigned int/*const std::size_t& */ nbr_cell_per_cluster,
-    SS activation,
-    VV channel0,
-    VV channel1,
+    const cell_collection_t& cluster,
     const cell_module& module, point2& mean,
     point2& var, scalar& totalWeight) {
 
     // Loop over the cells of the cluster.
-    for (unsigned int i = 0; i < nbr_cell_per_cluster ; i++ ) {
-        // obtenir l'indice global de cell 
-        unsigned int cell_index = clusters_device[idx_cluster + i];
+    
+     for (const cell& cell : cluster) {
+
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(activation[cell_index], module);
+        const scalar weight = signal_cell_modelling(cell.activation, module);
+        
 
         // Only consider cells over a minimum threshold.
         if (weight > module.threshold) {
 
             // Update all output properties with this cell.
-            totalWeight += activation[cell_index];
-            const point2 cell_position = position_from_cell(channel0[cell_index], channel1[cell_index], module);
+            totalWeight += cell.activation;
+            const point2 cell_position = position_from_cell(cell, module);
             const point2 prev = mean;
             const point2 diff = cell_position - prev;
 
@@ -133,25 +126,19 @@ TRACCC_HOST inline void calc_cluster_properties(
 
 
 
-template <typename VV , typename SS, typename PP>
+template <typename PP>
 TRACCC_DEVICE inline void fill_measurement( 
     PP& local_measurement, 
     PP& variance_measurement,
-    VV clusters_device,
-    std::size_t idx_cluster,//indice de cluster dans clusters view 
-    std::size_t nbr_cell_per_cluster,
-    SS activation,
-    VV channel0,
-    VV channel1,
+    const cell_collection_t& cluster,
     const cell_module& module, 
-    std::size_t module_link,
-    std::size_t cl_link /*global index*/) {
+    const std::size_t module_link,
+    const std::size_t cl_link /*global index*/) {
 
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
-    detail::calc_cluster_properties(clusters_device, idx_cluster,  nbr_cell_per_cluster,
-     activation , channel0, channel1, module, mean, var, totalWeight);
+    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight);
 
     if (totalWeight > 0.)
     {
