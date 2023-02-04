@@ -43,7 +43,6 @@ inline void count_cluster_cells(
    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> moduleidx,
-   vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view);
 
 }  // namespace traccc::device
