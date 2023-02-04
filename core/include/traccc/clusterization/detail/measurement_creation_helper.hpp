@@ -92,7 +92,7 @@ void calc_cluster_properties(
 
 
 
-template <typename PP>
+template <typename PP , typename cell_collection_t>
 TRACCC_DEVICE inline void fill_measurement( 
     PP& local_measurement, 
     PP& variance_measurement,
