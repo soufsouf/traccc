@@ -133,7 +133,7 @@ __global__ void connect_components(
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
-     vecmem::data::jagged_vector_view<cell_struct> clusters_view) {
+     vecmem::data::jagged_vector_view<unsigned int> clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
                                channel0, channel1, activation_cell,
@@ -383,7 +383,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
-   vecmem::data::jagged_vector_buffer<cell_struct> clusters_buff(
+   vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
         std::vector<unsigned int>(cluster_sizes.begin(), cluster_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(clusters_buff);
