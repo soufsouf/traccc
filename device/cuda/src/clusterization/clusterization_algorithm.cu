@@ -384,13 +384,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.items);
 
    vecmem::data::jagged_vector_buffer<cell_struct> clusters_buff(
-        std::vector<unsigned int>(cluster_sizes.begin(), cluster_sizes.end()),
+        std::vector<cell_struct>(cluster_sizes.begin(), cluster_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(clusters_buff);
 
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
-   /kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         channel0, channel1, activation , moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
          clusters_buff);
     CUDA_ERROR_CHECK(cudaGetLastError()); 
