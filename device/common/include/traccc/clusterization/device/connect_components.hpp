@@ -22,6 +22,13 @@
 
 namespace traccc::device {
 
+    struct cell_struct {
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
+};
+
 /// Function used for the filling the cluster container with corresponding cells
 ///
 /// The output is the cluster container with module indices as headers and
@@ -49,7 +56,7 @@ inline void connect_components(
      vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
     vecmem::data::vector_view<unsigned int> clusters_view);
 
-}  // namespace traccc::device
+
 
 TRACCC_DEVICE
 inline void connect_components(
@@ -65,3 +72,5 @@ inline void connect_components(
 
 // Include the implementation.
 #include "traccc/clusterization/device/impl/connect_components.ipp"
+
+}  // namespace traccc::device
