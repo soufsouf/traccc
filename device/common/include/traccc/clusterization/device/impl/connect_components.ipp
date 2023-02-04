@@ -73,14 +73,14 @@ inline void connect_components(
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
-    vecmem::data::jagged_vector_view<unsigned int> clusters_view) {
+    vecmem::data::jagged_vector_view<cell_struct> clusters_view) {
 
     // Get device vector of the cells prefix sum
     vecmem::device_vector<scalar> activation(activation_cell);
     vecmem::device_vector<unsigned int> ch0(channel0);
     vecmem::device_vector<unsigned int> ch1(channel1);
     vecmem::device_vector<unsigned int> midx(moduleidx);
-    vecmem::jagged_device_vector<unsigned int> clusters_device(clusters_view);
+    vecmem::jagged_device_vector<cell_struct> clusters_device(clusters_view);
     vecmem::device_vector<unsigned int> labels(celllabel);
     vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
     vecmem::device_vector<std::size_t> device_cluster_prefix_sum(cluster_prefix_sum_view);
