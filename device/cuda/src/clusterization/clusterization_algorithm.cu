@@ -32,8 +32,8 @@ using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
     struct cell_struct {
-    channel_id channel0 = 0;
-    channel_id channel1 = 0;
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
     scalar activation = 0.;
     scalar time = 0.;
 };
