@@ -113,7 +113,8 @@ inline void connect_components(
 
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
-   
+
+   auto cluster_cells = clusters_device[cluster_indice] ; 
     
     if (cindex < n_clusters)
     {
@@ -121,10 +122,10 @@ inline void connect_components(
       vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
             .fetch_add(1);
- 
-      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
-      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
-      clusters_device.at(cluster_indice)[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex];
+      
+      cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
+      cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
+      cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex];
     }
 }
 
