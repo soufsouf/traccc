@@ -43,9 +43,9 @@ inline void create_measurements(
     //on met dans le premier l'indice de debut des cells d'un cluster dans le vecteur device_clusters 
     //et dans le deuxieme prefix sum on peut obtenir le nombre de cells par cluster 
     
-    Cl_module_link[globalIndex] = module_link;
     const auto& cluster = clusters_device[globalIndex].items;
     const auto& module_link = clusters_device[globalIndex].header;
+    Cl_module_link[globalIndex] = module_link;
     auto &module = cells_device.at(module_link).header; // c quoi header
 
     /*printf("th %llu cluster %llu cell %u module %llu nbr cell per cluster %llu\n",
