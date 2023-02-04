@@ -45,7 +45,7 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 
 
 template <typename cell_collection_t>
-TRACCC_DEVICE
+TRACCC_HOST_DEVICE
 void calc_cluster_properties(
     const cell_collection_t& cluster,
     const cell_module& module, point2& mean,
@@ -77,34 +77,7 @@ void calc_cluster_properties(
     }
 }
 
-template <typename cell_collection_t>
-TRACCC_HOST inline void calc_cluster_properties(
-    const cell_collection_t& cluster, const cell_module& module, point2& mean,
-    point2& var, scalar& totalWeight) {
 
-    // Loop over the cells of the cluster.
-    for (const cell& cell : cluster) {
-
-        // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation, module);
-
-        // Only consider cells over a minimum threshold.
-        if (weight > module.threshold) {
-
-            // Update all output properties with this cell.
-            totalWeight += cell.activation;
-            const point2 cell_position = position_from_cell(cell, module);
-            const point2 prev = mean;
-            const point2 diff = cell_position - prev;
-
-            mean = prev + (weight / totalWeight) * diff;
-            for (std::size_t i = 0; i < 2; ++i) {
-                var[i] =
-                    var[i] + weight * (diff[i]) * (cell_position[i] - mean[i]);
-            }
-        }
-    }
-}
 
 /// Function used for calculating the properties of the cluster during
 /// measurement creation
