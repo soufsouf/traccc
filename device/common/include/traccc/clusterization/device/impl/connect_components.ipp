@@ -141,7 +141,7 @@ inline void connect_components(
     __syncthreads();
 
    if (globalIndex < 64) {
-        printf("channel 0 of cluster device %u activation of cluster device %u \n", 
+        printf("channel 0 of cluster device %llu activation of cluster device %llu \n", 
                 cluster_cells[cluster_index_atomic[cluster_indice]].channel0, cluster_cells[cluster_index_atomic[cluster_indice]].activation);
                  } 
 }
