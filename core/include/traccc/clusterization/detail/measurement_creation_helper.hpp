@@ -60,7 +60,7 @@ void calc_cluster_properties(
         
 /// print 
     
-        printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
+       // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
                  
 
         // Only consider cells over a minimum threshold.
@@ -79,6 +79,7 @@ void calc_cluster_properties(
             }
         }
     }
+    printf("totalWeight   %llu \n", totalWeight );
 }
 
 
