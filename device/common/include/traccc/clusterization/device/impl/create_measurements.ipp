@@ -56,11 +56,6 @@ inline void create_measurements(
    
     // Fill measurement from cluster
     
-    /// print 
-    if (globalIndex < 64) {
-        printf("header of cluster container   %llu  \n", 
-                module_link);
-                 } 
 
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  
           module, module_link, globalIndex);
