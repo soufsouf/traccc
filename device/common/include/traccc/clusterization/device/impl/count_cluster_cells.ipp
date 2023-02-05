@@ -9,8 +9,7 @@
 
 // VecMem include(s).
 #include <vecmem/memory/device_atomic_ref.hpp>
-#include <thrust/scan.h>
-#include <thrust/device_ptr.h>
+
 
 namespace traccc::device {
 
