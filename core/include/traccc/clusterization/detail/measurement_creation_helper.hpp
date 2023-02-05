@@ -164,7 +164,7 @@ TRACCC_HOST inline void fill_measurement(
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight);
+    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight , cl_link);
 
     if (totalWeight > 0.) {
         measurement m;
