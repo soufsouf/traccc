@@ -79,7 +79,6 @@ void calc_cluster_properties(
             }
         }
     }
-    printf("totalWeight   %llu \n", totalWeight );
 }
 
 

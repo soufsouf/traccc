@@ -59,6 +59,10 @@ inline void create_measurements(
 
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  
           module, module_link, globalIndex);
+
+        if (globalIndex <= 64){
+        printf("local_measurement %llu variance_measurement %llu\n",
+            local_measurement[globalIndex] , variance_measurement[globalIndex]); }
 }
 
 }  // namespace traccc::device
