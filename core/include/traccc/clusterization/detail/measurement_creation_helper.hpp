@@ -58,6 +58,10 @@ void calc_cluster_properties(
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(cell.activation, module);
         
+/// print 
+    
+        printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
+                 
 
         // Only consider cells over a minimum threshold.
         if (weight > module.threshold) {
@@ -105,11 +109,7 @@ TRACCC_DEVICE inline void fill_measurement(
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
     detail::calc_cluster_properties(cluster, module, mean, var, totalWeight);
-/// print 
-    if (cl_link < 64) {
-        printf("totalweight   %llu  \n", 
-                totalWeight);
-                 } 
+
 
     if (totalWeight > 0.)
     {
