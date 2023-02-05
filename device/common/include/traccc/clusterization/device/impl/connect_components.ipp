@@ -133,9 +133,12 @@ inline void connect_components(
        
        clusters_device[cluster_indice].header = module_idx;
          
-      cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
+      /*cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
-      cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; 
+      cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
+
+
+      clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
     }
 
 /*    __syncthreads();
