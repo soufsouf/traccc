@@ -70,6 +70,42 @@ struct cell_module {
 
 };  // struct cell_module
 
+using scalar = TRACCC_CUSTOM_SCALARTYPE;
+
+using int_view = vecmem::vector<unsigned int>;
+using scalar_view = vecmem::vector<scalar>;
+
+using int_device = vecmem::device_vector<unsigned int>;
+using scalar_device = vecmem::device_vector<scalar>;
+
+struct CellVec {
+    int_view channel0;
+    int_view channel1;
+    scalar_view activation;
+    scalar_view time;
+    int_view module_id;
+    int_view cluster_id;
+};
+
+struct CellVecDevice {
+    int_device channel0;
+    int_device channel1;
+    scalar_device activation;
+    scalar_device time;
+    int_device module_id;
+    int_device cluster_id;
+};
+
+struct Cluster {
+    int_view cells_prefix_sum;
+    int_view module_id;
+};
+
+struct Module {
+    int_view cells_prefix_sum;
+    int_view clusters_prefix_sum;
+};
+
 /// Equality operator for cell module
 TRACCC_HOST_DEVICE
 inline bool operator==(const cell_module& lhs, const cell_module& rhs) {

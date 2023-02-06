@@ -39,6 +39,7 @@ cell_container_types::host read_cells(std::string_view filename,
     auto reader = make_cell_reader(filename);
 
     // Create cell counter vector.
+    std::unordered_map<uint64_t, int> cellMap;
     std::vector<cell_counter> cell_counts;
     cell_counts.reserve(5000);
 
@@ -54,19 +55,40 @@ cell_container_types::host read_cells(std::string_view filename,
         allCells.push_back(iocell);
 
         // Increment the appropriate counter.
-        auto rit = std::find_if(cell_counts.rbegin(), cell_counts.rend(),
+        
+        
+        /*auto rit = std::find_if(cell_counts.rbegin(), cell_counts.rend(),
                                 [&iocell](const cell_counter& cc) {
                                     return cc.module == iocell.geometry_id;
-                                });
-        if (rit == cell_counts.rend()) {
+                                });*/
+
+        auto it = cellMap.find(iocell.geometry_id);
+        if ( it == cellMap.end()) {
             cell_counts.push_back({iocell.geometry_id, 1});
+            cellMap.insert(std::make_pair(iocell.geometry_id, cell_counts.size()-1));
         } else {
-            ++(rit->nCells);
+            ++(cell_counts[it->second].nCells);
         }
     }
 
     // The number of modules that have cells in them.
     const std::size_t size = cell_counts.size();
+    const std::size_t allCellsCount = allCells.size();
+
+    // create Cell Vector
+    /*using int_vec = vecmem::vector<unsigned int>;
+    using scalar_vec = vecmem::vector<scalar>;
+
+    //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
+    CellVec cellsVec = {
+        int_vec{allCellsCount, mr}, //channel0
+        int_vec(allCellsCount, mr), // channel1
+        scalar_vec(allCellsCount, mr), // activation
+        scalar_vec(allCellsCount, mr), // time
+        int_vec(allCellsCount, mr), // module_id
+        int_vec(allCellsCount, mr) // cluster_id
+    };*/
+
 
     // Construct the result container, and set up its headers.
     cell_container_types::host result;
@@ -142,14 +164,10 @@ cell_container_types::host read_cells(std::string_view filename,
         // If not that, then look for the appropriate module with a generic
         // search.
         else {
-            auto rit = std::find_if(
-                result.get_headers().rbegin(), result.get_headers().rend(),
-                [&iocell](const cell_module& module) {
-                    return module.module == iocell.geometry_id;
-                });
-            assert(rit != result.get_headers().rend());
-            last_module_index =
-                std::distance(result.get_headers().begin(), rit.base()) - 1;
+            auto it = cellMap.find(iocell.geometry_id);
+            assert(it != cellMap.end());
+
+            last_module_index = it->second;
         }
 
         // Add the cell to the appropriate module.
@@ -157,6 +175,13 @@ cell_container_types::host read_cells(std::string_view filename,
             .at(last_module_index)
             .push_back({iocell.channel0, iocell.channel1, iocell.value,
                         iocell.timestamp});
+
+        /*CellVec.channel0[] = ;
+        CellVec.channel1[] = ;
+        CellVec.activation[] = ;
+        CellVec.time[] = ;
+        CellVec.module_id[] = ;*/
+
     }
 
     // Do some post-processing on the cells.
