@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cassert>
 #include <vector>
+#include <numeric>
 
 namespace {
 
@@ -55,12 +56,6 @@ cell_container_types::host read_cells(std::string_view filename,
         allCells.push_back(iocell);
 
         // Increment the appropriate counter.
-        
-        
-        /*auto rit = std::find_if(cell_counts.rbegin(), cell_counts.rend(),
-                                [&iocell](const cell_counter& cc) {
-                                    return cc.module == iocell.geometry_id;
-                                });*/
 
         auto it = cellMap.find(iocell.geometry_id);
         if ( it == cellMap.end()) {
@@ -76,7 +71,7 @@ cell_container_types::host read_cells(std::string_view filename,
     const std::size_t allCellsCount = allCells.size();
 
     // create Cell Vector
-    /*using int_vec = vecmem::vector<unsigned int>;
+    using int_vec = vecmem::vector<unsigned int>;
     using scalar_vec = vecmem::vector<scalar>;
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
@@ -87,8 +82,18 @@ cell_container_types::host read_cells(std::string_view filename,
         scalar_vec(allCellsCount, mr), // time
         int_vec(allCellsCount, mr), // module_id
         int_vec(allCellsCount, mr) // cluster_id
-    };*/
+    };
 
+    // create prefix sum for modules size
+    int_vec module_prefix_sum = int_vec{size, mr};
+
+    auto nCellsReader = [](cell_counter x) { return x.nCells; };
+    auto sum = [](auto a, auto b) {return a + b;};
+    std::transform_inclusive_scan(cell_counts.begin(),
+                        cell_counts.end(),
+                        module_prefix_sum.begin(),
+                        sum,
+                        nCellsReader);
 
     // Construct the result container, and set up its headers.
     cell_container_types::host result;
@@ -181,7 +186,6 @@ cell_container_types::host read_cells(std::string_view filename,
         CellVec.activation[] = ;
         CellVec.time[] = ;
         CellVec.module_id[] = ;*/
-
     }
 
     // Do some post-processing on the cells.
