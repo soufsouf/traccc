@@ -149,6 +149,7 @@ cell_container_types::host read_cells(std::string_view filename,
     }
 
     // Now loop over all the cells, and put them into the appropriate modules.
+    std::vector<unsigned int> module_fill_counter(size, 0);
     std::size_t last_module_index = 0;
     for (const csv::cell& iocell : allCells) {
 
@@ -181,11 +182,12 @@ cell_container_types::host read_cells(std::string_view filename,
             .push_back({iocell.channel0, iocell.channel1, iocell.value,
                         iocell.timestamp});
 
-        /*CellVec.channel0[] = ;
-        CellVec.channel1[] = ;
-        CellVec.activation[] = ;
-        CellVec.time[] = ;
-        CellVec.module_id[] = ;*/
+        cellsVec.channel0[module_fill_counter[last_module_index]] = iocell.channel0;
+        cellsVec.channel1[module_fill_counter[last_module_index]] = iocell.channel1;
+        cellsVec.activation[module_fill_counter[last_module_index]] = iocell.value;
+        cellsVec.time[module_fill_counter[last_module_index]] = iocell.timestamp;
+        cellsVec.module_id[module_fill_counter[last_module_index]] = last_module_index;
+        module_fill_counter[last_module_index]++;
     }
 
     // Do some post-processing on the cells.
