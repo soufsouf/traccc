@@ -36,7 +36,7 @@ cell_container_types::host read_cells(std::string_view filename,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
                                     
-    std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
     // Construct the cell reader object.
     auto reader = make_cell_reader(filename);
 
@@ -49,7 +49,7 @@ cell_container_types::host read_cells(std::string_view filename,
     std::vector<csv::cell> allCells;
     allCells.reserve(50000);
 
-    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     // Read all cells from input file.
     csv::cell iocell;
     while (reader.read(iocell)) {
@@ -68,7 +68,7 @@ cell_container_types::host read_cells(std::string_view filename,
         }
     }
 
-    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
     // The number of modules that have cells in them.
     const std::size_t size = cell_counts.size();
@@ -88,7 +88,7 @@ cell_container_types::host read_cells(std::string_view filename,
         int_vec(allCellsCount, mr) // cluster_id
     };
 
-    std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
     // create prefix sum for modules size
     int_vec module_prefix_sum = int_vec{size, mr};
 
@@ -100,7 +100,7 @@ cell_container_types::host read_cells(std::string_view filename,
                         sum,
                         nCellsReader);
 
-    std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 
     // Construct the result container, and set up its headers.
     cell_container_types::host result;
@@ -155,7 +155,7 @@ cell_container_types::host read_cells(std::string_view filename,
         }
     }
 
-    std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
 
     // fill counter for cellsVec vectors
     std::vector<unsigned int> module_fill_counter(size, 0);
@@ -204,7 +204,7 @@ cell_container_types::host read_cells(std::string_view filename,
         module_fill_counter[last_module_index]++;
     }
 
-    std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
+    //std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
 
     // Do some post-processing on the cells.
     for (std::size_t i = 0; i < result.size(); ++i) {
@@ -217,7 +217,7 @@ cell_container_types::host read_cells(std::string_view filename,
                   });
     }
 
-    std::chrono::high_resolution_clock::time_point t7 = std::chrono::high_resolution_clock::now();
+    /*std::chrono::high_resolution_clock::time_point t7 = std::chrono::high_resolution_clock::now();
 
     std::cout <<
         std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count() << " " <<
@@ -227,7 +227,7 @@ cell_container_types::host read_cells(std::string_view filename,
         std::chrono::duration_cast<std::chrono::milliseconds>(t5-t4).count() << " " <<
         std::chrono::duration_cast<std::chrono::milliseconds>(t6-t5).count() << " " <<
         std::chrono::duration_cast<std::chrono::milliseconds>(t7-t6).count() << " " <<
-        std::endl;
+        std::endl;*/
 
     // Return the prepared object.
     return result;
