@@ -61,7 +61,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     uint64_t n_seeds = 0;
     uint64_t n_seeds_cuda = 0;
 
-    traccc::CellVec *cellsVec = nullptr;
+    traccc::CellVec cellsVec;
 
     // Memory resources used by the application.
     vecmem::host_memory_resource host_mr;
@@ -130,10 +130,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     *cellsVec,
                     common_opts.input_data_format, &surface_transforms,
                     &digi_cfg, &cuda_host_mr);*/
-                cells_per_event = traccc::io::read_cells2(
+                cells_per_event = traccc::io::csv::read_cells2(
                     "/home/soufsouf/projects/nyu" + common_opts.input_directory + "event000000000-cells.csv",
                     cellsVec,
-                    common_opts.input_data_format, &surface_transforms,
+                    &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
 

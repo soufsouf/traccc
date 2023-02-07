@@ -7,6 +7,7 @@
 
 // Local include(s).
 #include "read_cells.hpp"
+
 #include "traccc/io/utils.hpp"
 
 #include "make_cell_reader.hpp"
@@ -235,7 +236,7 @@ cell_container_types::host read_cells(std::string_view filename,
 }
 
 cell_container_types::host read_cells2(std::string_view filename,
-                                      CellVec *cellsVec,
+                                      CellVec &cellsVec,
                                       const geometry* geom,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
@@ -243,7 +244,6 @@ cell_container_types::host read_cells2(std::string_view filename,
     //std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
     // Construct the cell reader object.
     auto reader = make_cell_reader(filename);
-    CellVec *cellsVec = new(CellVec);
     // Create cell counter vector.
     std::unordered_map<uint64_t, int> cellMap;
     std::vector<cell_counter> cell_counts;
@@ -398,11 +398,11 @@ cell_container_types::host read_cells2(std::string_view filename,
                         iocell.timestamp});
 
         unsigned int midx = module_fill_counter[last_module_index];
-        cellsVec->channel0[midx]   = iocell.channel0;
-        cellsVec->channel1[midx]   = iocell.channel1;
-        cellsVec->activation[midx] = iocell.value;
-        cellsVec->time[midx]       = iocell.timestamp;
-        cellsVec->module_id[midx] = last_module_index;
+        cellsVec.channel0[midx]   = iocell.channel0;
+        cellsVec.channel1[midx]   = iocell.channel1;
+        cellsVec.activation[midx] = iocell.value;
+        cellsVec.time[midx]       = iocell.timestamp;
+        cellsVec.module_id[midx] = last_module_index;
 
         // increment the fill counter for the current module
         module_fill_counter[last_module_index]++;
