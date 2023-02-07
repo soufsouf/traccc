@@ -60,4 +60,11 @@ cell_container_types::host read_cells(
     const digitization_config *dconfig = nullptr,
     vecmem::memory_resource *mr = nullptr);
 
+cell_container_types::host read_cells2(
+    std::string_view filename, CellVec *cellsVec,
+    data_format format = data_format::csv,
+    const geometry *geom = nullptr,
+    const digitization_config *dconfig = nullptr,
+    vecmem::memory_resource *mr = nullptr);
+
 }  // namespace traccc::io
