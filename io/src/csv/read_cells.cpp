@@ -375,6 +375,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
 
     // Do some post-processing on the cells.
+    unsigned int doffset = 0;
     for (std::size_t i = 0; i < result.size(); ++i) {
 
         // Sort the cells of this module. (Not sure why this is needed. :-/)
@@ -383,6 +384,18 @@ cell_container_types::host read_cells2(std::string_view filename,
                   [](const traccc::cell& c1, const traccc::cell& c2) {
                       return c1.channel1 < c2.channel1;
                   });
+        const auto module_cells = result.at(i).items;
+        if (i > 0) doffset += module_fill_counter[i - 1];
+        n_cells = module_fill_counter[i];
+        for(std::size_t j = 0; j < n_cells; ++j)
+        {
+            (*cellsVec).channel0[j + doffset]   = module_cells[j].channel0;
+            (*cellsVec).channel1[j + doffset]   = module_cells[j].channel1;
+            (*cellsVec).activation[j + doffset] = module_cells[j].value;
+            (*cellsVec).time[j + doffset]       = module_cells[j].timestamp;
+            (*cellsVec).module_id[j + doffset] = i ;
+        }
+
     }
 
     std::chrono::high_resolution_clock::time_point t7 = std::chrono::high_resolution_clock::now();
