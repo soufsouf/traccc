@@ -135,11 +135,11 @@ struct ModuleVec {
 struct ModuleBuf {
     int_buf cells_prefix_sum;
     int_buf clusters_prefix_sum;
-}
+};
 struct ModuleVecDevice {
     int_device cells_prefix_sum;
     int_device clusters_prefix_sum;
-}
+};
 
 /// Equality operator for cell module
 TRACCC_HOST_DEVICE
