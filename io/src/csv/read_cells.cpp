@@ -386,13 +386,13 @@ cell_container_types::host read_cells2(std::string_view filename,
                   });
         const auto module_cells = result.at(i).items;
         if (i > 0) doffset += module_fill_counter[i - 1];
-        n_cells = module_fill_counter[i];
+        unsigned int n_cells = module_fill_counter[i];
         for(std::size_t j = 0; j < n_cells; ++j)
         {
             (*cellsVec).channel0[j + doffset]   = module_cells[j].channel0;
             (*cellsVec).channel1[j + doffset]   = module_cells[j].channel1;
-            (*cellsVec).activation[j + doffset] = module_cells[j].value;
-            (*cellsVec).time[j + doffset]       = module_cells[j].timestamp;
+            (*cellsVec).activation[j + doffset] = module_cells[j].activation;
+            (*cellsVec).time[j + doffset]       = module_cells[j].time;
             (*cellsVec).module_id[j + doffset] = i ;
         }
 
