@@ -72,13 +72,33 @@ struct cell_module {
 
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 
-using int_view = vecmem::vector<unsigned int>;
-using scalar_view = vecmem::vector<scalar>;
-
-using int_device = vecmem::device_vector<unsigned int>;
-using scalar_device = vecmem::device_vector<scalar>;
-
+using int_vec = vecmem::vector<unsigned int>;
+using scalar_vec = vecmem::vector<scalar>;
 struct CellVec {
+    int_vec channel0;
+    int_vec channel1;
+    scalar_vec activation;
+    scalar_vec time;
+    int_vec module_id;
+    int_vec cluster_id;
+    std::size_t size;
+    std::size_t module_size;
+};
+
+using int_buf = vecmem::data::vector_buffer<unsigned int>;
+using scalar_buf = vecmem::data::vector_buffer<scalar>;
+struct CellBuf {
+    int_buf channel0;
+    int_buf channel1;
+    scalar_buf activation;
+    scalar_buf time;
+    int_buf module_id;
+    int_buf cluster_id;
+};
+
+using int_view = vecmem::data::vector_view<unsigned int>;
+using scalar_view = vecmem::data::vector_view<scalar>;
+struct CellView {
     int_view channel0;
     int_view channel1;
     scalar_view activation;
@@ -87,6 +107,8 @@ struct CellVec {
     int_view cluster_id;
 };
 
+using int_device = vecmem::device_vector<unsigned int>;
+using scalar_device = vecmem::device_vector<scalar>;
 struct CellVecDevice {
     int_device channel0;
     int_device channel1;

@@ -251,7 +251,8 @@ cell_container_types::host read_cells2(std::string_view filename,
         scalar_vec(allCellsCount, mr), // activation
         scalar_vec(allCellsCount, mr), // time
         int_vec(allCellsCount, mr), // module_id
-        int_vec(allCellsCount, mr) // cluster_id
+        int_vec(allCellsCount, mr), // cluster_id
+        allCellsCount, size
     };
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
