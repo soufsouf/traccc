@@ -257,7 +257,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     };
     *moduleVec = {
         int_vec{size, mr}
-    }
+    };
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
