@@ -190,7 +190,7 @@ cell_container_types::host read_cells(std::string_view filename,
 }
 
 cell_container_types::host read_cells2(std::string_view filename,
-                                      CellVec &cellsVec,
+                                      CellVec *cellsVec,
                                       const geometry* geom,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
@@ -245,7 +245,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     using scalar_vec = vecmem::vector<scalar>;
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
-    cellsVec = {
+    *cellsVec = {
         int_vec{allCellsCount, mr}, //channel0
         int_vec(allCellsCount, mr), // channel1
         scalar_vec(allCellsCount, mr), // activation
@@ -361,11 +361,11 @@ cell_container_types::host read_cells2(std::string_view filename,
                         iocell.timestamp});
 
         unsigned int midx = module_fill_counter[last_module_index];
-        cellsVec.channel0[midx]   = iocell.channel0;
-        cellsVec.channel1[midx]   = iocell.channel1;
-        cellsVec.activation[midx] = iocell.value;
-        cellsVec.time[midx]       = iocell.timestamp;
-        cellsVec.module_id[midx] = last_module_index;
+        (*cellsVec).channel0[midx]   = iocell.channel0;
+        (*cellsVec).channel1[midx]   = iocell.channel1;
+        (*cellsVec).activation[midx] = iocell.value;
+        (*cellsVec).time[midx]       = iocell.timestamp;
+        (*cellsVec).module_id[midx] = last_module_index;
 
         // increment the fill counter for the current module
         module_fill_counter[last_module_index]++;

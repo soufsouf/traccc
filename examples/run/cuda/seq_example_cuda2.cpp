@@ -18,6 +18,7 @@
 #include "traccc/io/read_cells.hpp"
 #include "traccc/io/read_digitization_config.hpp"
 #include "traccc/io/read_geometry.hpp"
+#include "traccc/io/utils.hpp"
 #include "traccc/options/common_options.hpp"
 #include "traccc/options/full_tracking_input_options.hpp"
 #include "traccc/options/handle_argument_errors.hpp"
@@ -123,16 +124,11 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                                              elapsedTimes);
                 // Read the cells from the relevant event file into host memory.
 
-                /*cells_per_event = traccc::io::read_cells2(
-                    traccc::io::data_directory() +
-                    common_opts.input_directory +
-                    get_event_filename(event, "-cells.csv"),
-                    *cellsVec,
-                    common_opts.input_data_format, &surface_transforms,
-                    &digi_cfg, &cuda_host_mr);*/
                 cells_per_event = traccc::io::csv::read_cells2(
-                    "/home/soufsouf/projects/nyu" + common_opts.input_directory + "event000000000-cells.csv",
-                    cellsVec,
+                    traccc::io::data_directory()
+                    + common_opts.input_directory
+                    + traccc::io::get_event_filename(event, "-cells.csv"),
+                    &cellsVec,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
