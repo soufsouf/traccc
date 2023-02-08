@@ -123,10 +123,23 @@ struct Cluster {
     int_view module_id;
 };
 
-struct Module {
+struct ModuleView {
     int_view cells_prefix_sum;
     int_view clusters_prefix_sum;
 };
+
+struct ModuleVec {
+    int_vec cells_prefix_sum;
+    int_vec clusters_prefix_sum;
+};
+struct ModuleBuf {
+    int_buf cells_prefix_sum;
+    int_buf clusters_prefix_sum;
+}
+struct ModuleVecDevice {
+    int_device cells_prefix_sum;
+    int_device clusters_prefix_sum;
+}
 
 /// Equality operator for cell module
 TRACCC_HOST_DEVICE

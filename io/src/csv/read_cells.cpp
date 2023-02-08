@@ -191,6 +191,7 @@ cell_container_types::host read_cells(std::string_view filename,
 
 cell_container_types::host read_cells2(std::string_view filename,
                                       CellVec *cellsVec,
+                                      ModuleVec *moduleVec,
                                       const geometry* geom,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
@@ -254,6 +255,9 @@ cell_container_types::host read_cells2(std::string_view filename,
         int_vec(allCellsCount, mr), // cluster_id
         allCellsCount, size
     };
+    *moduleVec = {
+        int_vec{size, mr}
+    }
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
@@ -267,7 +271,7 @@ cell_container_types::host read_cells2(std::string_view filename,
                         module_prefix_sum.begin(),
                         sum,
                         nCellsReader);
-
+    (*moduleVec).cells_prefix_sum = module_prefix_sum;
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 
     // Construct the result container, and set up its headers.

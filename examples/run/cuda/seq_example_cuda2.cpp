@@ -64,6 +64,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
     traccc::CellVec cellsVec;
     traccc::CellView cellsView;
+    traccc::ModuleVec moduleVec;
+    traccc::ModuleView moduleView;
 
     // Memory resources used by the application.
     vecmem::host_memory_resource host_mr;
@@ -130,6 +132,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     + common_opts.input_directory
                     + traccc::io::get_event_filename(event, "-cells.csv"),
                     &cellsVec,
+                    &moduleVec,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
 
@@ -164,6 +167,14 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     vecmem::copy::type::copy_type::host_to_device);
                 copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
+     /**************************************************/
+
+                moduleView.cells_prefix_sum = traccc::int_buf(cellsVec.size, *mr.host);
+                traccc::int_buf channel1_buf(cellsVec.module_size, *mr.host);
+                copy.setup(moduleView.cells_prefix_sum );
+                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), moduleView.cells_prefix_sum,
+                    vecmem::copy::type::copy_type::host_to_device);
+
             }  // stop measuring file reading timer
 
             /*-----------------------------
@@ -177,7 +188,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 
