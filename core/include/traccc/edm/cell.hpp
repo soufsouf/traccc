@@ -109,7 +109,7 @@ struct CellView {
 
 using int_device = vecmem::device_vector<unsigned int>;
 using scalar_device = vecmem::device_vector<scalar>;
-TRACCC_HOST_DEVICE struct CellVecDevice {
+struct CellVecDevice {
     int_device channel0;
     int_device channel1;
     scalar_device activation;
@@ -118,7 +118,7 @@ TRACCC_HOST_DEVICE struct CellVecDevice {
     int_device cluster_id;
     
     /// constructor 
-    CellVecDevice(const traccc::CellView& data);
+    CellVecDevice(const CellView& data);
     
 };
 
@@ -141,12 +141,12 @@ struct ModuleBuf {
     int_buf cells_prefix_sum;
     int_buf clusters_prefix_sum;
 };
-TRACCC_HOST_DEVICE struct ModuleVecDevice {
+struct ModuleVecDevice {
     int_device cells_prefix_sum;
     int_device clusters_prefix_sum;
 
     /// constroctor 
-    ModuleVecDevice(const traccc::ModuleView& data );
+    ModuleVecDevice(const ModuleView& data );
 };
 
 /// Equality operator for cell module
