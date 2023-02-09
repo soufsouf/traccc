@@ -169,7 +169,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     vecmem::copy::type::copy_type::host_to_device);
      /**************************************************/
 
-                moduleView.cells_prefix_sum = traccc::int_buf(cellsVec.size, *mr.host);
+                moduleView.cells_prefix_sum = traccc::int_buf(cellsVec.module_size, *mr.host);
             
                 copy.setup(moduleView.cells_prefix_sum );
                  copy(vecmem::get_data(moduleVec.cells_prefix_sum), moduleView.cells_prefix_sum,

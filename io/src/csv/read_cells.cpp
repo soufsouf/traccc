@@ -365,12 +365,12 @@ cell_container_types::host read_cells2(std::string_view filename,
             .push_back({iocell.channel0, iocell.channel1, iocell.value,
                         iocell.timestamp});
 
-        unsigned int midx = module_fill_counter[last_module_index];
+       /* unsigned int midx = module_fill_counter[last_module_index];
         (*cellsVec).channel0[midx]   = iocell.channel0;
         (*cellsVec).channel1[midx]   = iocell.channel1;
         (*cellsVec).activation[midx] = iocell.value;
         (*cellsVec).time[midx]       = iocell.timestamp;
-        (*cellsVec).module_id[midx] = last_module_index;
+        (*cellsVec).module_id[midx] = last_module_index;*/
 
         // increment the fill counter for the current module
         module_fill_counter[last_module_index]++;
@@ -379,7 +379,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
 
     // Do some post-processing on the cells.
-    unsigned int doffset = 0;
+    unsigned int lb = 0;
     for (std::size_t i = 0; i < result.size(); ++i) {
 
         // Sort the cells of this module. (Not sure why this is needed. :-/)
@@ -388,16 +388,16 @@ cell_container_types::host read_cells2(std::string_view filename,
                   [](const traccc::cell& c1, const traccc::cell& c2) {
                       return c1.channel1 < c2.channel1;
                   });
-        const auto module_cells = result.at(i).items;
-        if (i > 0) doffset += module_fill_counter[i - 1];
-        unsigned int n_cells = module_fill_counter[i];
+        auto module_cells = result.at(i).items;
+        lb = ( i == 0 : 0 ? module_prefix_sum[i - 1]);
+        unsigned int n_cells = module_prefix_sum[i] - lb;
         for(std::size_t j = 0; j < n_cells; ++j)
         {
-            (*cellsVec).channel0[j + doffset]   = module_cells[j].channel0;
-            (*cellsVec).channel1[j + doffset]   = module_cells[j].channel1;
-            (*cellsVec).activation[j + doffset] = module_cells[j].activation;
-            (*cellsVec).time[j + doffset]       = module_cells[j].time;
-            (*cellsVec).module_id[j + doffset] = i ;
+            (*cellsVec).channel0[j + lb]   = module_cells[j].channel0;
+            (*cellsVec).channel1[j + lb]   = module_cells[j].channel1;
+            (*cellsVec).activation[j + lb] = module_cells[j].activation;
+            (*cellsVec).time[j + lb]       = module_cells[j].time;
+            (*cellsVec).module_id[j + lb] = i ;
         }
 
     }
