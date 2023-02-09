@@ -389,7 +389,7 @@ cell_container_types::host read_cells2(std::string_view filename,
                       return c1.channel1 < c2.channel1;
                   });
         auto module_cells = result.at(i).items;
-        lb = ( i == 0 : 0 ? module_prefix_sum[i - 1]);
+        lb = ( i == 0 ? 0 : module_prefix_sum[i - 1]);
         unsigned int n_cells = module_prefix_sum[i] - lb;
         for(std::size_t j = 0; j < n_cells; ++j)
         {
