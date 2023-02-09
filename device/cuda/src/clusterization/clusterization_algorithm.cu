@@ -31,12 +31,19 @@ std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-    struct cell_struct {
-    unsigned int channel0 = 0;
-    unsigned int channel1 = 0;
-    scalar activation = 0.;
-    scalar time = 0.;
+    struct CellVecDevice {
+    int_device channel0;
+    int_device channel1;
+    scalar_device activation;
+    scalar_device time;
+    int_device module_id;
+    int_device cluster_id;
+    
+    /// constructor 
+    CellVecDevice(const traccc::CellView& data);
+    
 };
+
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
@@ -54,8 +61,9 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
-    traccc::CellVecDevice cell_device(cellView);
+    CellVecDevice cell_device(cellView);
     traccc::ModuleVecDevice module_device(moduleView);
+
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
         return;
