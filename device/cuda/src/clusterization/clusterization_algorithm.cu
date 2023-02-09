@@ -31,19 +31,12 @@ std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-    struct CellVecDevice {
-    int_device channel0;
-    int_device channel1;
-    scalar_device activation;
-    scalar_device time;
-    int_device module_id;
-    int_device cluster_id;
-    
-    /// constructor 
-    CellVecDevice(const traccc::CellView& data);
-    
+    struct cell_struct {
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
 };
-
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
@@ -52,8 +45,8 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
                              vecmem::data::vector_view<scalar> activat,
                              vecmem::data::vector_view<unsigned int> cumulsize,
                              vecmem::data::vector_view<unsigned int> moduleidx,
-                             traccc::CellView cellView,
-                             traccc::ModuleView moduleView) {
+                             CellView cellView,
+                             ModuleView moduleView) {
 
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> ch0(channel0);
@@ -62,8 +55,8 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
     CellVecDevice cell_device(cellView);
-    traccc::ModuleVecDevice module_device(moduleView);
-
+    ModuleVecDevice module_device(moduleView);
+    
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
         return;
