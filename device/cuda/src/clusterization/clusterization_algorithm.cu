@@ -41,6 +41,20 @@ struct CellView {
     int_view module_id;
     int_view cluster_id;
 };
+using int_device = vecmem::device_vector<unsigned int>;
+using scalar_device = vecmem::device_vector<scalar>;
+struct CellVecDevice {
+    int_device channel0;
+    int_device channel1;
+    scalar_device activation;
+    scalar_device time;
+    int_device module_id;
+    int_device cluster_id;
+    
+    /// constructor 
+    CellVecDevice(const traccc::cuda::CellView& data);
+    
+};
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
