@@ -61,3 +61,22 @@ cell_container_types::host read_cells(
     vecmem::memory_resource *mr = nullptr);
 
 }  // namespace traccc::io
+
+namespace traccc::io::csv {
+
+/// Read cell information from a specific CSV file
+///
+/// @param filename The file to read the cell data from
+/// @param geom The description of the detector geometry
+/// @param dconfig The detector's digitization configuration
+/// @param mr The memory resource to create the host container with
+/// @return A cell (host) container
+///
+
+cell_container_types::host read_cells2(
+    std::string_view filename, CellVec *cellsVec, ModuleVec *moduleVec,
+    const geometry *geom = nullptr,
+    const digitization_config *dconfig = nullptr,
+    vecmem::memory_resource *mr = nullptr);
+
+}  // namespace traccc::io::csv
