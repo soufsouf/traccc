@@ -9,7 +9,7 @@
 #include "../utils/utils.hpp"
 #include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
 #include "traccc/cuda/utils/definitions.hpp"
-
+#include "traccc/edm/cell.hpp"
 // Project include(s)
 #include "traccc/clusterization/device/connect_components.hpp"
 #include "traccc/clusterization/device/count_cluster_cells.hpp"
@@ -26,34 +26,15 @@
 #include <algorithm>
 
 
-
 std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-using int_view = vecmem::data::vector_view<unsigned int>;
-using scalar_view = vecmem::data::vector_view<scalar>;
-struct Cell_View {
-    int_view channel0;
-    int_view channel1;
-    scalar_view activation;
-    scalar_view time;
-    int_view module_id;
-    int_view cluster_id;
-};
-using int_device = vecmem::device_vector<unsigned int>;
-using scalar_device = vecmem::device_vector<scalar>;
-struct CellVec_Device {
-    int_device channel0;
-    int_device channel1;
-    scalar_device activation;
-    scalar_device time;
-    int_device module_id;
-    int_device cluster_id;
-    
-    /// constructor 
-    CellVecDevice(const traccc::cuda::Cell_View& data);
-    
+    struct cell_struct {
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
 };
 namespace kernels {
 
@@ -72,10 +53,30 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
+/*    CellVecDevice cellbuf(cell_buf);
     CellVecDevice cell_device(cellView);
+    ModuleVecDevice modulebuf(module_buf);
     ModuleVecDevice module_device(moduleView);
-    
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  */
+ vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
+    vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
+    vecmem::device_vector<scalar> activation_s(cellView.activation);
+vecmem::device_vector<scalar>  time_s(cellView.time);
+vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
+ vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
+int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  sum[idx] = prefix_sum_s[idx];
+printf("somme module : %u \n", sum[idx]);
+  unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
+  unsigned int n_cells = prefix_sum_s[idx] - doffset;
+ for(unsigned int is =0  ; is < n_cells ; ++is ){
+   ch0[is +doffset ] = ch0_s[is+doffset];
+   ch1[is+doffset] = ch1_s[is+doffset];
+   activation[is+doffset] = activation_s[is+doffset];
+   midx[is+doffset] = module_id_s[is+doffset];
+ }  
+/*
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
         return;
 
@@ -97,7 +98,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
         ch1.at(i+doffset) = cells[i].channel1;
 activation.at(i+doffset)=cells[i].activation;
         midx.at(i+doffset) = idx;
-    }
+    }*/
 }
 
 __global__ void find_clusters(
@@ -260,11 +261,12 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     m_copy.setup(moduleidx);
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules+1, m_mr.main);
     m_copy.setup(prefixsum);
+    
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
-                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx , Cell_View,
-                              moduleView );
+                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx , cellView,
+                              moduleView);
 
     /*
      * Helper container for sparse CCL calculations.

@@ -116,10 +116,6 @@ struct CellVecDevice {
     scalar_device time;
     int_device module_id;
     int_device cluster_id;
-    
-    /// constructor 
-    CellVecDevice(const CellView& data);
-    
 };
 
 struct Cluster {
@@ -144,9 +140,6 @@ struct ModuleBuf {
 struct ModuleVecDevice {
     int_device cells_prefix_sum;
     int_device clusters_prefix_sum;
-
-    /// constroctor 
-    ModuleVecDevice(const ModuleView& data );
 };
 
 /// Equality operator for cell module
