@@ -33,7 +33,7 @@ namespace traccc::cuda {
     
 using int_view = vecmem::data::vector_view<unsigned int>;
 using scalar_view = vecmem::data::vector_view<scalar>;
-struct CellView {
+struct Cell_View {
     int_view channel0;
     int_view channel1;
     scalar_view activation;
@@ -43,7 +43,7 @@ struct CellView {
 };
 using int_device = vecmem::device_vector<unsigned int>;
 using scalar_device = vecmem::device_vector<scalar>;
-struct CellVecDevice {
+struct CellVec_Device {
     int_device channel0;
     int_device channel1;
     scalar_device activation;
@@ -52,7 +52,7 @@ struct CellVecDevice {
     int_device cluster_id;
     
     /// constructor 
-    CellVecDevice(const traccc::cuda::CellView& data);
+    CellVecDevice(const traccc::cuda::Cell_View& data);
     
 };
 namespace kernels {
@@ -263,7 +263,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
-                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx , cellView,
+                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx , Cell_View,
                               moduleView );
 
     /*
