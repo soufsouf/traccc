@@ -22,6 +22,13 @@
 
 namespace traccc::device {
 
+    struct cell_struct {
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
+};
+
 /// Function used for the filling the cluster container with corresponding cells
 ///
 /// The output is the cluster container with module indices as headers and
@@ -29,26 +36,40 @@ namespace traccc::device {
 /// cluster_idx, there can be multiple same module_idx next to each other
 ///
 /// @param[in] globalIndex              The index for the current thread
-/// @param[in] cells_view               The cells for each module
-/// @param[in] sparse_ccl_indices_view  Jagged vector that maps cells to
+/// @param[in] moduleidx               The cells for each module
+/// @param[in] label_view     Jagged vector that maps cells to
 /// corresponding clusters
 /// @param[in] cluster_prefix_sum_view  Prefix sum vector made out of number of
 /// clusters in each module
-/// @param[in] cells_prefix_sum_view    Prefix sum for iterating over all the
+/// @param[in] cluster_idx_atomic    Prefix sum for iterating over all the
 /// cells
+/// @param[in] cells_cl_prefix_sum
 /// @param[out] clusters_view           Container storing the cells for every
 /// cluster
 ///
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 inline void connect_components(
-    std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
+    std::size_t globalIndex, vecmem::data::vector_view<unsigned int> moduleidx,
+     vecmem::data::vector_view<unsigned int> label_view,
+     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
+     vecmem::data::vector_view<unsigned int> cells_cl_prefix_sum,
+    vecmem::data::vector_view<unsigned int> clusters_view);
+
+
+TRACCC_DEVICE
+inline void connect_components(
+    std::size_t globalIndex, 
+    vecmem::data::vector_view<unsigned int> channel0,
+    vecmem::data::vector_view<unsigned int> channel1,
+    vecmem::data::vector_view<TRACCC_CUSTOM_SCALARTYPE> activation_cell, 
+    vecmem::data::vector_view<unsigned int > moduleidx,
+    vecmem::data::vector_view<unsigned int > celllabel,
+    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
+    vecmem::data::vector_view<unsigned int > cluster_atomic,
     cluster_container_types::view clusters_view);
 
 }  // namespace traccc::device
-
 // Include the implementation.
 #include "traccc/clusterization/device/impl/connect_components.ipp"
+

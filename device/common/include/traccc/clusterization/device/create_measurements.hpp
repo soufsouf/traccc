@@ -31,11 +31,14 @@ namespace traccc::device {
 /// @param[out] measurements_view   Container storing the created measurements
 /// for each module
 ///
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void create_measurements(
-    std::size_t globalIndex, cluster_container_types::const_view clusters_view,
-    const cell_container_types::const_view& cells_view,
-    measurement_container_types::view measurements_view);
+    std::size_t globalIndex, 
+    cluster_container_types::const_view clusters_view,
+    const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int >& Clusters_module_link,
+    vecmem::data::vector_view<point2 >& measurement_local,
+    vecmem::data::vector_view<point2>& measurement_variance);
 
 }  // namespace traccc::device
 

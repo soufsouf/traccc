@@ -14,12 +14,13 @@
 #include "traccc/edm/cluster.hpp"
 #include "traccc/edm/measurement.hpp"
 
+
 namespace traccc::detail {
 
 /// Function used for retrieving the cell signal based on the module id
 TRACCC_HOST_DEVICE
 inline scalar signal_cell_modelling(scalar signal_in,
-                                    const cell_module& /*module*/) {
+                                    const cell_module& module) {
     return signal_in;
 }
 
@@ -41,16 +42,26 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 ///                    cluster/measurement
 /// @param[out] totalWeight The total weight of the cluster/measurement
 ///
+
+
 template <typename cell_collection_t>
-TRACCC_HOST_DEVICE inline void calc_cluster_properties(
-    const cell_collection_t& cluster, const cell_module& module, point2& mean,
-    point2& var, scalar& totalWeight) {
+TRACCC_HOST_DEVICE
+void calc_cluster_properties(
+    const cell_collection_t& cluster,
+    const cell_module& module, point2& mean,
+    point2& var, scalar& totalWeight , const std::size_t cl_link) {
 
     // Loop over the cells of the cluster.
-    for (const cell& cell : cluster) {
+    
+     for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(cell.activation, module);
+        
+/// print 
+    
+       // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
+                 
 
         // Only consider cells over a minimum threshold.
         if (weight > module.threshold) {
@@ -62,13 +73,67 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
             const point2 diff = cell_position - prev;
 
             mean = prev + (weight / totalWeight) * diff;
-            for (std::size_t i = 0; i < 2; ++i) {
-                var[i] =
-                    var[i] + weight * (diff[i]) * (cell_position[i] - mean[i]);
+            for (unsigned int j = 0; j < 2; ++j) {
+                var[j] =
+                    var[j] + weight * (diff[j]) * (cell_position[j] - mean[j]);
             }
         }
     }
+   /* if (cl_link <= 64) {
+    printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
+            var[0] , var[1] , mean[0] , mean[1]); } */
 }
+
+
+
+/// Function used for calculating the properties of the cluster during
+/// measurement creation
+///
+/// @param[out] measurements is the measurement container where the measurement
+/// object will be filled
+/// @param[in] cluster is the input cell vector
+/// @param[in] module is the cell module where the cluster belongs to
+/// @param[in] module_link is the module index of the cell container
+/// @param[in] cluster_link is the cluster index of the cluster container
+///
+
+
+
+template <typename PP , typename cell_collection_t>
+TRACCC_DEVICE inline void fill_measurement( 
+    PP& local_measurement, 
+    PP& variance_measurement,
+    const cell_collection_t& cluster,
+    const cell_module& module, 
+    const std::size_t module_link,
+    const std::size_t cl_link /*global index*/) {
+
+    // Calculate the cluster properties
+    scalar totalWeight = 0.;
+    point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
+    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight , cl_link);
+
+
+    if (totalWeight > 0.)
+    {
+        // cluster link
+        // normalize the cell position   
+        local_measurement[cl_link]= mean;
+        // normalize the variance
+        variance[0]=var[0] / totalWeight;
+        variance[1] = var[1] / totalWeight;
+        // plus pitch^2 / 12
+        const auto pitch = module.pixel.get_pitch();
+        // @todo add variance estimation
+        variance_measurement[cl_link]= variance + point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
+        /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,
+            module_link, module.threshold, pitch[0], pitch[1]);*/
+    }
+
+}
+
+
+
 
 /// Function used for calculating the properties of the cluster during
 /// measurement creation
@@ -81,7 +146,7 @@ TRACCC_HOST_DEVICE inline void calc_cluster_properties(
 /// @param[in] cluster_link is the cluster index of the cluster container
 ///
 template <typename measurement_container_t, typename cell_collection_t>
-TRACCC_HOST_DEVICE inline void fill_measurement(
+TRACCC_HOST inline void fill_measurement(
     measurement_container_t& measurements, const cell_collection_t& cluster,
     const cell_module& module, const std::size_t module_link,
     const std::size_t cl_link) {
@@ -99,7 +164,7 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight);
+    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight , cl_link);
 
     if (totalWeight > 0.) {
         measurement m;
@@ -120,5 +185,6 @@ TRACCC_HOST_DEVICE inline void fill_measurement(
         measurements[module_link].items.push_back(std::move(m));
     }
 }
+
 
 }  // namespace traccc::detail

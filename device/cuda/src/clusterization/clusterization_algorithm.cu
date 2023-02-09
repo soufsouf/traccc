@@ -25,20 +25,31 @@
 // System include(s).
 #include <algorithm>
 
-std::size_t cellcount;
 
+
+std::size_t cellcount;
+using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
+    
+    struct cell_struct {
+    unsigned int channel0 = 0;
+    unsigned int channel1 = 0;
+    scalar activation = 0.;
+    scalar time = 0.;
+};
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
                              vecmem::data::vector_view<unsigned int> channel0,
                              vecmem::data::vector_view<unsigned int> channel1,
+vecmem::data::vector_view<scalar> activat,
                              vecmem::data::vector_view<unsigned int> cumulsize,
                              vecmem::data::vector_view<unsigned int> moduleidx) {
 
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> ch0(channel0);
     vecmem::device_vector<unsigned int> ch1(channel1);
+    vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
 
@@ -62,6 +73,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     for (int i=0; i < n_cells; i++) {
         ch0.at(i+doffset) = cells[i].channel0;
         ch1.at(i+doffset) = cells[i].channel1;
+activation.at(i+doffset)=cells[i].activation;
         midx.at(i+doffset) = idx;
     }
 }
@@ -100,59 +112,101 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
     }
 }
 
+ 
+
 __global__ void count_cluster_cells(
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
+    vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
-    vecmem::data::vector_view<unsigned int> cluster_sizes_view) {
+    vecmem::data::vector_view<unsigned int> moduleidx,
+    vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
-        threadIdx.x + blockIdx.x * blockDim.x, sparse_ccl_indices_view,
-        cluster_prefix_sum_view, cells_prefix_sum_view, cluster_sizes_view);
+        threadIdx.x + blockIdx.x * blockDim.x, label_view,
+        cluster_prefix_sum_view , moduleidx , clusters_view );
 }
 
 __global__ void connect_components(
-    const cell_container_types::const_view cells_view,
-    vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        cells_prefix_sum_view,
-    cluster_container_types::view clusters_view) {
+     vecmem::data::vector_view<unsigned int> channel0,
+     vecmem::data::vector_view<unsigned int> channel1,
+     vecmem::data::vector_view<scalar> activation_cell,
+     vecmem::data::vector_view<unsigned int> moduleidx,
+     vecmem::data::vector_view<unsigned int> label_view,
+     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
+     vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
+     cluster_container_types::view  clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
-                               cells_view, sparse_ccl_indices_view,
-                               cluster_prefix_sum_view, cells_prefix_sum_view,
+                               channel0, channel1, activation_cell,
+                               moduleidx, label_view,
+                               cluster_prefix_sum_view, cluster_idx_atomic,
                                clusters_view);
 }
+
 __global__ void create_measurements(
-    const cell_container_types::const_view cells_view,
     cluster_container_types::const_view clusters_view,
-    measurement_container_types::view measurements_view) {
+    const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point2 > measurement_variance) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
-                                clusters_view, cells_view, measurements_view);
+                                clusters_view, cells_view,
+                                 Clusters_module_link, measurement_local, measurement_variance);
 }
 
 __global__ void form_spacepoints(
-    measurement_container_types::const_view measurements_view,
-    vecmem::data::vector_view<const device::prefix_sum_element_t>
-        measurements_prefix_sum_view,
-    spacepoint_container_types::view spacepoints_view) {
+const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point3 > global_spacepoint) {
 
-    device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x,
-                             measurements_view, measurements_prefix_sum_view,
-                             spacepoints_view);
+    device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x, cells_view,Clusters_module_link,
+     measurement_local ,global_spacepoint);
+        
+        
 }
+ __global__ void fill4(const cell_container_types::const_view cells_view,
+    vecmem::data::vector_view<unsigned int > Clusters_module_link ,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point2 > measurement_variance,
+    vecmem::data::vector_view<point3 > global_spacepoint,
+    spacepoint_container_types::view spacepoints_view )
+    {
+       int idx = threadIdx.x + blockIdx.x * blockDim.x;
+       if (idx >= Clusters_module_link.size())
+         return;
+    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
+    vecmem::device_vector<point2> local_measurement(measurement_local);
+    vecmem::device_vector<point2> variance_measurement(measurement_variance);
+    vecmem::device_vector<point3> global(global_spacepoint);
+    spacepoint_container_types::device spacepoints_device(spacepoints_view);
+
+    std::size_t module_link = Cl_module_link[idx];
+    point2 local_ = local_measurement[idx];
+    variance2 variance_ = variance_measurement[idx];
+    measurement m;
+    m.cluster_link = module_link;
+    m.local = local_;
+    m.variance = variance_;
+    auto &module = cells_device.at(module_link).header;
+    spacepoint s({global[idx], m});
+    // Push the speacpoint into the container at the appropriate
+    // module idx
+    spacepoints_device[module_link].header = module.module;
+
+    spacepoints_device[module_link].items.push_back(s);
+    }
 
 }  // namespace kernels
 
-clusterization_algorithm::clusterization_algorithm(
+clusterization_algorithm2::clusterization_algorithm2(
     const traccc::memory_resource& mr, vecmem::copy& copy, stream& str)
     : m_mr(mr), m_copy(copy), m_stream(str) {}
 
-clusterization_algorithm::output_type clusterization_algorithm::operator()(
-    const cell_container_types::const_view& cells_view) const {
+clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
+    const cell_container_types::const_view& cells_view,
+    const traccc::CellView& cellsView, const traccc::ModuleView& moduleView ) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
@@ -162,8 +216,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         num_modules = m_copy.get_size(cells_view.headers);
 
     // Work block size for kernel execution
-    const std::size_t threadsPerBlock = 64;
-
+    const std::size_t threadsPerBlock = 512;
     // Get the sizes of the cells in each module
     const std::vector<
         cell_container_types::const_device::item_vector::value_type::size_type>
@@ -179,6 +232,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(channel0);
     vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
     m_copy.setup(channel1);
+    vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
+    m_copy.setup(activation);
     vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
     m_copy.setup(moduleidx);
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules+1, m_mr.main);
@@ -186,7 +241,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
-                            (cells_view, channel0, channel1, prefixsum, moduleidx);
+                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx);
 
     /*
      * Helper container for sparse CCL calculations.
@@ -195,10 +250,10 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
      * and will indicate to which cluster, a particular cell in the module
      * belongs to.
      */
-    vecmem::data::jagged_vector_buffer<unsigned int> sparse_ccl_indices_buff(
+    /*vecmem::data::jagged_vector_buffer<unsigned int> sparse_ccl_indices_buff(
         std::vector<std::size_t>(cell_sizes.begin(), cell_sizes.end()),
         m_mr.main, m_mr.host);
-    m_copy.setup(sparse_ccl_indices_buff);
+    m_copy.setup(sparse_ccl_indices_buff);*/
 
     vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
     m_copy.setup(label_buff);
@@ -245,9 +300,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
-    kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         label_buff, sparse_ccl_indices_buff, prefixsum);
-    CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());*/
 
     // Create prefix sum buffer
     vecmem::data::vector_buffer cells_prefix_sum_buff =
@@ -281,13 +336,28 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(cluster_sizes_buffer);
     m_copy.memset(cluster_sizes_buffer, 0);
 
+/////////struct
+
+
+     vecmem::data::vector_buffer<unsigned int> cluster_index_atomic(total_clusters, m_mr.main);
+    m_copy.setup(cluster_index_atomic);
+    m_copy.memset(cluster_index_atomic, 0);
+
+   /* vecmem::data::vector_buffer<cell> clusters_buff(cellcount, m_mr.main);
+    m_copy.setup(clusters_buff);*/
+
+
+    printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
     blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
+    vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
+    m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
+
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        sparse_ccl_indices_buff, cl_per_module_prefix_buff,
-        cells_prefix_sum_buff, cluster_sizes_buffer);
+        label_buff, cl_per_module_prefix_buff, moduleidx,
+        cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
     CUDA_ERROR_CHECK(cudaGetLastError());
@@ -308,20 +378,20 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(clusters_buffer.headers);
     m_copy.setup(clusters_buffer.items);
 
+  /* vecmem::data::jagged_vector_buffer<unsigned int> clusters_buff(
+        std::vector<unsigned int>(cluster_sizes.begin(), cluster_sizes.end()),
+        m_mr.main, m_mr.host);
+    m_copy.setup(clusters_buff); */
+
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, sparse_ccl_indices_buff, cl_per_module_prefix_buff,
-        cells_prefix_sum_buff, clusters_buffer);
-    CUDA_ERROR_CHECK(cudaGetLastError());
+        channel0, channel1, activation , moduleidx, label_buff, cl_per_module_prefix_buff, cluster_index_atomic,
+         clusters_buffer);
+    CUDA_ERROR_CHECK(cudaGetLastError()); 
 
     // Resizable buffer for the measurements
-    measurement_container_types::buffer measurements_buffer{
-        {num_modules, m_mr.main},
-        {std::vector<std::size_t>(num_modules, 0), clusters_per_module_host,
-         m_mr.main, m_mr.host}};
-    m_copy.setup(measurements_buffer.headers);
-    m_copy.setup(measurements_buffer.items);
+   
 
     // Spacepoint container buffer to fill inside the spacepoint formation
     // kernel
@@ -332,38 +402,58 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
 
+    printf("clusters_buff %llu\n", clusters_buffer.headers.size());
     // Calculating grid size for measurements creation kernel (block size 64)
     blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
                     threadsPerBlock;
+    
+    
+    //measurement struct 
+    vecmem::data::vector_buffer<unsigned int> Clusters_module_link(total_clusters, m_mr.main);
+    m_copy.setup(Clusters_module_link);
+    m_copy.memset(Clusters_module_link, 0);
+
+    vecmem::data::vector_buffer<point2> measurement_local(total_clusters, m_mr.main);
+    m_copy.setup(measurement_local);
+    //m_copy.memset(measurement_local, 0);
+
+    vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
+    m_copy.setup(measurement_variance);
+
+    vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
+    m_copy.setup(global);
+    //m_copy.memset(measurement_variance, 0);
+
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, clusters_buffer, measurements_buffer);
+        clusters_buffer,cells_view, Clusters_module_link,measurement_local, measurement_variance);
     CUDA_ERROR_CHECK(cudaGetLastError());
-
-    // Create prefix sum buffer
-    vecmem::data::vector_buffer meas_prefix_sum_buff = make_prefix_sum_buff(
-        std::vector<device::prefix_sum_size_t>{clusters_per_module_host.begin(),
-                                               clusters_per_module_host.end()},
-        m_copy, m_mr, m_stream);
-
+   
+   
     // Using the same grid size as before
     // Invoke spacepoint formation will call form_spacepoints kernel
+
     kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        measurements_buffer, meas_prefix_sum_buff, spacepoints_buffer);
+       cells_view, Clusters_module_link,measurement_local,global);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
+ kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    cells_view, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
+    
     // Return the buffer. Which may very well not be filled at this point yet.
     return spacepoints_buffer;
 }
 
-clusterization_algorithm2::clusterization_algorithm2(
+
+
+
+clusterization_algorithm::clusterization_algorithm(
     const traccc::memory_resource& mr, vecmem::copy& copy, stream& str)
     : m_mr(mr), m_copy(copy), m_stream(str) {}
 
-clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
-    const cell_container_types::const_view& cells_view,
-    const traccc::CellView& cellsView, const traccc::ModuleView& moduleView ) const {
+clusterization_algorithm::output_type clusterization_algorithm::operator()(
+    const cell_container_types::const_view& cells_view ) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
@@ -569,3 +659,5 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 }
 
 }  // namespace traccc::cuda
+
+
