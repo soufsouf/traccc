@@ -54,8 +54,8 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
     vecmem::device_vector<unsigned int> midx(moduleidx);
-    CellVecDevice cell_device(cellView);
-    ModuleVecDevice module_device(moduleView);
+    traccc::CellVecDevice cell_device(cellView);
+    traccc::ModuleVecDevice module_device(moduleView);
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
         return;
@@ -209,7 +209,7 @@ clusterization_algorithm2::clusterization_algorithm2(
 
 clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const cell_container_types::const_view& cells_view,
-    const traccc::CellView& cellsView, const traccc::ModuleView& moduleView ) const {
+    const traccc::CellView& cellView, const traccc::ModuleView& moduleView ) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
