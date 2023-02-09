@@ -118,7 +118,7 @@ struct CellVecDevice {
     int_device cluster_id;
     
     /// constructor 
-    CellVecDevice(const traccc::CellView& cellView);
+    CellVecDevice(const traccc::CellView& data);
     
 };
 
@@ -146,7 +146,7 @@ struct ModuleVecDevice {
     int_device clusters_prefix_sum;
 
     /// constroctor 
-    ModuleVecDevice(const traccc::ModuleView& moduleView );
+    ModuleVecDevice(const traccc::ModuleView& data );
 };
 
 /// Equality operator for cell module
