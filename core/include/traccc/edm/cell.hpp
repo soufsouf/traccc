@@ -109,7 +109,7 @@ struct CellView {
 
 using int_device = vecmem::device_vector<unsigned int>;
 using scalar_device = vecmem::device_vector<scalar>;
-struct CellVecDevice {
+TRACCC_HOST_DEVICE struct CellVecDevice {
     int_device channel0;
     int_device channel1;
     scalar_device activation;
@@ -141,7 +141,7 @@ struct ModuleBuf {
     int_buf cells_prefix_sum;
     int_buf clusters_prefix_sum;
 };
-struct ModuleVecDevice {
+TRACCC_HOST_DEVICE struct ModuleVecDevice {
     int_device cells_prefix_sum;
     int_device clusters_prefix_sum;
 
