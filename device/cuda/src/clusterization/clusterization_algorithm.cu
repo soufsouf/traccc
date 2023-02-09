@@ -31,11 +31,15 @@ std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-    struct cell_struct {
-    unsigned int channel0 = 0;
-    unsigned int channel1 = 0;
-    scalar activation = 0.;
-    scalar time = 0.;
+using int_view = vecmem::data::vector_view<unsigned int>;
+using scalar_view = vecmem::data::vector_view<scalar>;
+struct CellView {
+    int_view channel0;
+    int_view channel1;
+    scalar_view activation;
+    scalar_view time;
+    int_view module_id;
+    int_view cluster_id;
 };
 namespace kernels {
 
