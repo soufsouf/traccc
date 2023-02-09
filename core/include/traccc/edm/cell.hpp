@@ -118,7 +118,7 @@ struct CellVecDevice {
     int_device cluster_id;
     
     /// constructor 
-    CellVecDevice(const CellView& data);
+    CellVecDevice(const traccc::cuda::CellView& data);
     
 };
 
