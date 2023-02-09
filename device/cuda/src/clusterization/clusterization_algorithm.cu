@@ -45,8 +45,8 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
                              vecmem::data::vector_view<scalar> activat,
                              vecmem::data::vector_view<unsigned int> cumulsize,
                              vecmem::data::vector_view<unsigned int> moduleidx,
-                             CellView cellView,
-                             ModuleView moduleView) {
+                             traccc::CellView cellView,
+                             traccc::ModuleView moduleView) {
 
     cell_container_types::const_device cells_device(cells_view);
     vecmem::device_vector<unsigned int> ch0(channel0);
