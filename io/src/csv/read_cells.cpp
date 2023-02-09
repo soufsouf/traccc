@@ -189,7 +189,8 @@ cell_container_types::host read_cells(std::string_view filename,
     return result;
 }
 
-cell_container_types::host read_cells2(std::string_view filename,
+cell_container_types::host
+read_cells2(std::string_view filename,
                                       CellVec *cellsVec,
                                       ModuleVec *moduleVec,
                                       const geometry* geom,
@@ -204,8 +205,8 @@ cell_container_types::host read_cells2(std::string_view filename,
 
     // Create cell counter vector.
     std::unordered_map<uint64_t, int> cellMap;
-    std::vector<cell_counter> cell_counts;
-    cell_counts.reserve(5000);
+    std::vector<cell_counter> modules;
+    modules.reserve(5000);
 
     // Create a cell collection, which holds on to a flat list of all the cells.
     std::vector<csv::cell> allCells;
@@ -227,10 +228,10 @@ cell_container_types::host read_cells2(std::string_view filename,
 
         auto it = cellMap.find(iocell.geometry_id);
         if ( it == cellMap.end()) {
-            cellMap.insert({iocell.geometry_id, cell_counts.size()});
-            cell_counts.push_back({iocell.geometry_id, 1});
+            cellMap.insert({iocell.geometry_id, modules.size()});
+            modules.push_back({iocell.geometry_id, 1});
         } else {
-            ++(cell_counts[it->second].nCells);
+            ++(modules[it->second].nCells);
         }
         t10 = std::chrono::high_resolution_clock::now();
     }
@@ -238,7 +239,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
     // The number of modules that have cells in them.
-    const std::size_t size = cell_counts.size();
+    const std::size_t size = modules.size();
     const std::size_t allCellsCount = allCells.size();
 
     // create Cell Vector
@@ -246,32 +247,28 @@ cell_container_types::host read_cells2(std::string_view filename,
     using scalar_vec = vecmem::vector<scalar>;
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
-    *cellsVec = {
-        int_vec{allCellsCount, mr}, //channel0
-        int_vec(allCellsCount, mr), // channel1
-        scalar_vec(allCellsCount, mr), // activation
-        scalar_vec(allCellsCount, mr), // time
-        int_vec(allCellsCount, mr), // module_id
-        int_vec(allCellsCount, mr), // cluster_id
-        allCellsCount, size
-    };
-    *moduleVec = {
-        int_vec{size, mr}
-    };
+    (*cellsVec).channel0 = int_vec(allCellsCount, mr); //channel0
+    (*cellsVec).channel1 = int_vec(allCellsCount, mr); // channel1
+    (*cellsVec).activation = scalar_vec(allCellsCount, mr); // activation
+    (*cellsVec).time = scalar_vec(allCellsCount, mr); // time
+    (*cellsVec).module_id = int_vec(allCellsCount, mr); // module_id
+    (*cellsVec).cluster_id = int_vec(allCellsCount, mr); // cluster_id
+    (*cellsVec).size = allCellsCount;
+
+    (*moduleVec).cells_prefix_sum = int_vec{size, mr};
+    (*moduleVec).clusters_prefix_sum = int_vec{size, mr};
+    (*moduleVec).size = size;
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
-    // create prefix sum for modules size
-    int_vec module_prefix_sum = int_vec{size, mr};
-
     auto nCellsReader = [](cell_counter x) { return x.nCells; };
     auto sum = [](auto a, auto b) {return a + b;};
-    std::transform_inclusive_scan(cell_counts.begin(),
-                        cell_counts.end(),
-                        module_prefix_sum.begin(),
+    std::transform_inclusive_scan(modules.begin(),
+                        modules.end(),
+                        (*moduleVec).cells_prefix_sum.begin(),
                         sum,
                         nCellsReader);
-    (*moduleVec).cells_prefix_sum = module_prefix_sum;
+    
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 
     // Construct the result container, and set up its headers.
@@ -287,11 +284,11 @@ cell_container_types::host read_cells2(std::string_view filename,
 
         // Make sure that we would have just the right amount of space available
         // for the cells.
-        result.get_items().at(i).reserve(cell_counts[i].nCells);
+        result.get_items().at(i).reserve(modules[i].nCells);
 
         // Construct the description of the detector module.
         cell_module& module = result.get_headers().at(i);
-        module.module = cell_counts[i].module;
+        module.module = modules[i].module;
 
         // Find/set the 3D position of the detector module.
         if (geom != nullptr) {
@@ -330,7 +327,7 @@ cell_container_types::host read_cells2(std::string_view filename,
     std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
 
     // fill counter for cellsVec vectors
-    std::vector<unsigned int> module_fill_counter(size, 0);
+    //std::vector<unsigned int> module_fill_counter(size, 0);
 
     // Now loop over all the cells, and put them into the appropriate modules.
     std::size_t last_module_index = 0;
@@ -373,7 +370,7 @@ cell_container_types::host read_cells2(std::string_view filename,
         (*cellsVec).module_id[midx] = last_module_index;*/
 
         // increment the fill counter for the current module
-        module_fill_counter[last_module_index]++;
+        //module_fill_counter[last_module_index]++;
     }
 
     std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
@@ -389,17 +386,15 @@ cell_container_types::host read_cells2(std::string_view filename,
                       return c1.channel1 < c2.channel1;
                   });
         auto module_cells = result.at(i).items;
-        lb = ( i == 0 ? 0 : module_prefix_sum[i - 1]);
-        unsigned int n_cells = module_prefix_sum[i] - lb;
-        for(std::size_t j = 0; j < n_cells; ++j)
-        {
-            (*cellsVec).channel0[j + lb]   = module_cells[j].channel0;
-            (*cellsVec).channel1[j + lb]   = module_cells[j].channel1;
-            (*cellsVec).activation[j + lb] = module_cells[j].activation;
-            (*cellsVec).time[j + lb]       = module_cells[j].time;
-            (*cellsVec).module_id[j + lb] = i ;
+        lb = ( i == 0 ? 0 : (*moduleVec).cells_prefix_sum[i - 1]);
+        unsigned int n_cells = (*moduleVec).cells_prefix_sum[i] - lb;
+        for(std::size_t j = 0; j < n_cells; ++j) {
+            (*cellsVec).channel0[lb+j]   = module_cells[j].channel0;
+            (*cellsVec).channel1[lb+j]   = module_cells[j].channel1;
+            (*cellsVec).activation[lb+j] = module_cells[j].activation;
+            (*cellsVec).time[lb+j]       = module_cells[j].time;
+            (*cellsVec).module_id[lb+j]  = i;
         }
-
     }
 
     std::chrono::high_resolution_clock::time_point t7 = std::chrono::high_resolution_clock::now();

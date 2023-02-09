@@ -135,7 +135,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &moduleVec,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
-
                 
                 cellsView.channel0 = traccc::int_buf(cellsVec.size, *mr.host);
                 traccc::int_buf channel1_buf(cellsVec.size, *mr.host);
@@ -168,11 +167,11 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
      /**************************************************/
+                traccc::int_buf cells_prefix_sum(moduleVec.size, *mr.host);
+                moduleView.cells_prefix_sum = cells_prefix_sum;
+                copy.setup(cells_prefix_sum);
 
-                moduleView.cells_prefix_sum = traccc::int_buf(cellsVec.module_size, *mr.host);
-            
-                copy.setup(moduleView.cells_prefix_sum );
-                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), moduleView.cells_prefix_sum,
+                copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
 
             }  // stop measuring file reading timer

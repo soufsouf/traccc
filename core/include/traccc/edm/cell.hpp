@@ -131,6 +131,7 @@ struct ModuleView {
 struct ModuleVec {
     int_vec cells_prefix_sum;
     int_vec clusters_prefix_sum;
+    std::size_t size;
 };
 struct ModuleBuf {
     int_buf cells_prefix_sum;
