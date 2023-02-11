@@ -175,7 +175,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
                     printf(" prefix sum : %u \n", moduleVec.cells_prefix_sum[100]);
-
+                modulebuf.cells_prefix_sum = cells_prefix_sum;
             }  // stop measuring file reading timer
 
             /*-----------------------------
@@ -189,7 +189,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, &cellsView, &moduleView);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, modulebuf);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 
