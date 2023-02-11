@@ -136,7 +136,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
                 
-                cellsView.channel0 = traccc::int_buf(cellsVec.size, *mr.host);
+                cellsView.channel0 = traccc::int_buf(cellsVec.channel0.size(), *mr.host);
                 traccc::int_buf channel1_buf(cellsVec.size, *mr.host);
                 cellsView.channel1 = channel1_buf;
                 traccc::scalar_buf activation_buf(cellsVec.size, *mr.host);
