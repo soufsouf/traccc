@@ -191,8 +191,8 @@ cell_container_types::host read_cells(std::string_view filename,
 
 cell_container_types::host
 read_cells2(std::string_view filename,
-                                      CellVec *cellsVec,
-                                      ModuleVec *moduleVec,
+                                       CellVec *cellsVec,
+                                       ModuleVec *moduleVec,
                                       const geometry* geom,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
