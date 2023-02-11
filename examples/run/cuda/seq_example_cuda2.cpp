@@ -175,7 +175,9 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
                     printf(" prefix sum : %u \n", moduleVec.cells_prefix_sum[100]);
-                modulebuf.cells_prefix_sum = cells_prefix_sum;
+               // modulebuf.cells_prefix_sum = cells_prefix_sum;
+                copy(vecmem::get_data(cells_prefix_sum), modulebuf.cells_prefix_sum,
+                    vecmem::copy::type::copy_type::host_to_device);
             }  // stop measuring file reading timer
 
             /*-----------------------------
