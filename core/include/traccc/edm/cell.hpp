@@ -99,7 +99,7 @@ struct CellBuf {
 using int_view = vecmem::data::vector_view<unsigned int>;
 using scalar_view = vecmem::data::vector_view<scalar>;
 struct CellView {
-    int_view channel0 (channel0.size() , 0);
+    int_view channel0 (321488 , 0);
     int_view channel1;
     scalar_view activation;
     scalar_view time;
