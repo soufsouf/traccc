@@ -261,11 +261,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
                             (cells_view, channel0, channel1,activation, prefixsum, moduleidx , cellView,
-<<<<<<< HEAD
-                              moduleView );
-=======
                               moduleView);
->>>>>>> a7d8bdab43bb69fbe008072a25926aa01db0126c
 
     /*
      * Helper container for sparse CCL calculations.
