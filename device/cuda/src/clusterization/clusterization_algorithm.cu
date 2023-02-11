@@ -66,7 +66,7 @@ vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
  vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
 int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
-printf(" somme module : %u et thread : %u | channel_s 0 : %u \n", *sum[idx], idx,  *ch0_s[idx] );
+printf(" somme module : %u et thread : %u | channel_s 0 : %u \n", sum[idx], idx,  ch1_s[idx] );
 
   unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
   unsigned int n_cells = prefix_sum_s[idx] - doffset;
