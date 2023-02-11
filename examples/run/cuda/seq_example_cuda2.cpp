@@ -66,6 +66,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::CellView cellsView;
     traccc::ModuleVec moduleVec;
     traccc::ModuleView moduleView;
+    traccc::ModuleBuf modulebuf;
 
     // Memory resources used by the application.
     vecmem::host_memory_resource host_mr;
@@ -173,7 +174,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
-printf(" prefix sum : %u, \n",moduleVec.cells_prefix_sum[100]);
+                    printf(" prefix sum : %u \n", moduleVec.cells_prefix_sum[100]);
+
             }  // stop measuring file reading timer
 
             /*-----------------------------
@@ -187,8 +189,9 @@ printf(" prefix sum : %u, \n",moduleVec.cells_prefix_sum[100]);
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView);
-                stream.synchronize();            }  // stop measuring clusterization cuda timer
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, *cellsView, *moduleView);
+                stream.synchronize();
+            }  // stop measuring clusterization cuda timer
 
             if (run_cpu) {
 
