@@ -174,7 +174,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
               
-              vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, *mr.host);
+              vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, mr.host);
               copy(vecmem::get_data(cellsVec.channel0), cluster_sizes,
               vecmem::copy::type::copy_type::device_to_host);
                 
