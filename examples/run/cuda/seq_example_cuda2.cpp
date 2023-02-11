@@ -175,7 +175,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     vecmem::copy::type::copy_type::host_to_device);
               /// trying to see the content of cellsView.channel0 
               vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, mr.host);
-              copy(vecmem::get_data(cellsView.channel0), cluster_sizes,
+              copy(cellsView.channel0, cluster_sizes,
               vecmem::copy::type::copy_type::device_to_host);
                 
                 for (int i = 0 ; i< 60 ; i++ )
