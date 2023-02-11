@@ -174,11 +174,11 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
 
-                traccc::int_vec channel(cellsVec.size, *mr.host);
-                copy(vecmem::get_data(cellsView.channel0), channel,
-                    vecmem::copy::type::copy_type::devece_to_host);
+                
+                unsigned int channel = cellsView.channel0[100];
+                unsigned int channel1 = cellsView.channel1.at(100);
 
-                    printf(" prefix sum : %u et ch0 : %u \n", moduleVec.cells_prefix_sum[100],channel[100] );
+                    printf(" prefix sum : %u et ch0 : %llu ch1: %llu \n", moduleVec.cells_prefix_sum[100],channel,channel1 );
                // modulebuf.cells_prefix_sum = cells_prefix_sum;
                ///************///
 
