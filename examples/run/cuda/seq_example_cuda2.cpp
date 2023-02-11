@@ -154,24 +154,24 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy.setup(module_id_buf);
                 copy.setup(cluster_id_buf);
 
-                copy(vecmem::get_data((*cellsVec).channel0), (*cellsView).channel0,
+                copy(vecmem::get_data(cellsVec.channel0), cellsView.channel0,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data((*cellsVec).channel1), channel1_buf,
+                copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data((*cellsVec).activation), activation_buf,
+                copy(vecmem::get_data(cellsVec.activation), activation_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data((*cellsVec).time), time_buf,
+                copy(vecmem::get_data(cellsVec.time), time_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data((*cellsVec).module_id), module_id_buf,
+                copy(vecmem::get_data(cellsVec.module_id), module_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data((*cellsVec).cluster_id), cluster_id_buf,
+                copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
      /**************************************************/
-                traccc::int_buf cells_prefix_sum((*moduleVec).size, *mr.host);
+                traccc::int_buf cells_prefix_sum(moduleVec.size, *mr.host);
                 moduleView.cells_prefix_sum = cells_prefix_sum;
                 copy.setup(cells_prefix_sum);
 
-                copy(vecmem::get_data((*moduleVec).cells_prefix_sum), cells_prefix_sum,
+                copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
                     printf(" prefix sum : %u \n", moduleVec.cells_prefix_sum[100]);
                // modulebuf.cells_prefix_sum = cells_prefix_sum;
@@ -190,7 +190,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellbuf, modulebuf);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 
