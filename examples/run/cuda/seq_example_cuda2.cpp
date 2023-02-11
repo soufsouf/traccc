@@ -67,7 +67,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::ModuleVec moduleVec;
     traccc::ModuleView moduleView;
     traccc::ModuleBuf modulebuf;
-
+    traccc::CellBuf cellbuf;
     // Memory resources used by the application.
     vecmem::host_memory_resource host_mr;
     vecmem::cuda::host_memory_resource cuda_host_mr;
@@ -176,7 +176,21 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     vecmem::copy::type::copy_type::host_to_device);
                     printf(" prefix sum : %u \n", moduleVec.cells_prefix_sum[100]);
                // modulebuf.cells_prefix_sum = cells_prefix_sum;
+               ///************///
+
                 copy(vecmem::get_data(cells_prefix_sum), modulebuf.cells_prefix_sum,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(cellsView.channel0),cellbuf.channel0 ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(channel1_buf),cellbuf.channel1 ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(activation_buf),cellbuf.activation ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(time_buf),cellbuf.time ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(module_id_buf),cellbuf.module_id,
+                    vecmem::copy::type::copy_type::host_to_device);
+                copy(vecmem::get_data(cluster_id_buf),cellbuf.cluster_id,
                     vecmem::copy::type::copy_type::host_to_device);
             }  // stop measuring file reading timer
 
@@ -191,7 +205,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, modulebuf);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellbuf, modulebuf);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 

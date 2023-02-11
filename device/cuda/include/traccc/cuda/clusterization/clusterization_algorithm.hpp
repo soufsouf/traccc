@@ -84,7 +84,7 @@ class clusterization_algorithm2
     /// per module.
     output_type operator()(
         const cell_container_types::const_view& cells_view,
-         traccc::CellView& cellsView,  traccc::ModuleView& moduleView) const override;
+        const traccc::CellView& cellsView, const traccc::ModuleView& moduleView) const override;
 //
     private:
     /// The memory resource(s) to use
