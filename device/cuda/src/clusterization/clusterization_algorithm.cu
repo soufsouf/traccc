@@ -30,16 +30,6 @@ std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
-<<<<<<< HEAD
-
-=======
-    struct cell_struct {
-    unsigned int channel0 = 0;
-    unsigned int channel1 = 0;
-    scalar activation = 0.;
-    scalar time = 0.;
-};
->>>>>>> a7d8bdab43bb69fbe008072a25926aa01db0126c
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
