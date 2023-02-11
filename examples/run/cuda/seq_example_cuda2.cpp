@@ -154,7 +154,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 copy.setup(module_id_buf);
                 copy.setup(cluster_id_buf);
 
-                copy(vecmem::get_data(cellsVec.channel0), vecmem::get_data(cellsView.channel0),
+                copy(vecmem::get_data(cellsVec.channel0), cellsView.channel0,
                     vecmem::copy::type::copy_type::host_to_device);
                 copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
                     vecmem::copy::type::copy_type::host_to_device);
