@@ -100,7 +100,7 @@ using int_view = vecmem::data::vector_view<unsigned int>;
 using scalar_view = vecmem::data::vector_view<scalar>;
 int n = 321488;
 struct CellView {
-    int_view channel0;
+    int_view channel0= nullptr;
     int_view channel1;
     scalar_view activation;
     scalar_view time;

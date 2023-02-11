@@ -59,7 +59,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     ModuleVecDevice module_device(moduleView);
   */
  vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
-    vecmem::device_vector<unsigned int> ch1_s((*cellView).channel1);
+    vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
     vecmem::device_vector<scalar> activation_s(cellView.activation);
 vecmem::device_vector<scalar>  time_s(cellView.time);
 vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
