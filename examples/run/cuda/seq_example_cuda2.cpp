@@ -175,11 +175,11 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     vecmem::copy::type::copy_type::host_to_device);
               /// trying to see the content of cellsView.channel0 
               vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, mr.host);
-              copy(cellsView.channel0, cluster_sizes,
+              copy(cellsVec.channel0, cluster_sizes,
               vecmem::copy::type::copy_type::device_to_host);
                 
                 for (int i = 0 ; i< 60 ; i++ )
-                  printf("cellsVec.channel0 %u cellsView.channel0 : %u  \n", cluster_sizes[i] , cellsVec.channel0[i] );
+                  printf("cellsVec.channel0 %u cluster_sizes : %u  \n", cluster_sizes[i] , cellsVec.channel0[i] );
                // modulebuf.cells_prefix_sum = cells_prefix_sum;
                ///************///
 
