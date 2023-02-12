@@ -61,7 +61,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
 // printf(" somme module : %u et thread : %u | channel_s 0 : %u \n", sum[idx], idx,  ch0_s[idx] );
-printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
+//printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
 
   unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
   unsigned int n_cells = prefix_sum_s[idx] - doffset;
@@ -71,7 +71,7 @@ printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u 
    activation[is+doffset] = activation_s[is+doffset];
    midx[is+doffset] = module_id_s[is+doffset];
  }  
- printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
+ //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
@@ -251,8 +251,8 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     m_copy(cellView.channel0, cc,
               vecmem::copy::type::copy_type::device_to_host);
                 
-    for (int i = 0 ; i< 60 ; i++ )
-        printf("cellsView.channel0 : %u  \n", cc[i]);
+    //for (int i = 0 ; i< 60 ; i++ )
+        //printf("cellsView.channel0 : %u  \n", cc[i]);
 
     //cellvec cells;
     vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
@@ -374,7 +374,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     m_copy.setup(clusters_buff);*/
 
 
-    printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
+    //printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
     blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
                     threadsPerBlock;
@@ -430,7 +430,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     m_copy.setup(spacepoints_buffer.headers);
     m_copy.setup(spacepoints_buffer.items);
 
-    printf("clusters_buff %llu\n", clusters_buffer.headers.size());
+   // printf("clusters_buff %llu\n", clusters_buffer.headers.size());
     // Calculating grid size for measurements creation kernel (block size 64)
     blocksPerGrid = (clusters_buffer.headers.size() - 1 + threadsPerBlock) /
                     threadsPerBlock;
