@@ -394,7 +394,7 @@ read_cells2(std::string_view filename,
             (*cellsVec).activation[lb+j] = module_cells[j].activation;
             (*cellsVec).time[lb+j]       = module_cells[j].time;
             (*cellsVec).module_id[lb+j]  = i;
-           if(i ==0) std::cout<< "le channel 0 de module cell de j "<< j << " est : " <<  module_cells[j].channel0<< std::endl;
+          // if(i ==0) std::cout<< "le channel 0 de module cell de j "<< j << " est : " <<  module_cells[j].channel0<< std::endl;
 
         }
     }
