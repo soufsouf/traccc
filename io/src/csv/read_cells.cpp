@@ -265,7 +265,7 @@ read_cells2(std::string_view filename,
                         sum,
                         nCellsReader);
 
-    for (int i = 0 ; i< 60 ; i++ )
+    for (int i = 0 ; i< 60 ; i++ ) 
                   printf("(*moduleVec).cells_prefix_sum: %u  \n", (*moduleVec).cells_prefix_sum[i] );
     
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
