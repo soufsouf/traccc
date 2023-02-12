@@ -60,7 +60,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
  vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
- //printf(" somme module : %u et thread : %u | channel_s 0 : %u \n", sum[idx], idx,  ch0_s[idx] );
+ printf(" somme module : %u et thread : %u | channel_s 0 : %u \n", sum[idx], idx,  ch0_s[idx] );
 
   unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
   unsigned int n_cells = prefix_sum_s[idx] - doffset;
@@ -245,6 +245,13 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     for (int i=0; i < cell_sizes.size(); i++) {
         cellcount += cell_sizes[i];
     }
+
+    vecmem::vector<unsigned int> cc(cellcount, m_mr.host);
+    m_copy(cellView.channel0, cc,
+              vecmem::copy::type::copy_type::device_to_host);
+                
+    for (int i = 0 ; i< 60 ; i++ )
+        printf("cellsView.channel0 : %u  \n", cc[i]);
 
     //cellvec cells;
     vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
