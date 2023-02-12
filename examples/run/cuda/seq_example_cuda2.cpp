@@ -170,21 +170,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
                 async_copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
-<<<<<<< HEAD
-              /// trying to see the content of cellsView.channel0 
-              vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, mr.host);
-              copy(cellsVec.channel0, cluster_sizes,
-              vecmem::copy::type::copy_type::device_to_host);
-                
-                for (int i = 0 ; i< 60 ; i++ )
-                  printf("cellsVec.channel0 %u cluster_sizes : %u  \n", cluster_sizes[i] , cellsVec.channel0[i] );
-               // modulebuf.cells_prefix_sum = cells_prefix_sum;
-               ///************///
-
-            }  // stop measuring file reading timer
-=======
-              // stop measuring file reading timer
->>>>>>> d7056e5843affe0764db67754d2e597f4a7b1aff
 
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
