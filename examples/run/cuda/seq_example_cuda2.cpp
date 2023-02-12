@@ -121,10 +121,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
         {
             traccc::performance::timer wall_t("Wall time", elapsedTimes);
-
-            {
-                traccc::performance::timer t("File reading  (cpu)",
-                                             elapsedTimes);
                 // Read the cells from the relevant event file into host memory.
 
                 cells_per_event = traccc::io::csv::read_cells2(
@@ -174,7 +170,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
                 async_copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
-            }  // stop measuring file reading timer
+              // stop measuring file reading timer
 
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
