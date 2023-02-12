@@ -70,6 +70,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
    activation[is+doffset] = activation_s[is+doffset];
    midx[is+doffset] = module_id_s[is+doffset];
  }  
+ printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= cells_device.size())
