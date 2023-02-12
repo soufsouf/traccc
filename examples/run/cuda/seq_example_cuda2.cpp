@@ -136,53 +136,44 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
                 
-                cellsView.channel0 = traccc::int_buf(cellsVec.channel0.size(), *mr.host);
-                traccc::int_buf channel1_buf(cellsVec.size, *mr.host);
+                traccc::int_buf channel0_buf(cellsVec.size, device_mr);
+                cellsView.channel0 = channel0_buf;
+                traccc::int_buf channel1_buf(cellsVec.size, device_mr);
                 cellsView.channel1 = channel1_buf;
-                traccc::scalar_buf activation_buf(cellsVec.size, *mr.host);
+                traccc::scalar_buf activation_buf(cellsVec.size, device_mr);
                 cellsView.activation = activation_buf;
-                traccc::scalar_buf time_buf(cellsVec.size, *mr.host);
+                traccc::scalar_buf time_buf(cellsVec.size, device_mr);
                 cellsView.time = time_buf;
-                traccc::int_buf module_id_buf(cellsVec.size, *mr.host);
+                traccc::int_buf module_id_buf(cellsVec.size, device_mr);
                 cellsView.module_id = module_id_buf;
-                traccc::int_buf cluster_id_buf(cellsVec.size, *mr.host);
+                traccc::int_buf cluster_id_buf(cellsVec.size, device_mr);
                 cellsView.cluster_id = cluster_id_buf;
-                copy.setup(cellsView.channel0);
-                copy.setup(channel1_buf);
-                copy.setup(activation_buf);
-                copy.setup(time_buf);
-                copy.setup(module_id_buf);
-                copy.setup(cluster_id_buf);
+                async_copy.setup(channel0_buf);
+                async_copy.setup(channel1_buf);
+                async_copy.setup(activation_buf);
+                async_copy.setup(time_buf);
+                async_copy.setup(module_id_buf);
+                async_copy.setup(cluster_id_buf);
 
-                copy(vecmem::get_data(cellsVec.channel0), cellsView.channel0,
+                async_copy(vecmem::get_data(cellsVec.channel0), channel0_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
+                async_copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.activation), activation_buf,
+                async_copy(vecmem::get_data(cellsVec.activation), activation_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.time), time_buf,
+                async_copy(vecmem::get_data(cellsVec.time), time_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.module_id), module_id_buf,
+                async_copy(vecmem::get_data(cellsVec.module_id), module_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
+                async_copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
      /**************************************************/
-                traccc::int_buf cells_prefix_sum(moduleVec.size, *mr.host);
+                traccc::int_buf cells_prefix_sum(moduleVec.size, device_mr);
                 moduleView.cells_prefix_sum = cells_prefix_sum;
-                copy.setup(cells_prefix_sum);
+                async_copy.setup(cells_prefix_sum);
 
-                copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
+                async_copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
-              /// trying to see the content of cellsView.channel0 
-              vecmem::vector<unsigned int> cluster_sizes(cellsVec.size, mr.host);
-              copy(cellsView.channel0, cluster_sizes,
-              vecmem::copy::type::copy_type::device_to_host);
-                
-                for (int i = 0 ; i< 60 ; i++ )
-                  printf("cellsVec.channel0 %u cellsView.channel0 : %u  \n", cluster_sizes[i] , cellsVec.channel0[i] );
-               // modulebuf.cells_prefix_sum = cells_prefix_sum;
-               ///************///
-
             }  // stop measuring file reading timer
 
             /*-----------------------------
@@ -191,7 +182,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             // Copy the cell data to the device.
             const traccc::cell_container_types::buffer cells_cuda_buffer =
                 cell_h2d(traccc::get_data(cells_per_event));
-
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
