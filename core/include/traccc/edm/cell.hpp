@@ -72,8 +72,8 @@ struct cell_module {
 
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 
-using int_vec = vecmem::vector<unsigned int>;
-using scalar_vec = vecmem::vector<scalar>;
+using int_vec = std::vector<unsigned int>;
+using scalar_vec = std::vector<scalar>;
 struct CellVec {
     int_vec channel0;
     int_vec channel1;

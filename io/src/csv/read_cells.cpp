@@ -242,21 +242,17 @@ read_cells2(std::string_view filename,
     const std::size_t size = modules.size();
     const std::size_t allCellsCount = allCells.size();
 
-    // create Cell Vector
-    using int_vec = vecmem::vector<unsigned int>;
-    using scalar_vec = vecmem::vector<scalar>;
-
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
-    (*cellsVec).channel0 = int_vec(allCellsCount, mr); //channel0
-    (*cellsVec).channel1 = int_vec(allCellsCount, mr); // channel1
-    (*cellsVec).activation = scalar_vec(allCellsCount, mr); // activation
-    (*cellsVec).time = scalar_vec(allCellsCount, mr); // time
-    (*cellsVec).module_id = int_vec(allCellsCount, mr); // module_id
-    (*cellsVec).cluster_id = int_vec(allCellsCount, mr); // cluster_id
+    (*cellsVec).channel0 = int_vec(allCellsCount); //channel0
+    (*cellsVec).channel1 = int_vec(allCellsCount); // channel1
+    (*cellsVec).activation = scalar_vec(allCellsCount); // activation
+    (*cellsVec).time = scalar_vec(allCellsCount); // time
+    (*cellsVec).module_id = int_vec(allCellsCount); // module_id
+    (*cellsVec).cluster_id = int_vec(allCellsCount); // cluster_id
     (*cellsVec).size = allCellsCount;
 
-    (*moduleVec).cells_prefix_sum = int_vec{size, mr};
-    (*moduleVec).clusters_prefix_sum = int_vec{size, mr};
+    (*moduleVec).cells_prefix_sum = int_vec(size);
+    (*moduleVec).clusters_prefix_sum = int_vec(size);
     (*moduleVec).size = size;
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
@@ -268,6 +264,9 @@ read_cells2(std::string_view filename,
                         (*moduleVec).cells_prefix_sum.begin(),
                         sum,
                         nCellsReader);
+
+    for (int i = 0 ; i< 60 ; i++ )
+                  printf("(*moduleVec).cells_prefix_sum: %u  \n", (*moduleVec).cells_prefix_sum[i] );
     
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 
@@ -394,6 +393,8 @@ read_cells2(std::string_view filename,
             (*cellsVec).activation[lb+j] = module_cells[j].activation;
             (*cellsVec).time[lb+j]       = module_cells[j].time;
             (*cellsVec).module_id[lb+j]  = i;
+          // if(i ==0) std::cout<< "le channel 0 de module cell de j "<< j << " est : " <<  module_cells[j].channel0<< std::endl;
+
         }
     }
 
