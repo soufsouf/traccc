@@ -257,8 +257,8 @@ read_cells2(std::string_view filename,
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
-    auto nCellsReader = [](cell_counter x) { return x.nCells; };
-    auto sum = [](auto a, auto b) {return a + b;};
+    auto nCellsReader = [](cell_counter x) { return x.nCells; }; 
+    auto sum = [](auto x, auto y) {return x + y;};
     std::transform_inclusive_scan(modules.begin(),
                         modules.end(),
                         (*moduleVec).cells_prefix_sum.begin(),
