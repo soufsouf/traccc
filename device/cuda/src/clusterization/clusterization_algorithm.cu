@@ -328,7 +328,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 printf(" hello 1");
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, cellView.channel0,cellView.channel1, moduleView.cells_prefix_sum,cellView.module_id, label_buff, cl_per_module_prefix_buff);
+        cells_view, &cellView.channel0,&cellView.channel1, &moduleView.cells_prefix_sum,&cellView.module_id, label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
