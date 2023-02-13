@@ -71,7 +71,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
    ch1[is+doffset] = ch1_s[is+doffset];
    activation[is+doffset] = activation_s[is+doffset];
    midx[is+doffset] = module_id_s[is+doffset];
-  // printf(" somme module : %u et thread : %d | channel_s 1 : %u et ch0_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx], idx,ch0_s[idx],  ch1_s[idx],module_id_s[idx],activation_s[idx] );
+  printf(" somme module : %u | channel_0 : %u et ch0_s: %u | channel_1 : %u et ch1_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx],ch0[idx], ch0_s[idx] , ch1[idx],ch1_s[idx],midx[idx],activation[idx] );
  }  
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
@@ -283,7 +283,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         std::vector<std::size_t>(cell_sizes.begin(), cell_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(sparse_ccl_indices_buff);*/
-
+printf("hello world");
     vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
     m_copy.setup(label_buff);
 
@@ -318,11 +318,11 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(
         num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
-
+printf("hello world");
     // Calculating grid size for cluster finding kernel
     blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
-
+printf("hello world");
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
