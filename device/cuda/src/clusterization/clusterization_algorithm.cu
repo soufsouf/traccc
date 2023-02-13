@@ -60,8 +60,8 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
  vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
-//if (idx < 60)
-//printf(" prefix_sum_s : %u  \n", sum[idx]);
+if (idx < 60)
+printf(" prefix_sum_s : %u, sum :  %u  \n",prefix_sum_s[idx], sum[idx]);
 //printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
 
   unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
@@ -71,7 +71,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
    ch1[is+doffset] = ch1_s[is+doffset];
    activation[is+doffset] = activation_s[is+doffset];
    midx[is+doffset] = module_id_s[is+doffset];
-  printf(" somme module : %u | channel_0 : %u et ch0_s: %u | channel_1 : %u et ch1_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx],ch0[idx], ch0_s[idx] , ch1[idx],ch1_s[idx],midx[idx],activation[idx] );
+ // printf(" somme module : %u | channel_0 : %u et ch0_s: %u | channel_1 : %u et ch1_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx],ch0[idx], ch0_s[idx] , ch1[idx],ch1_s[idx],midx[idx],activation[idx] );
  }  
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
