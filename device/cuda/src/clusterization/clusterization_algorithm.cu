@@ -61,7 +61,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
 if (idx < 60)
-printf(" prefix_sum_s : %u  \n", sum[idx]);
+//printf(" prefix_sum_s : %u  \n", sum[idx]);
 //printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
 
   unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
