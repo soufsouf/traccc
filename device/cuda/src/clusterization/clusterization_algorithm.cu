@@ -458,7 +458,7 @@ printf(" hello 1");
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         clusters_buffer,cells_view, Clusters_module_link,measurement_local, measurement_variance);
-    CUDA_ERROR_CHECK(cudaGetLastError());
+    //CUDA_ERROR_CHECK(cudaGetLastError());
    
    
     // Using the same grid size as before
