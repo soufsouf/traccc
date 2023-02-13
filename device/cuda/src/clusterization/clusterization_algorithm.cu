@@ -272,7 +272,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
                             (cells_view, /*channel0, channel1,*/activation, prefixsum,/** moduleidx ,*/ cellView,
                               moduleView);
-    
+    CUDA_ERROR_CHECK(cudaGetLastError());
     /*
      * Helper container for sparse CCL calculations.
      * Each inner vector corresponds to 1 module.
@@ -327,7 +327,7 @@ printf(" hello 111 \n");
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
-   // CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         label_buff, sparse_ccl_indices_buff, prefixsum);
