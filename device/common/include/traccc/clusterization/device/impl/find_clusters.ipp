@@ -25,7 +25,7 @@ inline void find_clusters(
     printf(" hello 3");
     vecmem::device_vector<unsigned int> ch1(cellView.channel1);
     vecmem::device_vector<unsigned int> sum(moduleView.cells_prefix_sum);
-    vecmem::device_vector<unsigned int> midx(cellView.moduleidx);
+    vecmem::device_vector<unsigned int> midx(cellView.module_id);
     vecmem::device_vector<unsigned int> labels(label_view);
     printf(" hello 4");
 
