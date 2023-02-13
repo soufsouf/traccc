@@ -332,6 +332,8 @@ printf(" hello 111 \n");
         label_buff, sparse_ccl_indices_buff, prefixsum);
     CUDA_ERROR_CHECK(cudaGetLastError());*/
 
+ vecmem::data::vector_buffer<unsigned int> lala(cellcount, m_mr.main);
+    m_copy.setup(lala);
     // Create prefix sum buffer
     vecmem::data::vector_buffer cells_prefix_sum_buff =
         make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);
