@@ -36,7 +36,7 @@ inline void find_clusters(
         return;
 
 if (globalIndex < 60)
-    printf(" somme module : %u     \n", sum[globalIndex]);
+    printf(" somme module : %u     \n", summ[globalIndex]);
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
    
