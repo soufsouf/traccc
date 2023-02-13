@@ -138,27 +138,23 @@ __global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    vecmem::data::vector_view<unsigned int> moduleidx,
+    const CellView cellView,
     vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
         threadIdx.x + blockIdx.x * blockDim.x, label_view,
-        cluster_prefix_sum_view , moduleidx , clusters_view );
+        cluster_prefix_sum_view , cellView , clusters_view );
 }
 
 __global__ void connect_components(
-     vecmem::data::vector_view<unsigned int> channel0,
-     vecmem::data::vector_view<unsigned int> channel1,
-     vecmem::data::vector_view<scalar> activation_cell,
-     vecmem::data::vector_view<unsigned int> moduleidx,
+     const CellView cellView,
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
      cluster_container_types::view  clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
-                               channel0, channel1, activation_cell,
-                               moduleidx, label_view,
+                               cellView, label_view,
                                cluster_prefix_sum_view, cluster_idx_atomic,
                                clusters_view);
 }
@@ -256,7 +252,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         //printf("cellsView.channel0 : %u  \n", cc[i]);
 
     //cellvec cells;
-    vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
+   /* vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
     m_copy.setup(channel0);
     vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
     m_copy.setup(channel1);
@@ -267,14 +263,13 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
     m_copy.setup(prefixsum);
     
-vecmem::data::vector_buffer<std::size_t> maissa(num_modules, m_mr.main);
-    m_copy.setup(maissa);
+
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
                             (cells_view, channel0, channel1,activation, prefixsum,moduleidx ,cellView,
                               moduleView);
-    CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());*/
     /*
      * Helper container for sparse CCL calculations.
      * Each inner vector corresponds to 1 module.
@@ -387,7 +382,7 @@ printf(" hello 111 \n");
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
 
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        label_buff, cl_per_module_prefix_buff, moduleidx,
+        label_buff, cl_per_module_prefix_buff, cellView,
         cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
@@ -417,7 +412,7 @@ printf(" hello 111 \n");
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        channel0, channel1, activation , moduleidx, label_buff,
+        cellView, label_buff,
         cl_per_module_prefix_buff, cluster_index_atomic,
         clusters_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError()); 

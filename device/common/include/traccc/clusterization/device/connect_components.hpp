@@ -60,10 +60,7 @@ inline void connect_components(
 TRACCC_DEVICE
 inline void connect_components(
     std::size_t globalIndex, 
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    vecmem::data::vector_view<TRACCC_CUSTOM_SCALARTYPE> activation_cell, 
-    vecmem::data::vector_view<unsigned int > moduleidx,
+     const CellView& cellView,
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
