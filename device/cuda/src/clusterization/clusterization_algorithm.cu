@@ -334,7 +334,7 @@ printf(" hello 111 \n");
 
  
     // Create prefix sum buffer
-   /vecmem::data::vector_buffer cells_prefix_sum_buff =
+   vecmem::data::vector_buffer cells_prefix_sum_buff =
         make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream); 
 printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());
     // Copy the sizes of clusters per module to the host
