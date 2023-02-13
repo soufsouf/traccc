@@ -12,8 +12,8 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-     CellView cellView,
-     ModuleView moduleView,
+    const CellView& cellView,
+    const ModuleView& moduleView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
@@ -29,9 +29,11 @@ inline void find_clusters(
     if (globalIndex >= sum.size())
         return;
 
+if (globalIndex < 60)
+    printf(" somme module : %u     \n", sum[globalIndex]);
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
-  
+   
 
     // Vectors used for cluster indices found by sparse CCL
     //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
