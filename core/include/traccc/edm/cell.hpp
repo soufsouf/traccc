@@ -99,12 +99,12 @@ struct CellBuf {
 using int_view = vecmem::data::vector_view<unsigned int>;
 using scalar_view = vecmem::data::vector_view<scalar>;
 struct CellView {
-    vecmem::data::vector_view<unsigned int> channel0;
-    vecmem::data::vector_view<unsigned int> channel1;
-    vecmem::data::vector_view<scalar> activation;
-    vecmem::data::vector_view<scalar> time;
-    vecmem::data::vector_view<unsigned int> module_id;
-    vecmem::data::vector_view<unsigned int> cluster_id;
+    int_view channel0;
+    int_view channel1;
+    scalar_view activation;
+    scalar_view time;
+    int_view module_id;
+    int_view cluster_id;
 };
 
 using int_device = vecmem::device_vector<unsigned int>;
