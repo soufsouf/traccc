@@ -256,14 +256,14 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         //printf("cellsView.channel0 : %u  \n", cc[i]);
 
     //cellvec cells;
-    /*vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
+    vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
     m_copy.setup(channel0);
     vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
-    m_copy.setup(channel1);*/
+    m_copy.setup(channel1);
     vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
     m_copy.setup(activation);
-   /* vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
-    m_copy.setup(moduleidx);*/
+    vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
+    m_copy.setup(moduleidx);
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
     m_copy.setup(prefixsum);
     
