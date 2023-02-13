@@ -36,7 +36,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
                              //vecmem::data::vector_view<unsigned int> channel0,
                              //vecmem::data::vector_view<unsigned int> channel1,
                              vecmem::data::vector_view<scalar> activat,
-                             //vecmem::data::vector_view<unsigned int> cumulsize,
+                             vecmem::data::vector_view<unsigned int> cumulsize,
                              //vecmem::data::vector_view<unsigned int> moduleidx,
                              const CellView cellView,
                              const ModuleView moduleView) {
@@ -256,21 +256,21 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         //printf("cellsView.channel0 : %u  \n", cc[i]);
 
     //cellvec cells;
-    vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
+    /*vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
     m_copy.setup(channel0);
     vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
-    m_copy.setup(channel1);
+    m_copy.setup(channel1);*/
     vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
     m_copy.setup(activation);
-    vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
-    m_copy.setup(moduleidx);
+   /* vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
+    m_copy.setup(moduleidx);*/
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
     m_copy.setup(prefixsum);
     
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
-                            (cells_view, channel0, channel1,activation, prefixsum, moduleidx , cellView,
+                            (cells_view, /*channel0, channel1,*/activation, prefixsum,/** moduleidx ,*/ cellView,
                               moduleView);
     
     /*
