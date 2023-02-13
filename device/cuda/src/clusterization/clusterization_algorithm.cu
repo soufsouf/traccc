@@ -332,11 +332,10 @@ printf(" hello 111 \n");
         label_buff, sparse_ccl_indices_buff, prefixsum);
     CUDA_ERROR_CHECK(cudaGetLastError());*/
 
- vecmem::data::vector_buffer<unsigned int> lala(cellcount, m_mr.main);
-    m_copy.setup(lala);
+ 
     // Create prefix sum buffer
-    vecmem::data::vector_buffer cells_prefix_sum_buff =
-        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);
+   /* vecmem::data::vector_buffer cells_prefix_sum_buff =
+        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream); */
 
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
@@ -377,7 +376,7 @@ printf(" hello 111 \n");
 
     //printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
+    blocksPerGrid = (cell_sizes + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
