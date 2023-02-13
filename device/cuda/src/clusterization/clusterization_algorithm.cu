@@ -33,11 +33,11 @@ namespace traccc::cuda {
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
-                             vecmem::data::vector_view<unsigned int>& channel0,
-                             vecmem::data::vector_view<unsigned int>& channel1,
-                             vecmem::data::vector_view<scalar>& activat,
-                             vecmem::data::vector_view<unsigned int>& cumulsize,
-                             vecmem::data::vector_view<unsigned int>& moduleidx,
+                             vecmem::data::vector_view<unsigned int> channel0,
+                             vecmem::data::vector_view<unsigned int> channel1,
+                             vecmem::data::vector_view<scalar> activat,
+                             vecmem::data::vector_view<unsigned int> cumulsize,
+                             vecmem::data::vector_view<unsigned int> moduleidx,
                              const CellView cellView,
                              const ModuleView moduleView) {
 
@@ -102,15 +102,13 @@ activation.at(i+doffset)=cells[i].activation;
 
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    vecmem::data::vector_view<unsigned int> cumulsize,
-    vecmem::data::vector_view<unsigned int> moduleidx,
+    const CellView cellView,
+    const ModuleView moduleView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
-                          channel0, channel1, cumulsize, moduleidx,
+                          cellView,moduleView,
                           label_view, clusters_per_module_view);
 }
 
@@ -327,8 +325,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, channel0, channel1, prefixsum, moduleidx,
-        label_buff, cl_per_module_prefix_buff);
+        cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
