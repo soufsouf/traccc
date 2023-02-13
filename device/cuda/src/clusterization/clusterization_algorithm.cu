@@ -71,6 +71,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
    ch1[is+doffset] = ch1_s[is+doffset];
    activation[is+doffset] = activation_s[is+doffset];
    midx[is+doffset] = module_id_s[is+doffset];
+   printf(" somme module : %u et thread : %d | channel_s 1 : %u et ch0_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx], idx,ch0_s[idx],  ch1_s[idx],module_id_s[idx],activation_s[idx] );
  }  
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
