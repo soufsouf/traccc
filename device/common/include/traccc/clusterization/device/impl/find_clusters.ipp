@@ -33,8 +33,8 @@ inline void find_clusters(
     if (globalIndex >= sum.size())
         return;
 
-if (globalIndex < 10)
-    printf(" somme module : %u \n", sum[100]);
+//if (globalIndex < 10)
+   // printf(" somme module : %u \n", sum[100]);
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
    
