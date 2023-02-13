@@ -33,30 +33,30 @@ namespace traccc::cuda {
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
-                             vecmem::data::vector_view<unsigned int> channel0,
-                             vecmem::data::vector_view<unsigned int> channel1,
+                             //vecmem::data::vector_view<unsigned int> channel0,
+                             //vecmem::data::vector_view<unsigned int> channel1,
                              vecmem::data::vector_view<scalar> activat,
-                             vecmem::data::vector_view<unsigned int> cumulsize,
-                             vecmem::data::vector_view<unsigned int> moduleidx,
+                             //vecmem::data::vector_view<unsigned int> cumulsize,
+                             //vecmem::data::vector_view<unsigned int> moduleidx,
                              const CellView cellView,
                              const ModuleView moduleView) {
 
     cell_container_types::const_device cells_device(cells_view);
-    vecmem::device_vector<unsigned int> ch0(channel0);
-    vecmem::device_vector<unsigned int> ch1(channel1);
+    //vecmem::device_vector<unsigned int> ch0(channel0);
+    //vecmem::device_vector<unsigned int> ch1(channel1);
     vecmem::device_vector<scalar> activation(activat);
     vecmem::device_vector<unsigned int> sum(cumulsize);
-    vecmem::device_vector<unsigned int> midx(moduleidx);
+    //vecmem::device_vector<unsigned int> midx(moduleidx);
 /*    CellVecDevice cellbuf(cell_buf);
     CellVecDevice cell_device(cellView);
     ModuleVecDevice modulebuf(module_buf);
     ModuleVecDevice module_device(moduleView);
   */
- vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
- vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
+ //vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
+ //vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
  vecmem::device_vector<scalar> activation_s(cellView.activation);
- vecmem::device_vector<scalar>  time_s(cellView.time);
- vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
+ //vecmem::device_vector<scalar>  time_s(cellView.time);
+ //vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
  vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   sum[idx] = prefix_sum_s[idx];
@@ -64,15 +64,16 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
 //printf(" prefix_sum_s : %u, sum :  %u  \n",prefix_sum_s[idx], sum[idx]);
 //printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
 
-  unsigned int doffset = (idx==0? 0:prefix_sum_s[idx-1]);
-  unsigned int n_cells = prefix_sum_s[idx] - doffset;
+  unsigned int doffset = (idx==0? 0 : sum[idx-1]);
+  unsigned int n_cells = sum[idx] - doffset;
  for(unsigned int is =0  ; is < n_cells ; is++ ){
-   ch0[is +doffset ] = ch0_s[is+doffset];
-   ch1[is+doffset] = ch1_s[is+doffset];
+  // ch0[is +doffset ] = ch0_s[is+doffset];
+   //ch1[is+doffset] = ch1_s[is+doffset];
    activation[is+doffset] = activation_s[is+doffset];
-   midx[is+doffset] = module_id_s[is+doffset];
-  printf(" somme module : %u | channel_0 : %u et ch0_s: %u | channel_1 : %u et ch1_s: %u | module_id_s : %u |  activation_s : %f \n", sum[idx],ch0[idx], ch0_s[idx] , ch1[idx],ch1_s[idx],midx[idx],activation[idx] );
+  // midx[is+doffset] = module_id_s[is+doffset];
+
  }  
+  printf(" activation: %f | activation_s : %f \n", activation[idx],activation_s[idx] );
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
