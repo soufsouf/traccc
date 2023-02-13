@@ -103,10 +103,10 @@ activation.at(i+doffset)=cells[i].activation;
 
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
-    vecmem::data::vector_view<unsigned int> channel0,
-    vecmem::data::vector_view<unsigned int> channel1,
-    vecmem::data::vector_view<unsigned int> sum,
-    vecmem::data::vector_view<unsigned int> moduleidx,
+    const vecmem::data::vector_view<unsigned int> channel0,
+    const vecmem::data::vector_view<unsigned int> channel1,
+    const vecmem::data::vector_view<unsigned int> sum,
+    const vecmem::data::vector_view<unsigned int> moduleidx,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
@@ -328,7 +328,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 printf(" hello 1");
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, *cellView.channel0,cellView.channel1, moduleView.cells_prefix_sum,cellView.module_id, label_buff, cl_per_module_prefix_buff);
+        cells_view, cellView.channel0,cellView.channel1, moduleView.cells_prefix_sum,cellView.module_id, label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
