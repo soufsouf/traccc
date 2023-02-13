@@ -71,7 +71,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
    //ch1[is+doffset] = ch1_s[is+doffset];
    activation[is+doffset] = activation_s[is+doffset];
   // midx[is+doffset] = module_id_s[is+doffset];
- printf(" activation: %f | activation_s : %f \n", activation[is],activation_s[is] );
+ printf(" activation: %f | activation_s : %f \n", activation[is+doffset],activation_s[is+doffset] );
  }  
  
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
