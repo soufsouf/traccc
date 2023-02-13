@@ -317,7 +317,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      * needed to allocate memory for other buffers later in the code.
      */
     
-    vecmem::data::vector_buffer<std::size_t> aya(num_modules, m_mr.main);
+    vecmem::data::vector_buffer<unsigned int> aya(num_modules, m_mr.main);
    // m_copy.setup(aya);
     vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
