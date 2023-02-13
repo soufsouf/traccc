@@ -318,6 +318,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      */
     
     vecmem::data::vector_buffer<unsigned int> aya(num_modules, m_mr.main);
+    printf(" hello 111 \n");
     m_copy.setup(aya);
     vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
