@@ -23,12 +23,12 @@ inline void count_cluster_cells(
     )   {
 
     // Get the device vector of the cell prefix sum
-   
+   printf(" hello maissa 1\n");
     vecmem::device_vector<unsigned int> midx(moduleidx);
     vecmem::device_vector<unsigned int> labels(celllabel);
     
     
-    
+    printf(" hello maissa 2");
 
     // Ignore if idx is out of range
     if (globalIndex >= labels.size())
