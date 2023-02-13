@@ -73,7 +73,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
   // midx[is+doffset] = module_id_s[is+doffset];
 
  }  
-  printf(" activation: %f | activation_s : %f \n", activation[idx],activation_s[idx] );
+  printf(" activation: %f | activation_s : %f \n", activation[0],activation_s[0] );
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
