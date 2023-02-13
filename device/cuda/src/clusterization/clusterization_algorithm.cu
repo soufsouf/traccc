@@ -320,9 +320,7 @@ vecmem::data::vector_buffer<std::size_t> maissa(num_modules, m_mr.main);
      */
     
     
-    vecmem::data::vector_buffer<unsigned int> aya(num_modules, m_mr.host ? m_mr.host : &(m_mr.main));
-    printf(" hello 111 \n");
-    m_copy.setup(aya);
+    
     vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
 
