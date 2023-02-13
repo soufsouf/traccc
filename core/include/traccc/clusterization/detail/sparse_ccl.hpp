@@ -150,8 +150,8 @@ TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
     unsigned int labels = 0;
 
     // The number of cells.
-    unsigned int doffset = cumulsize[idx];
-    const unsigned int n_cells = cumulsize[idx+1] - doffset;
+    unsigned int doffset = cumulsize[idx -1];
+    const unsigned int n_cells = cumulsize[idx] - doffset;
 
     // first scan: pixel association
     unsigned int start_j = 0;

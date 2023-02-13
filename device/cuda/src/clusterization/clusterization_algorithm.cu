@@ -264,7 +264,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     m_copy.setup(activation);
     vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
     m_copy.setup(moduleidx);
-    vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules+1, m_mr.main);
+    vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
     m_copy.setup(prefixsum);
     
 
@@ -272,7 +272,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
                             (cells_view, channel0, channel1,activation, prefixsum, moduleidx , cellView,
                               moduleView);
-
+    
     /*
      * Helper container for sparse CCL calculations.
      * Each inner vector corresponds to 1 module.

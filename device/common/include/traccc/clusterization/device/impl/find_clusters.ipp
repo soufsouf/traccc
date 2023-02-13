@@ -28,12 +28,12 @@ inline void find_clusters(
     vecmem::device_vector<unsigned int> labels(label_view);
 
     // Ignore if idx is out of range
-    if (globalIndex >= sum.size()-1)
+    if (globalIndex >= sum.size())
         return;
 
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
-    printf(" somme module : %u  | channel_s 1 : %u | module_id_s : %u  \n", sum[globalIndex],  ch1[globalIndex],midx[globalIndex]);
+    printf(" somme module : %u  | channel_s 1 : %u   \n", sum[globalIndex],  ch1[globalIndex]);
 
     // Vectors used for cluster indices found by sparse CCL
     //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
