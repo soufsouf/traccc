@@ -284,7 +284,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         std::vector<std::size_t>(cell_sizes.begin(), cell_sizes.end()),
         m_mr.main, m_mr.host);
     m_copy.setup(sparse_ccl_indices_buff);*/
-printf("hello world");
+
     vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
     m_copy.setup(label_buff);
 
@@ -319,11 +319,11 @@ printf("hello world");
     vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(
         num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
-printf("hello world");
+
     // Calculating grid size for cluster finding kernel
     blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
-printf("hello world");
+
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);

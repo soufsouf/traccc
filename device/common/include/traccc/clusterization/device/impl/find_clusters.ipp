@@ -18,17 +18,16 @@ inline void find_clusters(
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     // Initialize the device container for cells
+    printf(" hello 1");
     cell_container_types::const_device cells_device(cells_view);
-    vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
-    vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
-    vecmem::device_vector<unsigned int> sum_s(moduleView.cells_prefix_sum);
-    vecmem::device_vector<unsigned int> midx_s(cellView.module_id);
+    printf(" hello 2");
+    vecmem::device_vector<unsigned int> ch0(cellView.channel0);
+    printf(" hello 3");
+    vecmem::device_vector<unsigned int> ch1(cellView.channel1);
+    vecmem::device_vector<unsigned int> sum(moduleView.cells_prefix_sum);
+    vecmem::device_vector<unsigned int> midx(cellView.module_id);
     vecmem::device_vector<unsigned int> labels(label_view);
-    
-    vecmem::device_vector<unsigned int> ch0(ch0_s);
-    vecmem::device_vector<unsigned int> ch1(ch1_s);
-    vecmem::device_vector<unsigned int> sum(sum_s);
-    vecmem::device_vector<unsigned int> midx(midx_s);
+    printf(" hello 4");
 
     // Ignore if idx is out of range
     if (globalIndex >= sum.size())
