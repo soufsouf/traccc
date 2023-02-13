@@ -12,10 +12,8 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    const vecmem::data::vector_view<unsigned int> channel0,
-    const vecmem::data::vector_view<unsigned int> channel1,
-    const vecmem::data::vector_view<unsigned int> sum,
-    const vecmem::data::vector_view<unsigned int> moduleidx,
+    const CellView& cellView,
+    const ModuleView& moduleView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
@@ -23,20 +21,20 @@ inline void find_clusters(
     printf(" hello 1");
     cell_container_types::const_device cells_device(cells_view);
     printf(" hello 2");
-    vecmem::device_vector<unsigned int> ch0(channel0);
+    vecmem::device_vector<unsigned int> ch0(cellView.channel0);
     printf(" hello 3");
-    vecmem::device_vector<unsigned int> ch1(channel1);
-    vecmem::device_vector<unsigned int> summ(sum);
-    vecmem::device_vector<unsigned int> midx(moduleidx);
+    vecmem::device_vector<unsigned int> ch1(cellView.channel1);
+    vecmem::device_vector<unsigned int> sum(moduleView.cells_prefix_sum);
+    vecmem::device_vector<unsigned int> midx(cellView.moduleidx);
     vecmem::device_vector<unsigned int> labels(label_view);
     printf(" hello 4");
 
     // Ignore if idx is out of range
-    if (globalIndex >= summ.size())
+    if (globalIndex >= sum.size())
         return;
 
 if (globalIndex < 60)
-    printf(" somme module : %u     \n", summ[globalIndex]);
+    printf(" somme module : %u     \n", sum[globalIndex]);
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
    
@@ -48,7 +46,7 @@ if (globalIndex < 60)
 
     // Run the sparse CCL algorithm
     unsigned int n_clusters = detail::sparse_ccl(cells, globalIndex, ch0, ch1,
-                                        summ, midx, labels);
+                                        sum, midx, labels);
 
     // Fill the "number of clusters per
     // module" vector
