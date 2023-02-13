@@ -103,8 +103,8 @@ activation.at(i+doffset)=cells[i].activation;
 
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
-    const CellView cellView,
-    const ModuleView moduleView,
+     CellView cellView,
+     ModuleView moduleView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
