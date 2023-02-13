@@ -31,7 +31,8 @@ inline void find_clusters(
 
     // Get the cells for the current module
     const auto& cells = cells_device.at(globalIndex).items;
-    printf(" somme module : %u  | channel_s 1 : %u   \n", sum[globalIndex],  ch1[globalIndex]);
+   if (globalIndex < 60)
+    printf(" somme module : %u     \n", sum[globalIndex]);
 
     // Vectors used for cluster indices found by sparse CCL
     //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
