@@ -323,7 +323,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     // Calculating grid size for cluster finding kernel
     blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
-
+printf(" hello 1");
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
