@@ -267,6 +267,8 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
     m_copy.setup(prefixsum);
     
+vecmem::data::vector_buffer<std::size_t> maissa(num_modules, m_mr.main);
+    m_copy.setup(maissa);
 
     std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
     kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
