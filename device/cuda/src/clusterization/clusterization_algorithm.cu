@@ -33,11 +33,11 @@ namespace traccc::cuda {
 namespace kernels {
 
 __global__ void fill_buffers(const cell_container_types::const_view cells_view,
-                             vecmem::data::vector_view<unsigned int> channel0,
-                             vecmem::data::vector_view<unsigned int> channel1,
-                             vecmem::data::vector_view<scalar> activat,
-                             vecmem::data::vector_view<unsigned int> cumulsize,
-                             vecmem::data::vector_view<unsigned int> moduleidx,
+                             vecmem::data::vector_view<unsigned int>& channel0,
+                             vecmem::data::vector_view<unsigned int>& channel1,
+                             vecmem::data::vector_view<scalar>& activat,
+                             vecmem::data::vector_view<unsigned int>& cumulsize,
+                             vecmem::data::vector_view<unsigned int>& moduleidx,
                              const CellView cellView,
                              const ModuleView moduleView) {
 
