@@ -316,8 +316,10 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      * kernel. The remaining host vector - clusters_per_module_host, will be
      * needed to allocate memory for other buffers later in the code.
      */
-    vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(
-        num_modules, m_mr.main);
+    
+    vecmem::data::vector_buffer<std::size_t> aya-maissa(num_modules, m_mr.main);
+    m_copy.setup(aya-maissa);
+    vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
 
     // Calculating grid size for cluster finding kernel

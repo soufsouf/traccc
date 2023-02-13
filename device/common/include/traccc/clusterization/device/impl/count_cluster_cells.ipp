@@ -28,7 +28,7 @@ inline void count_cluster_cells(
     vecmem::device_vector<unsigned int> labels(celllabel);
     
     
-    printf(" hello maissa 2");
+    printf(" hello 2");
 
     // Ignore if idx is out of range
     if (globalIndex >= labels.size())
