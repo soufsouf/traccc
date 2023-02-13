@@ -334,9 +334,9 @@ printf(" hello 111 \n");
 
  
     // Create prefix sum buffer
-   vecmem::data::vector_buffer cells_prefix_sum_buff =
+  /*/ vecmem::data::vector_buffer cells_prefix_sum_buff =
         make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream); 
-printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());
+printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
     vecmem::vector<std::size_t> cl_per_module_prefix_host(
@@ -376,7 +376,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());
 
     //printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cells_prefix_sum_buff.capacity() + threadsPerBlock - 1) /
+    blocksPerGrid = (cellcount + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
