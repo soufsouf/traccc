@@ -43,11 +43,11 @@ if (globalIndex < 10)
     //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
     //    sparse_ccl_indices_view);
     //auto cluster_indices = device_sparse_ccl_indices[globalIndex];
-printf("sparse_ccl");
+
     // Run the sparse CCL algorithm
     unsigned int n_clusters = detail::sparse_ccl(cells, globalIndex, ch0, ch1,
                                         sum, midx, labels);
-printf("sparse_ccl 2");
+
     // Fill the "number of clusters per
     // module" vector
     vecmem::device_vector<std::size_t> device_clusters_per_module(

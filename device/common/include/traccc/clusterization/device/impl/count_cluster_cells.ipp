@@ -69,7 +69,7 @@ inline void count_cluster_cells(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);*/
     }
-
+printf("fin count cluster");
     }  
     
    // __syncthreads();

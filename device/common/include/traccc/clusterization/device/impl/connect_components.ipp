@@ -90,7 +90,7 @@ inline void connect_components(
     vecmem::device_vector<std::size_t> device_cluster_prefix_sum(cluster_prefix_sum_view);
     
 
-
+ printf("debut connect componnent");
     if (globalIndex >= labels.size())
         return;
 
