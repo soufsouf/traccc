@@ -350,9 +350,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
          
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
-    for(int i = 23; i<29;i++) printf("label : %u \n",cl_per_module_prefix_host[i] );       
+       
     m_stream.synchronize();
-    for(int i = 23; i<29;i++) printf("label 2 : %u \n",cl_per_module_prefix_host[i] );    
+    for(int i = 23; i<29;i++) printf("label 1 : %u \n",cl_per_module_prefix_host[i] );    
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
   //for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
@@ -364,6 +364,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     unsigned int total_clusters = cl_per_module_prefix_host.back();
     printf(" n cluster %u \n", total_clusters );
+    for(int i = 23; i<29;i++) printf("label 2 : %u \n",cl_per_module_prefix_host[i] );
 //for(int i = 230; i<261;i++) printf("host : %llu \n",cl_per_module_prefix_host[i] );
     // Copy the prefix sum back to its device container
     m_copy(vecmem::get_data(cl_per_module_prefix_host),
