@@ -322,7 +322,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     // Calculating grid size for cluster finding kernel
     blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
-printf(" hello 111 \n");
+
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
@@ -343,7 +343,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
         m_mr.host ? m_mr.host : &(m_mr.main));
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
-        //   for(int j = 230; j<261;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
+          for(int j = 230; j<261;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
     //m_stream.synchronize();
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());

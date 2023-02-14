@@ -15,7 +15,7 @@ inline void find_clusters(
     const CellView& cellView,
     const ModuleView& moduleView,
     vecmem::data::vector_view<unsigned int> label_view,
-    vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
+    vecmem::data::vector_view<std::size_t>& clusters_per_module_view) {
 
     // Initialize the device container for cells
     //printf(" hello 1");
