@@ -353,9 +353,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
   //for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
     
     // Perform the inclusive scan operation
-    std::inclusive_scan(&cl_per_module_prefix_host,
+    std::inclusive_scan(&cl_per_module_prefix_host[0],
                         num_modules,
-                        &cl_per_module_prefix_host);
+                        &cl_per_module_prefix_host[0]);
 
     unsigned int total_clusters = cl_per_module_prefix_host.back();
     printf(" n cluster %u \n", total_clusters );
