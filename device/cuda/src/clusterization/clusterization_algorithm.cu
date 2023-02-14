@@ -345,7 +345,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
         //m_stream.synchronize();
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
-  for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
+  for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",get_data(cl_per_module_prefix_buff)[j] );
     
     // Perform the inclusive scan operation
     std::inclusive_scan(cl_per_module_prefix_host.begin(),
