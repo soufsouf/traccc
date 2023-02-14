@@ -338,8 +338,8 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
     vecmem::vector<unsigned int> label_buf(
-        m_mr.host);
- async_copy(label_buff, label_buf,
+         m_mr.host ? m_mr.host : &(m_mr.main));
+    copy(label_buff, label_buf,
            vecmem::copy::type::copy_type::device_to_host);
     for(int i = 230; i<261;i++) printf("label : %u \n",label_buf[i] );       
     vecmem::vector<std::size_t> cl_per_module_prefix_host(
