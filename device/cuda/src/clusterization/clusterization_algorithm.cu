@@ -345,7 +345,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
         //m_stream.synchronize();
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
-  for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
+  //for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
     
     // Perform the inclusive scan operation
     std::inclusive_scan(cl_per_module_prefix_host.begin(),
@@ -353,6 +353,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
                         cl_per_module_prefix_host.begin());
 
     unsigned int total_clusters = cl_per_module_prefix_host.back();
+    printf(" n cluster %u \n", total_clusters );
 //for(int i = 230; i<261;i++) printf("host : %llu \n",cl_per_module_prefix_host[i] );
     // Copy the prefix sum back to its device container
     m_copy(vecmem::get_data(cl_per_module_prefix_host),
