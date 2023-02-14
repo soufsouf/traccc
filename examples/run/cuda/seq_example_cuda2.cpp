@@ -144,31 +144,31 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 cellsView.module_id = module_id_buf;
                 traccc::int_buf cluster_id_buf(cellsVec.size, device_mr );
                 cellsView.cluster_id = cluster_id_buf;
-                copy.setup(channel0_buf);
-                copy.setup(channel1_buf);
-                copy.setup(activation_buf);
-                copy.setup(time_buf);
-                copy.setup(module_id_buf);
-                copy.setup(cluster_id_buf);
+                async_copy.setup(channel0_buf);
+                async_copy.setup(channel1_buf);
+                async_copy.setup(activation_buf);
+                async_copy.setup(time_buf);
+                async_copy.setup(module_id_buf);
+                async_copy.setup(cluster_id_buf);
 
-                copy(vecmem::get_data(cellsVec.channel0), channel0_buf,
+                async_copy(vecmem::get_data(cellsVec.channel0), channel0_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
+                async_copy(vecmem::get_data(cellsVec.channel1), channel1_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.activation), activation_buf,
+                async_copy(vecmem::get_data(cellsVec.activation), activation_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.time), time_buf,
+                async_copy(vecmem::get_data(cellsVec.time), time_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.module_id), module_id_buf,
+                async_copy(vecmem::get_data(cellsVec.module_id), module_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
-                copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
+                async_copy(vecmem::get_data(cellsVec.cluster_id), cluster_id_buf,
                     vecmem::copy::type::copy_type::host_to_device);
      /**************************************************/
                 traccc::int_buf cells_prefix_sum(moduleVec.size, device_mr );
                 moduleView.cells_prefix_sum = cells_prefix_sum;
-                copy.setup(cells_prefix_sum);
+                async_copy.setup(cells_prefix_sum);
 
-                copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
+                async_copy(vecmem::get_data(moduleVec.cells_prefix_sum), cells_prefix_sum,
                     vecmem::copy::type::copy_type::host_to_device);
 
             /*-----------------------------
