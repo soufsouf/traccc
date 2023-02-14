@@ -55,7 +55,7 @@ inline void find_clusters(
         clusters_per_module_view);
     device_clusters_per_module[globalIndex] = n_clusters;
      //printf("module %llu number of clusters %llu \n", globalIndex, device_clusters_per_module[globalIndex]);
- //if(globalIndex < 10) printf(" label find cluster est %llu \n", device_clusters_per_module[globalIndex] );
+ printf(" label find cluster est %llu \n", device_clusters_per_module[globalIndex] );
 }
 
 }  // namespace traccc::device
