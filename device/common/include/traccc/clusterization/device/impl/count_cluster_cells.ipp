@@ -58,7 +58,7 @@ inline void count_cluster_cells(
     std::size_t n_clusters =
         (module_idx == 0 ? device_cluster_prefix_sum[0]
                          : device_cluster_prefix_sum[module_idx] - prefix_sum);
- //printf(" hello 1 %llu , hello 2 %u , prefix sum %llu ,module_idx %u,  device_cluster_prefix_sum[]: %llu  \n",n_clusters,cindex,prefix_sum, module_idx,device_cluster_prefix_sum[module_idx] );
+     printf(" hello 1 %llu , hello 2 %u , prefix sum %llu   device_cluster_prefix_sum[]: %llu  \n",n_clusters,cindex,prefix_sum, device_cluster_prefix_sum[module_idx] );
     // Vector to fill in with the sizes of each cluster
     vecmem::device_vector<unsigned int> device_cluster_sizes(
         cluster_sizes_view);
