@@ -341,8 +341,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     m_copy(vecmem::get_data(label_buff), label_buf,
            vecmem::copy::type::copy_type::device_to_host);
     for(int i = 230; i<261;i++) printf("label : %u \n",label_buf[i] );       
-    vecmem::vector<std::size_t> cl_per_module_prefix_host(
-        m_mr.host ? m_mr.host : &(m_mr.main));
+    vecmem::vector<std::size_t> cl_per_module_prefix_host(&(m_mr.main));
          
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
