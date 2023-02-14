@@ -23,12 +23,12 @@ inline void count_cluster_cells(
     )   {
 
     // Get the device vector of the cell prefix sum
-   printf(" hello maissa 1\n");
+   
     vecmem::device_vector<unsigned int> midx(cellView.module_id);
     vecmem::device_vector<unsigned int> labels(celllabel);
     
     
-    printf(" hello 2");
+   
 
     // Ignore if idx is out of range
     if (globalIndex >= labels.size())
@@ -37,7 +37,7 @@ inline void count_cluster_cells(
     // Get the indices for the module and the cell in this
     // module, from the prefix sum
    auto module_idx = midx[globalIndex];
-    
+    printf(" hello maissa 1\n");
    unsigned int cindex = labels[globalIndex] - 1;
     // Vectors used for cluster indices found by sparse CCL
    
@@ -65,6 +65,7 @@ inline void count_cluster_cells(
    
     if (cindex < n_clusters) {
         atomicAdd(&device_cluster_sizes[cluster_indice], 1);
+         printf(" hello 2 %u",cindex );
         /*vecmem::device_atomic_ref<unsigned int>(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);*/
