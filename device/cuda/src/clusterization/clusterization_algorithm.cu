@@ -244,9 +244,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         cellcount += cell_sizes[i];
     }
 
-    vecmem::vector<unsigned int> cc(cellcount, m_mr.host);
-    m_copy(cellView.channel0, cc,
-              vecmem::copy::type::copy_type::device_to_host);
+   
                 
     //for (int i = 0 ; i< 60 ; i++ )
         //printf("cellsView.channel0 : %u  \n", cc[i]);
@@ -341,7 +339,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // and create a copy of "clusters per module" vector
     vecmem::vector<std::size_t> cl_per_module_prefix_host(
         m_mr.host ? m_mr.host : &(m_mr.main));
-        m_copy.setup(cl_per_module_prefix_host); 
+         
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
           for(int j = 230; j<261;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
