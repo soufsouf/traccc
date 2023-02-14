@@ -29,7 +29,7 @@ inline void count_cluster_cells(
      //printf(" midx count cluster est %u \n", midx[globalIndex]);
     vecmem::device_vector<unsigned int> labels(celllabel);
     
-    printf(" label count cluster est %u \n", labels[globalIndex]);
+    //printf(" label count cluster est %u \n", labels[globalIndex]);
    
 
     // Ignore if idx is out of range
@@ -42,7 +42,7 @@ inline void count_cluster_cells(
     //printf(" hello maissa 1\n");
    unsigned int cindex = labels[globalIndex] - 1;
     // Vectors used for cluster indices found by sparse CCL
-   
+   printf(" label count cluster est %u \n", cindex);
     
     // Get the cluster prefix sum at this module_idx to know
     // where to write current clusters in the
