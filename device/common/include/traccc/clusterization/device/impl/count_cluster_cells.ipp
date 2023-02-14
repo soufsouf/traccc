@@ -42,7 +42,7 @@ inline void count_cluster_cells(
     //printf(" hello maissa 1\n");
    unsigned int cindex = labels[globalIndex] - 1;
     // Vectors used for cluster indices found by sparse CCL
-   printf(" label count cluster est %u \n", cindex);
+   //printf(" label count cluster est %u \n", cindex);
     
     // Get the cluster prefix sum at this module_idx to know
     // where to write current clusters in the
@@ -58,13 +58,13 @@ inline void count_cluster_cells(
     std::size_t n_clusters =
         (module_idx == 0 ? device_cluster_prefix_sum[0]
                          : device_cluster_prefix_sum[module_idx] - prefix_sum);
-
+ printf(" hello 1 %u , hello 2 %u",n_clusters,cindex);
     // Vector to fill in with the sizes of each cluster
     vecmem::device_vector<unsigned int> device_cluster_sizes(
         cluster_sizes_view);
 
     // Count the cluster sizes for each position
-    //printf(" hello 2 %u",cindex );
+   
     if (cindex < n_clusters) {
         atomicAdd(&device_cluster_sizes[cluster_indice], 1);
         
