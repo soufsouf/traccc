@@ -339,8 +339,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Copy the sizes of clusters per module to the host
     // and create a copy of "clusters per module" vector
-    vecmem::vector<std::size_t> cl_per_module_prefix_host(
-        m_mr.host ? m_mr.host : &(m_mr.main));
+    vecmem::vector<std::size_t> cl_per_module_prefix_host(m_mr.main);
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
           for(int j = 230; j<261;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
