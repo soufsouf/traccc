@@ -37,7 +37,7 @@ inline void count_cluster_cells(
     // Get the indices for the module and the cell in this
     // module, from the prefix sum
    auto module_idx = midx[globalIndex];
-    printf(" hello maissa 1\n");
+    //printf(" hello maissa 1\n");
    unsigned int cindex = labels[globalIndex] - 1;
     // Vectors used for cluster indices found by sparse CCL
    
@@ -62,7 +62,7 @@ inline void count_cluster_cells(
         cluster_sizes_view);
 
     // Count the cluster sizes for each position
-    printf(" hello 2 %u",cindex );
+    //printf(" hello 2 %u",cindex );
     if (cindex < n_clusters) {
         atomicAdd(&device_cluster_sizes[cluster_indice], 1);
         

@@ -50,6 +50,7 @@ inline void find_clusters(
 
     // Fill the "number of clusters per
     // module" vector
+    if(globalIndex < 10) printf(" label est %u \n",labels[globalIndex] );
     vecmem::device_vector<std::size_t> device_clusters_per_module(
         clusters_per_module_view);
     device_clusters_per_module[globalIndex] = n_clusters;
