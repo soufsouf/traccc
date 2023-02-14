@@ -340,13 +340,13 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     vecmem::vector<std::size_t> cl_per_module_prefix_host(
         m_mr.host ? m_mr.host : &(m_mr.main));
          
-    m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
+    m_copy(vecmem::data::get_data(cl_per_module_prefix_buff), cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
-         // for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
-    //m_stream.synchronize();
+        //m_stream.synchronize();
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
-
+  for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
+    
     // Perform the inclusive scan operation
     std::inclusive_scan(cl_per_module_prefix_host.begin(),
                         cl_per_module_prefix_host.end(),
