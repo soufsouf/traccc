@@ -356,7 +356,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     printf(" n cluster %u \n", total_clusters );
 //for(int i = 230; i<261;i++) printf("host : %llu \n",cl_per_module_prefix_host[i] );
     // Copy the prefix sum back to its device container
-    m_copy(vecmem::get_data(cl_per_module_prefix_host),
+    m_copy(cl_per_module_prefix_host,
            cl_per_module_prefix_buff,
            vecmem::copy::type::copy_type::host_to_device);
 
