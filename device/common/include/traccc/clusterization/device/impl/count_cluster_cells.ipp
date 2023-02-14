@@ -62,10 +62,10 @@ inline void count_cluster_cells(
         cluster_sizes_view);
 
     // Count the cluster sizes for each position
-   
+    printf(" hello 2 %u",cindex );
     if (cindex < n_clusters) {
         atomicAdd(&device_cluster_sizes[cluster_indice], 1);
-         printf(" hello 2 %u",cindex );
+        
         /*vecmem::device_atomic_ref<unsigned int>(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);*/
