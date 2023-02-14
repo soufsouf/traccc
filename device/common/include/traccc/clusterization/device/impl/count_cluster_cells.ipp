@@ -23,8 +23,9 @@ inline void count_cluster_cells(
     )   {
 
     // Get the device vector of the cell prefix sum
-   
+   if(globalIndex < 10) printf("hello yes \n");
     vecmem::device_vector<unsigned int> midx(cellView.module_id);
+       if(globalIndex < 10) printf("hello no \n");
     if(globalIndex < 10) printf(" midx count cluster est %u \n", midx[globalIndex]);
     vecmem::device_vector<unsigned int> labels(celllabel);
     
