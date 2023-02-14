@@ -342,20 +342,25 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     m_copy.setup(label_buf);
     m_copy(label_buff, label_buf,
            vecmem::copy::type::copy_type::device_to_host);
-    for(int i = 230; i<261;i++) printf("label : %u \n",label_buf[i] );     */  
-    vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_host(num_modules,
-       m_mr.main);
+    for(int i = 230; i<261;i++) printf("label : %u \n",label_buf[i] ); */      
+   
+   
+    vecmem::vector<std::size_t> cl_per_module_prefix_host(
+        m_mr.host ? m_mr.host : &(m_mr.main));
          
     m_copy(cl_per_module_prefix_buff, cl_per_module_prefix_host,
            vecmem::copy::type::copy_type::device_to_host);
-        //m_stream.synchronize();
-    std::vector<std::size_t> clusters_per_module_host(num_modules);
+    for(int i = 23; i<29;i++) printf("label : %u \n",cl_per_module_prefix_host[i] );       
+    m_stream.synchronize();
+    for(int i = 23; i<29;i++) printf("label 2 : %u \n",cl_per_module_prefix_host[i] );    
+    std::vector<std::size_t> clusters_per_module_host(
+        cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
   //for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
     
     // Perform the inclusive scan operation
-    std::inclusive_scan(&cl_per_module_prefix_host[0],
-                        num_modules,
-                        &cl_per_module_prefix_host[0]);
+    std::inclusive_scan(cl_per_module_prefix_host.begin(),
+                        cl_per_module_prefix_host.end(),
+                        cl_per_module_prefix_host.begin());
 
     unsigned int total_clusters = cl_per_module_prefix_host.back();
     printf(" n cluster %u \n", total_clusters );
