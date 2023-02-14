@@ -27,7 +27,7 @@ inline void count_cluster_cells(
     vecmem::device_vector<unsigned int> midx(cellView.module_id);
     vecmem::device_vector<unsigned int> labels(celllabel);
     
-    
+    if(globalIndex < 10) printf(" label count cluster est %u \n", labels[globalIndex]);
    
 
     // Ignore if idx is out of range
