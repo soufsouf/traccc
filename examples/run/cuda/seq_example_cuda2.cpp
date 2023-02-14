@@ -132,17 +132,17 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
                 
-                traccc::int_buf channel0_buf(cellsVec.size, host_mr);
+                traccc::int_buf channel0_buf(cellsVec.size, mr);
                 cellsView.channel0 = channel0_buf;
-                traccc::int_buf channel1_buf(cellsVec.size, host_mr);
+                traccc::int_buf channel1_buf(cellsVec.size, mr);
                 cellsView.channel1 = channel1_buf;
-                traccc::scalar_buf activation_buf(cellsVec.size, host_mr);
+                traccc::scalar_buf activation_buf(cellsVec.size, mr);
                 cellsView.activation = activation_buf;
-                traccc::scalar_buf time_buf(cellsVec.size, host_mr);
+                traccc::scalar_buf time_buf(cellsVec.size, mr);
                 cellsView.time = time_buf;
-                traccc::int_buf module_id_buf(cellsVec.size, host_mr);
+                traccc::int_buf module_id_buf(cellsVec.size, mr);
                 cellsView.module_id = module_id_buf;
-                traccc::int_buf cluster_id_buf(cellsVec.size, host_mr);
+                traccc::int_buf cluster_id_buf(cellsVec.size, mr);
                 cellsView.cluster_id = cluster_id_buf;
                 async_copy.setup(channel0_buf);
                 async_copy.setup(channel1_buf);
