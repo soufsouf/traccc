@@ -120,7 +120,10 @@ inline void connect_components(
 
    auto cluster_cells = clusters_device.at(cluster_indice).items ; 
    
-    
+    if (globalIndex < 64) {
+        printf("cindex : %u n_clusters %u \n", 
+        cindex , n_clusters);
+                 }  
     if (cindex < n_clusters)
     {
         //ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
