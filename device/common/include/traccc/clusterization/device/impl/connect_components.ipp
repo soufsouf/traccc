@@ -124,9 +124,9 @@ inline void connect_components(
     if (cindex < n_clusters)
     {
         //ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
-      vecmem::device_atomic_ref<unsigned int>(
+     /* vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
-            .fetch_add(1);
+            .fetch_add(1); */
        
        clusters_device[cluster_indice].header = module_idx;
          
