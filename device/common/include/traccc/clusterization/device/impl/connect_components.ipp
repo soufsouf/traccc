@@ -90,7 +90,7 @@ inline void connect_components(
     vecmem::device_vector<std::size_t> device_cluster_prefix_sum(cluster_prefix_sum_view);
     
 
- printf("debut connect componnent");
+
     if (globalIndex >= labels.size())
         return;
 
@@ -114,11 +114,11 @@ inline void connect_components(
         (module_idx == 0 ? device_cluster_prefix_sum[module_idx]
                          : device_cluster_prefix_sum[module_idx] -
                                device_cluster_prefix_sum[module_idx - 1]);
-
+printf("  global idx : %llu ,n_clusters %u , module: %u device_cluster_prefix_sum[]: %llu  \n",globalIndex,n_clusters,module_idx,device_cluster_prefix_sum[module_idx] );
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
 
-   auto/*&*/ cluster_cells = clusters_device.at(cluster_indice).items ; 
+   auto cluster_cells = clusters_device.at(cluster_indice).items ; 
    
     
     if (cindex < n_clusters)
