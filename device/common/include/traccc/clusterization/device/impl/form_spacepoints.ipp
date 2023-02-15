@@ -42,8 +42,8 @@ inline void form_spacepoints(
     //const auto& placement = placement_device[module_index];
     point3 local_3d = {local[0], local[1], 0.};
 
-    if (globalIndex> 1111 && globalIndex < 1200) { printf("  local[1] %llu\n", local[1]);
-    printf("  local_3d.local[0] %llu\n", local_3d.at(1)); }
+    if (globalIndex> 1111 && globalIndex < 1200) { printf("local_measurement[globalIndex] %llu\n", local_measurement[globalIndex].at(0));
+     }
     //printf("maissa \n");
     global[globalIndex] = placement_device[module_index].point_to_global(local_3d);
     //printf("maissa  2\n");
