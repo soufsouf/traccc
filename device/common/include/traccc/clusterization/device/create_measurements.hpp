@@ -38,7 +38,8 @@ inline void create_measurements(
     const cell_container_types::const_view cells_view,
     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
     vecmem::data::vector_view<point2 >& measurement_local,
-    vecmem::data::vector_view<point2>& measurement_variance);
+    vecmem::data::vector_view<point2>& measurement_variance,
+    const cell_container_types::const_view& cells_view);
 
 }  // namespace traccc::device
 
