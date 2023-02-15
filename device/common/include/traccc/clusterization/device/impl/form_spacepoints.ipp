@@ -18,7 +18,7 @@ inline void form_spacepoints(
     vecmem::data::vector_view<point3 >& global_spacepoint){
 //printf("hello world ****** \n");
     vecmem::device_vector<transform3> placement_device(headersView.placement);
-    printf("hello  ****** \n");
+    //printf("hello  ****** \n");
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point3> global(global_spacepoint);
@@ -41,9 +41,9 @@ inline void form_spacepoints(
     point2 local =  local_measurement[globalIndex];
     //const auto& placement = placement_device[module_index];
     point3 local_3d = {local[0], local[1], 0.};
-    printf("maissa \n");
+    //printf("maissa \n");
     global[globalIndex] = placement_device[module_index].point_to_global(local_3d);
-    printf("maissa  2\n");
+    //printf("maissa  2\n");
 
     
 }
