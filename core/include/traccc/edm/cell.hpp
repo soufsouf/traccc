@@ -80,7 +80,7 @@ geometry_id_vec module;
 transform3_vec placement;
 scalar_vec threshold;
 pixel_data_vec pixel;
-}
+};
 using scalar_buf = vecmem::data::vector_buffer<scalar>;
 using geometry_id_buf = vecmem::data::vector_buffer<geometry_id>;
 using transform3_buf = vecmem::data::vector_buffer<transform3>;
@@ -90,7 +90,7 @@ geometry_id_buf module;
 transform3_buf placement;
 scalar_buf threshold;
 pixel_data_buf pixel;
-}
+};
 using scalar_view = vecmem::data::vector_view<scalar>;
 using geometry_id_view = vecmem::data::vector_view<geometry_id>;
 using transform3_view = vecmem::data::vector_view<transform3>;
@@ -101,7 +101,7 @@ struct headerView{
 transform3_view placement;
 scalar_view threshold;
 pixel_data_view pixel;   
-}
+};
 using scalar_device = vecmem::device_vector<scalar>;
 using geometry_id_device = vecmem::device_vector<geometry_id>;
 using transform3_device = vecmem::device_vector<transform3>;
@@ -111,7 +111,7 @@ geometry_id_device module;
 transform3_device placement;
 scalar_device threshold;
 pixel_data_device pixel; 
-}
+};
 
 
 using int_vec = std::vector<unsigned int>;
