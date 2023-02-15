@@ -99,7 +99,7 @@ void calc_cluster_properties(
     point2& var, scalar& totalWeight , const std::size_t cl_link) {
 
     // Loop over the cells of the cluster.
-    
+    if (cl_link <= 64) printf("aya create m helper");
      for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
