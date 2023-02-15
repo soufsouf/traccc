@@ -134,10 +134,10 @@ inline void connect_components(
       cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
     
-   /**if (globalIndex >200 && globalIndex < 210) {
-        printf("clusters_device[cluster_indice].header %llu \n", 
-                clusters_device[cluster_indice].header );
-                 }  */
+   if (globalIndex >200 && globalIndex < 210) {
+        printf(" n_clusters %u | cindex %u |module_idx %u | clusters_device[cluster_indice].header %u \n", 
+                 n_clusters,cindex, module_idx,clusters_device[cluster_indice].header );
+                 }  
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
     
