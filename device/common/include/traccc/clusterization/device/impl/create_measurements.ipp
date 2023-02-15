@@ -52,7 +52,7 @@ inline void create_measurements(
             globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
     // Should not happen
-  //  assert(clusters_device.empty() == false);
+   assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
     
@@ -61,8 +61,7 @@ inline void create_measurements(
           module, module_link, globalIndex);
 
         
-      /*printf("local_measurement %llu variance_measurement %llu\n",
-            local_measurement[globalIndex] , variance_measurement[globalIndex]); */
+    
 }           ////// local_measurement and variance_measurement is 0 
 
 }  // namespace traccc::device
