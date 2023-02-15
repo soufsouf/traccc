@@ -124,22 +124,26 @@ inline void connect_components(
     if (cindex < n_clusters)
     {
        // atomicAdd(&cluster_index_atomic[cluster_indice], 1);
-      /*vecmem::device_atomic_ref<unsigned int>(
+      vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
-            .fetch_add(1);*/
+            .fetch_add(1);
        
        clusters_device[cluster_indice].header = module_idx;
          
         
-      /*cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
-      cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
-      cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).activation = activation[globalIndex];  
     
 
-      clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
+     // clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
+   
+   
     if (globalIndex >200 && globalIndex < 205) {
+        printf(" cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 %llu \n", 
+                cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 );
         printf(" ch0[globalIndex] %llu \n", 
-                ch0[globalIndex] );
+                ch0[globalIndex] );       
 
                  }  
     }
