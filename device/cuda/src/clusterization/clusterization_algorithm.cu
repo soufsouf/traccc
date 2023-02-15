@@ -205,7 +205,6 @@ __global__ void form_spacepoints(
     m.cluster_link = module_link;
     m.local = local_;
     m.variance = variance_;
-    auto &module = cells_device.at(module_link).header;
     spacepoint s({global[idx], m});
     // Push the speacpoint into the container at the appropriate
     // module idx
@@ -453,11 +452,11 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Invoke spacepoint formation will call form_spacepoints kernel
 
     kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-       cells_view, Clusters_module_link,measurement_local,global);
+       headersView, Clusters_module_link,measurement_local,global);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
  kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-    cells_view, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
+    headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
     
     // Return the buffer. Which may very well not be filled at this point yet.
     return spacepoints_buffer;
