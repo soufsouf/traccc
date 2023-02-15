@@ -29,7 +29,7 @@ inline void create_measurements(
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point2> variance_measurement(measurement_variance);
     
-    printf("debut create measurement");
+  
     // Ignore if idx is out of range
     if (globalIndex >= Cl_module_link.size()) /// faux 
         return;
