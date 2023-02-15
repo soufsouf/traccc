@@ -12,12 +12,12 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void form_spacepoints(
     std::size_t globalIndex,
-    const cell_container_types::const_view cells_view,
+    const traccc::headerView& headersView,
      vecmem::data::vector_view<unsigned int > Clusters_module_link,
      vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point3 >& global_spacepoint){
 
-    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<transform3> placement_device(headersView.placement);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point3> global(global_spacepoint);
@@ -38,9 +38,9 @@ inline void form_spacepoints(
     /*********************************************************************************/
     const auto module_index = Cl_module_link[globalIndex];
     point2 local =  local_measurement[globalIndex];
-    const auto& module = cells_device.at(module_index).header;
+    const auto& placement = placement_device[module_index];
     point3 local_3d = {local[0], local[1], 0.};
-    global[globalIndex] = module.placement.point_to_global(local_3d);
+    global[globalIndex] = placement.point_to_global(local_3d);
 
     
 }

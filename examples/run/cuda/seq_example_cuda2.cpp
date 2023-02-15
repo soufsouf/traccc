@@ -61,6 +61,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     uint64_t n_spacepoints_cuda = 0;
     uint64_t n_seeds = 0;
     uint64_t n_seeds_cuda = 0;
+    traccc::headerVec headersVec ;
+    traccc::headerView headersView;
 
     traccc::CellVec cellsVec;
     traccc::CellView cellsView;
@@ -129,9 +131,32 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     + traccc::io::get_event_filename(event, "-cells.csv"),
                     &cellsVec,
                     &moduleVec,
+                    &headersVec,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
                 
+
+               traccc::geometry_id_buf modulebuf(moduleVec.size, device_mr );
+               headersView.module = modulebuf;
+               traccc::transform3_buf placementbuf(moduleVec.size, device_mr );
+               headersView.placement = placementbuf;
+               traccc::scalar_buf thresholdbuf(moduleVec.size, device_mr );
+               headersView.threshold = thresholdbuf;
+               traccc::pixel_data_buf pixelbuf(moduleVec.size, device_mr );
+               headersView.pixel = pixelbuf;
+                async_copy.setup(modulebuf);
+                async_copy.setup(placementbuf);
+                async_copy.setup(thresholdbuf);
+                async_copy.setup(pixelbuf);
+                async_copy(vecmem::get_data(headersVec.module),modulebuf ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                     async_copy(vecmem::get_data(headersVec.placement), placementbuf,
+                    vecmem::copy::type::copy_type::host_to_device);
+                     async_copy(vecmem::get_data(headersVec.threshold),thresholdbuf ,
+                    vecmem::copy::type::copy_type::host_to_device);
+                     async_copy(vecmem::get_data(headersVec.pixel),pixelbuf ,
+                    vecmem::copy::type::copy_type::host_to_device);
+
                 traccc::int_buf channel0_buf(cellsVec.size, device_mr );
                 cellsView.channel0 = channel0_buf;
                 traccc::int_buf channel1_buf(cellsVec.size,device_mr);
@@ -181,7 +206,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView, headersView);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 

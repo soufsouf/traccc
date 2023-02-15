@@ -18,18 +18,24 @@
 namespace traccc::detail {
 
 /// Function used for retrieving the cell signal based on the module id
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 inline scalar signal_cell_modelling(scalar signal_in,
                                     const cell_module& module) {
     return signal_in;
 }
 
 /// Function for pixel segmentation
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 inline vector2 position_from_cell(const cell& c, const cell_module& module) {
     // Retrieve the specific values based on module idx
     return {module.pixel.min_center_x + c.channel0 * module.pixel.pitch_x,
             module.pixel.min_center_y + c.channel1 * module.pixel.pitch_y};
+}
+TRACCC_DEVICE
+inline vector2 position_from_cell(const cell& c,const pixel_data pixels ) {
+    // Retrieve the specific values based on module idx
+    return {pixels.min_center_x + c.channel0 * pixels.pitch_x,
+            pixels.min_center_y + c.channel1 * pixels.pitch_y};
 }
 
 /// Function used for calculating the properties of the cluster during
@@ -45,7 +51,7 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
 
 
 template <typename cell_collection_t>
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 void calc_cluster_properties(
     const cell_collection_t& cluster,
     const cell_module& module, point2& mean,
@@ -56,7 +62,7 @@ void calc_cluster_properties(
      for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation, module);
+        const scalar weight = cell.activation;
         
 /// print 
     
@@ -69,6 +75,47 @@ void calc_cluster_properties(
             // Update all output properties with this cell.
             totalWeight += cell.activation;
             const point2 cell_position = position_from_cell(cell, module);
+            const point2 prev = mean;
+            const point2 diff = cell_position - prev;
+
+            mean = prev + (weight / totalWeight) * diff;
+            for (unsigned int j = 0; j < 2; ++j) {
+                var[j] =
+                    var[j] + weight * (diff[j]) * (cell_position[j] - mean[j]);
+            }
+        }
+    }
+   /* if (cl_link <= 64) {
+    printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
+            var[0] , var[1] , mean[0] , mean[1]); } */
+}
+template <typename cell_collection_t>
+TRACCC_DEVICE
+void calc_cluster_properties(
+    const cell_collection_t& cluster,
+    const scalar threshold,
+    const pixel_data pixels,
+     point2& mean,
+    point2& var, scalar& totalWeight , const std::size_t cl_link) {
+
+    // Loop over the cells of the cluster.
+    
+     for (const cell& cell : cluster) {
+
+        // Translate the cell readout value into a weight.
+        const scalar weight = cell.activation;
+        
+/// print 
+    
+       // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
+                 
+
+        // Only consider cells over a minimum threshold.
+        if (weight > threshold) {
+
+            // Update all output properties with this cell.
+            totalWeight += cell.activation;
+            const point2 cell_position = position_from_cell(cell, pixels);
             const point2 prev = mean;
             const point2 diff = cell_position - prev;
 
@@ -104,14 +151,15 @@ TRACCC_DEVICE inline void fill_measurement(
     PP& local_measurement, 
     PP& variance_measurement,
     const cell_collection_t& cluster,
-    const cell_module& module, 
+    const scalar threshold,
+    const pixel_data pixels, 
     const std::size_t module_link,
     const std::size_t cl_link /*global index*/) {
 
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
-    detail::calc_cluster_properties(cluster, module, mean, var, totalWeight , cl_link);
+    detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight , cl_link);
 
 
     if (totalWeight > 0.)
@@ -123,7 +171,7 @@ TRACCC_DEVICE inline void fill_measurement(
         variance[0]=var[0] / totalWeight;
         variance[1] = var[1] / totalWeight;
         // plus pitch^2 / 12
-        const auto pitch = module.pixel.get_pitch();
+        const auto pitch = pixels.get_pitch();
         // @todo add variance estimation
         variance_measurement[cl_link]= variance + point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
         /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,

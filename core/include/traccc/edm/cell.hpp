@@ -60,6 +60,7 @@ inline bool operator==(const cell& lhs, const cell& rhs) {
 /// the detector module, to be able to lay out the data in memory in a way
 /// that is more friendly towards accelerators.
 ///
+using scalar = TRACCC_CUSTOM_SCALARTYPE;
 struct cell_module {
 
     geometry_id module = 0;
@@ -69,11 +70,52 @@ struct cell_module {
     pixel_data pixel;
 
 };  // struct cell_module
+using scalar_vec = std::vector<scalar>;
+using geometry_id_vec = std::vector<geometry_id>;
+using transform3_vec = std::vector<transform3>;
+using pixel_data_vec = std::vector<pixel_data>;
 
-using scalar = TRACCC_CUSTOM_SCALARTYPE;
+struct headerVec{
+geometry_id_vec module;
+transform3_vec placement;
+scalar_vec threshold;
+pixel_data_vec pixel;
+}
+using scalar_buf = vecmem::data::vector_buffer<scalar>;
+using geometry_id_buf = vecmem::data::vector_buffer<geometry_id>;
+using transform3_buf = vecmem::data::vector_buffer<transform3>;
+using pixel_data_buf = vecmem::data::vector_buffer<pixel_data>;
+struct headerBuff{
+geometry_id_buf module;
+transform3_buf placement;
+scalar_buf threshold;
+pixel_data_buf pixel;
+}
+using scalar_view = vecmem::data::vector_view<scalar>;
+using geometry_id_view = vecmem::data::vector_view<geometry_id>;
+using transform3_view = vecmem::data::vector_view<transform3>;
+using pixel_data_view = vecmem::data::vector_view<pixel_data>;  
+
+struct headerView{
+ geometry_id_view module;
+transform3_view placement;
+scalar_view threshold;
+pixel_data_view pixel;   
+}
+using scalar_device = vecmem::device_vector<scalar>;
+using geometry_id_device = vecmem::device_vector<geometry_id>;
+using transform3_device = vecmem::device_vector<transform3>;
+using pixel_data_device = vecmem::device_vector<pixel_data>;
+struct headerVecDevice{
+geometry_id_device module;
+transform3_device placement;
+scalar_device threshold;
+pixel_data_device pixel; 
+}
+
 
 using int_vec = std::vector<unsigned int>;
-using scalar_vec = std::vector<scalar>;
+
 struct CellVec {
     int_vec channel0;
     int_vec channel1;
@@ -86,7 +128,7 @@ struct CellVec {
 };
 
 using int_buf = vecmem::data::vector_buffer<unsigned int>;
-using scalar_buf = vecmem::data::vector_buffer<scalar>;
+
 struct CellBuf {
     int_buf channel0;
     int_buf channel1;
@@ -97,7 +139,7 @@ struct CellBuf {
 };
 
 using int_view = vecmem::data::vector_view<unsigned int>;
-using scalar_view = vecmem::data::vector_view<scalar>;
+
 struct CellView {
     int_view channel0;
     int_view channel1;
@@ -108,7 +150,7 @@ struct CellView {
 };
 
 using int_device = vecmem::device_vector<unsigned int>;
-using scalar_device = vecmem::device_vector<scalar>;
+
 struct CellVecDevice {
     int_device channel0;
     int_device channel1;

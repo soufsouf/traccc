@@ -193,6 +193,7 @@ cell_container_types::host
 read_cells2(std::string_view filename,
                                        CellVec *cellsVec,
                                        ModuleVec *moduleVec,
+                                       headerVec *headersVec,
                                       const geometry* geom,
                                       const digitization_config* dconfig,
                                       vecmem::memory_resource* mr) {
@@ -241,6 +242,13 @@ read_cells2(std::string_view filename,
     // The number of modules that have cells in them.
     const std::size_t size = modules.size();
     const std::size_t allCellsCount = allCells.size();
+    // headers
+     (*headerVec).module =  geometry_id_vec(size);
+     (*headerVec).placement = transform3_vec(size);
+     (*headerVec).threshold = scalar_vec(size);
+     (*headerVec).pixel = pixel_data_vec(size);
+
+
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
     (*cellsVec).channel0 = int_vec(allCellsCount); //channel0
@@ -288,19 +296,21 @@ read_cells2(std::string_view filename,
         // Construct the description of the detector module.
         cell_module& module = result.get_headers().at(i);
         module.module = modules[i].module;
-
+      ///// module 
+          (*headerVec).module[i]= modules[i].module;
         // Find/set the 3D position of the detector module.
-        if (geom != nullptr) {
+        
+         if (geom != nullptr) {
 
             // Check if the module ID is known.
-            if (!geom->contains(module.module)) {
+            if (!geom->contains((*headerVec).module[i])) {
                 throw std::runtime_error(
                     "Could not find placement for geometry ID " +
-                    std::to_string(module.module));
+                    std::to_string((*headerVec).module[i]));
             }
 
             // Set the value on the module description.
-            module.placement = (*geom)[module.module];
+            (*headerVec).placement[i] = (*geom)[(*headerVec).module[i]];
         }
 
         // Find/set the digitization configuration of the detector module.
@@ -308,19 +318,20 @@ read_cells2(std::string_view filename,
 
             // Check if the module ID is known.
             const digitization_config::Iterator geo_it =
-                dconfig->find(module.module);
+                dconfig->find((*headerVec).module[i]);
             if (geo_it == dconfig->end()) {
                 throw std::runtime_error(
                     "Could not find digitization config for geometry ID " +
-                    std::to_string(module.module));
+                    std::to_string((*headerVec).module[i]));
             }
 
             // Set the value on the module description.
             const auto& binning_data = geo_it->segmentation.binningData();
             assert(binning_data.size() >= 2);
-            module.pixel = {binning_data[0].min, binning_data[1].min,
+            (*headerVec).pixel[i] = {binning_data[0].min, binning_data[1].min,
                             binning_data[0].step, binning_data[1].step};
         }
+       (*headerVec).threshold[i] = 0; 
     }
 
     std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
@@ -361,15 +372,7 @@ read_cells2(std::string_view filename,
             .push_back({iocell.channel0, iocell.channel1, iocell.value,
                         iocell.timestamp});
 
-       /* unsigned int midx = module_fill_counter[last_module_index];
-        (*cellsVec).channel0[midx]   = iocell.channel0;
-        (*cellsVec).channel1[midx]   = iocell.channel1;
-        (*cellsVec).activation[midx] = iocell.value;
-        (*cellsVec).time[midx]       = iocell.timestamp;
-        (*cellsVec).module_id[midx] = last_module_index;*/
-
-        // increment the fill counter for the current module
-        //module_fill_counter[last_module_index]++;
+     
     }
 
     std::chrono::high_resolution_clock::time_point t6 = std::chrono::high_resolution_clock::now();
