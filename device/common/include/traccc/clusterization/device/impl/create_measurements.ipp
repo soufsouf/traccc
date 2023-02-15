@@ -50,7 +50,7 @@ inline void create_measurements(
     const scalar threshold = threshold_device[module_link] ;
     const pixel_data pixels = pixel_device[module_link] ;
     
-    if (globalIndex > 100 && globalIndex < 105) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
+    //if (globalIndex > 100 && globalIndex < 105) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
 
     // Should not happen
   assert(clusters_device.empty() == false);

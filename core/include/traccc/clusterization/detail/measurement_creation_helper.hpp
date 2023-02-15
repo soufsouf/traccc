@@ -96,7 +96,7 @@ void calc_cluster_properties(
     const scalar threshold,
     const pixel_data pixels,
      point2& mean,
-    point2& var, scalar& totalWeight , const std::size_t cl_link) {
+    point2& var, scalar& totalWeight) {
 
     // Loop over the cells of the cluster.
 
@@ -158,7 +158,7 @@ TRACCC_DEVICE inline void fill_measurement(
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
-    detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight , cl_link);
+    detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight );
 
 
     if (totalWeight > 0.)
