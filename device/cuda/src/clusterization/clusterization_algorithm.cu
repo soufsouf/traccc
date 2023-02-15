@@ -171,7 +171,7 @@ __global__ void create_measurements(
 }
 
 __global__ void form_spacepoints(
-    const traccc::headerView& headersView,
+    const traccc::headerView headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point3 > global_spacepoint) {
@@ -237,7 +237,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         cell_container_types::const_device::item_vector::value_type::size_type>
         cell_sizes = m_copy.get_sizes(cells_view.items);
 
-    cellcount = 0;
+    cellcount = 0; // we should remove this 
     for (int i=0; i < cell_sizes.size(); i++) {
         cellcount += cell_sizes[i];
     }

@@ -12,11 +12,11 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void form_spacepoints(
     std::size_t globalIndex,
-    const traccc::headerView& headersView,
+    const traccc::headerView headersView,
      vecmem::data::vector_view<unsigned int > Clusters_module_link,
      vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point3 >& global_spacepoint){
-printf("hello world ****** \n");
+//printf("hello world ****** \n");
     vecmem::device_vector<transform3> placement_device(headersView.placement);
     printf("hello  ****** \n");
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
