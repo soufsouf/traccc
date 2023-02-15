@@ -103,8 +103,7 @@ void calc_cluster_properties(
      for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
-        const scalar weight = cell.activation;
-        if (cl_link = 1) { printf(" cell.activation %llu \n", cell.activation); } 
+        const scalar weight = cell.activation; 
     
        // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
                  
