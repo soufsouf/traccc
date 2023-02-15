@@ -24,6 +24,11 @@ inline scalar signal_cell_modelling(scalar signal_in,
     return signal_in;
 }
 
+TRACCC_DEVICE
+inline scalar signal_cell_modelling(scalar signal_in) {
+    return signal_in;
+}
+
 /// Function for pixel segmentation
 TRACCC_HOST
 inline vector2 position_from_cell(const cell& c, const cell_module& module) {
@@ -62,7 +67,7 @@ void calc_cluster_properties(
      for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
-        const scalar weight = cell.activation;
+        const scalar weight = signal_cell_modelling(cell.activation, module);;
         
 /// print 
     
@@ -101,9 +106,9 @@ void calc_cluster_properties(
     // Loop over the cells of the cluster.
 
      for (const cell& cell : cluster) {
-         printf("hello aya " );
+        
         // Translate the cell readout value into a weight.
-        const scalar weight = cell.activation; 
+        const scalar weight = signal_cell_modelling(cell.activation); 
     
        // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
                  
