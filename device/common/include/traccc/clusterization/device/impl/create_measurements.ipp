@@ -53,9 +53,7 @@ inline void create_measurements(
             globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
 
-if (globalIndex >1111 && globalIndex < 1120) 
-        printf(" pixels.min_center_x %llu \n", 
-                pixels.min_center_x); 
+
     // Should not happen
   assert(clusters_device.empty() == false);
    
