@@ -133,10 +133,14 @@ inline void connect_components(
       /*cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
-    printf("aya 1");
+    
+    if (globalIndex < 64) {
+        printf("clusters_device[cluster_indice].header %llu \n", 
+                clusters_device[cluster_indice].header );
+                 }  
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
-    printf("aya 2");
+    
     }
 
 /*    __syncthreads();
