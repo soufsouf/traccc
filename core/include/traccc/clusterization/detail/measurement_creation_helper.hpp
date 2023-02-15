@@ -108,7 +108,7 @@ void calc_cluster_properties(
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(cell.activation); 
     
-       // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
+       printf("hello aya inside for " );
                  
 
         // Only consider cells over a minimum threshold.
