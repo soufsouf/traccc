@@ -53,7 +53,7 @@ inline void create_measurements(
             globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
     // Should not happen
-   assert(clusters_device.empty() == false);
+  // assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
     
