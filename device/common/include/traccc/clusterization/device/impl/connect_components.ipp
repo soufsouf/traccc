@@ -138,9 +138,9 @@ inline void connect_components(
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
     if (globalIndex >200 && globalIndex < 205) {
-        printf("clusters_device[cluster_indice].items %llu \n", 
-                clusters_device[cluster_indice].items.at(1).activation );
-         
+        printf(" ch0[globalIndex] %llu \n", 
+                ch0[globalIndex] );
+
                  }  
     }
 
