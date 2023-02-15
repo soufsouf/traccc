@@ -243,10 +243,10 @@ read_cells2(std::string_view filename,
     const std::size_t size = modules.size();
     const std::size_t allCellsCount = allCells.size();
     // headers
-     (*headerVec).module =  geometry_id_vec(size);
-     (*headerVec).placement = transform3_vec(size);
-     (*headerVec).threshold = scalar_vec(size);
-     (*headerVec).pixel = pixel_data_vec(size);
+     (*headersVec).module =  geometry_id_vec(size);
+     (*headersVec).placement = transform3_vec(size);
+     (*headersVec).threshold = scalar_vec(size);
+     (*headersVec).pixel = pixel_data_vec(size);
 
 
 
@@ -297,20 +297,20 @@ read_cells2(std::string_view filename,
         cell_module& module = result.get_headers().at(i);
         module.module = modules[i].module;
       ///// module 
-          (*headerVec).module[i]= modules[i].module;
+          (*headersVec).module[i]= modules[i].module;
         // Find/set the 3D position of the detector module.
         
          if (geom != nullptr) {
 
             // Check if the module ID is known.
-            if (!geom->contains((*headerVec).module[i])) {
+            if (!geom->contains((*headersVec).module[i])) {
                 throw std::runtime_error(
                     "Could not find placement for geometry ID " +
-                    std::to_string((*headerVec).module[i]));
+                    std::to_string((*headersVec).module[i]));
             }
 
             // Set the value on the module description.
-            (*headerVec).placement[i] = (*geom)[(*headerVec).module[i]];
+            (*headersVec).placement[i] = (*geom)[(*headersVec).module[i]];
         }
 
         // Find/set the digitization configuration of the detector module.
@@ -318,20 +318,20 @@ read_cells2(std::string_view filename,
 
             // Check if the module ID is known.
             const digitization_config::Iterator geo_it =
-                dconfig->find((*headerVec).module[i]);
+                dconfig->find((*headersVec).module[i]);
             if (geo_it == dconfig->end()) {
                 throw std::runtime_error(
                     "Could not find digitization config for geometry ID " +
-                    std::to_string((*headerVec).module[i]));
+                    std::to_string((*headersVec).module[i]));
             }
 
             // Set the value on the module description.
             const auto& binning_data = geo_it->segmentation.binningData();
             assert(binning_data.size() >= 2);
-            (*headerVec).pixel[i] = {binning_data[0].min, binning_data[1].min,
+            (*headersVec).pixel[i] = {binning_data[0].min, binning_data[1].min,
                             binning_data[0].step, binning_data[1].step};
         }
-       (*headerVec).threshold[i] = 0; 
+       (*headersVec).threshold[i] = 0; 
     }
 
     std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
