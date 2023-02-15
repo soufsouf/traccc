@@ -139,13 +139,13 @@ inline void connect_components(
      // clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
    
    
-    if (globalIndex >200 && globalIndex < 205) {
+    if (globalIndex >1111 && globalIndex < 1120) {
         printf(" cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 %llu \n", 
                 cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 );
         printf(" ch0[globalIndex] %llu \n", 
                 ch0[globalIndex] );       
 
-                 }  
+                 } 
     }
 
 /*    __syncthreads();
