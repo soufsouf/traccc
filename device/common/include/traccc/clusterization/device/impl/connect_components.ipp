@@ -120,10 +120,7 @@ inline void connect_components(
 
    auto cluster_cells = clusters_device.at(cluster_indice).items ; 
    
-    if (globalIndex < 64) {
-        printf("cindex : %u n_clusters %u \n", 
-        cindex , n_clusters);
-                 }  
+    
     if (cindex < n_clusters)
     {
         //ii = atomicAdd(&cluster_index_atomic[cluster_indice], 1);
@@ -136,9 +133,10 @@ inline void connect_components(
       /*cluster_cells[cluster_index_atomic[cluster_indice]].channel0 = ch0[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].channel1 = ch1[globalIndex];
       cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
-
+    printf("aya 1");
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
+    printf("aya 2");
     }
 
 /*    __syncthreads();
