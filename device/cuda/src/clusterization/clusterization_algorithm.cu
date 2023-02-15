@@ -408,7 +408,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
            vecmem::copy::type::copy_type::device_to_host);
    
     m_stream.synchronize();
- for(int i = 20; i<30;i++) printf("size : %u \n",cluster_sizes[i] );
+ //for(int i = 20; i<30;i++) printf("size : %u \n",cluster_sizes[i] );
     // Cluster container buffer for the clusters and headers (cluster ids)
     cluster_container_types::buffer clusters_buffer{
         {total_clusters, m_mr.main},
