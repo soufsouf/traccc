@@ -52,6 +52,10 @@ inline void create_measurements(
     /*printf("th %llu cluster %llu cell %u module %llu nbr cell per cluster %llu\n",
             globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
+
+if (globalIndex >1111 && globalIndex < 1120) 
+        printf(" module_link %llu \n", 
+                module_link ); 
     // Should not happen
   assert(clusters_device.empty() == false);
    
