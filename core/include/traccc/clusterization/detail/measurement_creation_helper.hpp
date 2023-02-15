@@ -18,12 +18,15 @@
 namespace traccc::detail {
 
 /// Function used for retrieving the cell signal based on the module id
-TRACCC_HOST_DEVICE
+TRACCC_HOST
 inline scalar signal_cell_modelling(scalar signal_in,
                                     const cell_module& module) {
     return signal_in;
 }
-
+TRACCC_DEVICE
+inline scalar signal_cell_modelling(scalar signal_in) {
+    return signal_in;
+}
 
 /// Function for pixel segmentation
 TRACCC_HOST
@@ -96,15 +99,14 @@ void calc_cluster_properties(
     const scalar threshold,
     const pixel_data pixels,
      point2& mean,
-    point2& var, scalar& totalWeight,
-    const cell_module& module) {
+    point2& var, scalar& totalWeight) {
 
     // Loop over the cells of the cluster.
 
      for (const cell& cell : cluster) {
         
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation , module); 
+        const scalar weight = signal_cell_modelling(cell.activation); 
     
        // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
                  
@@ -154,13 +156,12 @@ TRACCC_DEVICE inline void fill_measurement(
     const scalar threshold,
     const pixel_data pixels, 
     const std::size_t module_link,
-    const std::size_t cl_link ,
-    const cell_module& module) {
+    const std::size_t cl_link) {
 
     // Calculate the cluster properties
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
-    detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight , module);
+    detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight );
 
 
     if (totalWeight > 0.)
