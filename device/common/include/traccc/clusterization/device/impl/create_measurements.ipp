@@ -50,9 +50,6 @@ inline void create_measurements(
     const scalar threshold = threshold_device[module_link] ;
     const pixel_data pixels = pixel_device[module_link] ;
     
-    if (globalIndex > 1111 && globalIndex < 1120)printf(" module_link %llu\n",
-             module_link);
-
 
 
     // Should not happen
