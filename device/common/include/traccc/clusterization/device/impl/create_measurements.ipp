@@ -19,7 +19,8 @@ inline void create_measurements(
     const traccc::headerView& headersView,
     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
     vecmem::data::vector_view<point2 > &measurement_local,
-    vecmem::data::vector_view<point2 >& measurement_variance) {
+    vecmem::data::vector_view<point2 >& measurement_variance,
+    const cell_container_types::const_view& cells_view) {
 
     // Initialize device vector that gives us the execution range
     
@@ -29,6 +30,7 @@ inline void create_measurements(
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point2> variance_measurement(measurement_variance);
+    cell_container_types::const_device cells_device(cells_view);
     
   
     // Ignore if idx is out of range
@@ -49,6 +51,7 @@ inline void create_measurements(
     Cl_module_link[globalIndex] = module_link;
     const scalar threshold = threshold_device[module_link] ;
     const pixel_data pixels = pixel_device[module_link] ;
+    const auto& module = cells_device.at(module_link).header;
     
     //if (globalIndex > 100 && globalIndex < 105) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
 
@@ -59,7 +62,7 @@ inline void create_measurements(
     
 
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
-          , module_link, globalIndex);
+          , module_link, globalIndex , module);
 
         
     
