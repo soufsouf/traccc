@@ -121,12 +121,12 @@ inline void connect_components(
    auto cluster_cells = clusters_device.at(cluster_indice).items ; 
    
     
-   // if (cindex < n_clusters)
+    if (cindex < n_clusters)
     {
        // atomicAdd(&cluster_index_atomic[cluster_indice], 1);
-      vecmem::device_atomic_ref<unsigned int>(
+      /*vecmem::device_atomic_ref<unsigned int>(
             cluster_index_atomic[cluster_indice])
-            .fetch_add(1);
+            .fetch_add(1); */
        
        clusters_device[cluster_indice].header = module_idx;
         
