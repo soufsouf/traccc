@@ -149,8 +149,8 @@ inline void connect_components(
    
     if ( cluster_indice < 7 ){
        for (const cell& cell : clusters_device[cluster_indice].items){
-    printf("\n cell.channel0 %llu \n", cell.channel0);
-    printf("ch0 %llu \n", ch0[globalIndex]);
+    printf("\n cell.channel0 %f \n", cell.activation);
+    printf("activation[globalIndex] %llu \n", activation[globalIndex]);
   } 
   } 
     }

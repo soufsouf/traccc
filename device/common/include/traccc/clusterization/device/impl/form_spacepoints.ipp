@@ -47,9 +47,9 @@ inline void form_spacepoints(
     //printf("maissa \n");
     global[globalIndex] = placement_device[module_index].point_to_global(local_3d);
     
-    if ( globalIndex < 7 ){
+    /*if ( globalIndex < 7 ){
     printf("\n global[globalIndex] : %llu \n", global[globalIndex].at(0));
-  } 
+  } */
 
     
 }
