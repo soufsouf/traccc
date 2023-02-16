@@ -59,7 +59,7 @@ inline void create_measurements(
    
     // Fill measurement from cluster
     if (globalIndex < 50){
-  for (const cell& cell : cluster){
+       for (const cell& cell : cluster){
     printf("cell.activation ", cell.activation);
   } }
    
