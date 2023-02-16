@@ -445,7 +445,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        clusters_buffer,headersView, Clusters_module_link,measurement_local, measurement_variance);
+        clusters_buffer,headersView, Clusters_module_link,measurement_local, measurement_variance , cells_view);
     //CUDA_ERROR_CHECK(cudaGetLastError());
    
    
