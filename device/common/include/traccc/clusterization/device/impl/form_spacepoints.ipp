@@ -38,6 +38,7 @@ inline void form_spacepoints(
     
     /*********************************************************************************/
     const auto module_index = Cl_module_link[globalIndex];
+    
     point2 local =  local_measurement[globalIndex];
     //const auto& placement = placement_device[module_index];
     point3 local_3d = {local[0], local[1], 0.};
