@@ -189,7 +189,6 @@ __global__ void form_spacepoints(
     spacepoint_container_types::view spacepoints_view )
     {
     
-    headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer
 
     vecmem::device_vector<geometry_id> module_device(headersView.module);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
