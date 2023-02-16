@@ -36,9 +36,6 @@ inline void find_clusters(
     // Run the sparse CCL algorithm
     unsigned int n_clusters = detail::sparse_ccl( globalIndex, ch0, ch1,
                                         sum, midx, labels);
-
-    if  (globalIndex > 0 && globalIndex <=1 ) { printf(" channel1 %llu" , ch1[globalIndex] ); 
-                              printf(" globalIndex %llu" , globalIndex ); }
    
     vecmem::device_vector<std::size_t> device_clusters_per_module(
         clusters_per_module_view);

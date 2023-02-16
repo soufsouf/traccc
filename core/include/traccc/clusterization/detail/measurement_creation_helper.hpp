@@ -66,7 +66,7 @@ void calc_cluster_properties(
      for (const cell& cell : cluster) {
 
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation, module);;
+        const scalar weight = signal_cell_modelling(cell.activation, module);
         
     
        // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
@@ -100,7 +100,8 @@ void calc_cluster_properties(
     const pixel_data pixels,
      point2& mean,
     point2& var, scalar& totalWeight ,
-    const std::size_t cl_link) {
+    const std::size_t cl_link,
+    const cell_module& module) {
 
     // Loop over the cells of the cluster.
 
@@ -108,7 +109,8 @@ void calc_cluster_properties(
        
      
         // Translate the cell readout value into a weight.
-        const scalar weight = cell.activation; 
+        const scalar weight = signal_cell_modelling(cell.activation, module);
+        
         
         // Only consider cells over a minimum threshold.
         if (weight > threshold) {
