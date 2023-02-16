@@ -218,9 +218,9 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
     // Push the speacpoint into the container at the appropriate
     // module idx
     spacepoints_device[module_link].header = module_device[module_link];
-    /*if ( idx >1111 && idx < 1118  ){
+    if ( idx >1111 && idx < 1118  ){
     printf("module_device[module_link] %llu \n", module_device[module_link]);
-  } */
+  } 
     spacepoints_device[module_link].items.push_back(s);
     }
 
