@@ -105,7 +105,7 @@ void calc_cluster_properties(
     // Loop over the cells of the cluster.
 
      for (const cell& cell : cluster) {
-       printf("hello inside for ");
+    
         // Translate the cell readout value into a weight.
         const scalar weight = cell.activation ; 
         
