@@ -130,10 +130,7 @@ inline void connect_components(
        
        clusters_device[cluster_indice].header = module_idx;
         
-        if (globalIndex < 60) {
-        printf(" clusters_device[cluster_indice].header  %llu \n", 
-                clusters_device[cluster_indice].header  );
-                 }
+        
          
         
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
@@ -142,7 +139,10 @@ inline void connect_components(
     
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
-   
+   if (globalIndex < 60) {
+        printf(" clusters_device[cluster_indice]  %llu \n", 
+                clusters_device.get_items().at(cluster_indice).activation  );
+                 }
    
     /*if (globalIndex < 7) {
         printf(" clusters_device[cluster_indice].items.at(0).activation %llu \n", 
