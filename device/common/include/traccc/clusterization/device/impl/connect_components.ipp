@@ -140,15 +140,15 @@ inline void connect_components(
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
      // cluster_cells.at(cluster_index_atomic[cluster_indice]).activation = activation[globalIndex];  
     
-      if ( cluster_indice == 0 ) printf("cluster_indice %llu \n" , cluster_indice);
+      
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
   
    
-    /*if (globalIndex <= 80) {
-        printf(" clusters_device[cluster_indice].items.at(0).channel0 %llu \n", 
-                clusters_device[cluster_indice].items.at(0).channel0 );
-                
-                 } */
+    if ( cluster_indice == 0 ){
+       for (const cell& cell : cluster){
+    printf("cell.channel0 %llu", cell.channel0);
+  } 
+  }
     }
 
 /*    __syncthreads();
