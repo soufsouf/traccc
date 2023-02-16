@@ -18,12 +18,12 @@
 namespace traccc::detail {
 
 /// Function used for retrieving the cell signal based on the module id
-TRACCC_HOST
+/*TRACCC_HOST
 inline scalar signal_cell_modelling(scalar signal_in,
                                     const cell_module& module) {
     return signal_in;
-}
-TRACCC_DEVICE
+}*/
+TRACCC_HOST_DEVICE
 inline scalar signal_cell_modelling(scalar signal_in) {
     return signal_in;
 }
