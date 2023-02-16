@@ -58,7 +58,7 @@ inline void create_measurements(
  // assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    if (globalIndex <30){
+    if (globalIndex <= 0){
        for (const cell& cell : cluster){
     printf("cell.channel0 ", cell.channel0);
   } 
