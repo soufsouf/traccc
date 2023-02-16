@@ -189,6 +189,8 @@ __global__ void form_spacepoints(
     spacepoint_container_types::view spacepoints_view )
     {
     
+    headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer
+
     vecmem::device_vector<geometry_id> module_device(headersView.module);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
@@ -442,10 +444,10 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
-
+    m_copy.memset(measurement_variance, 0);
     vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
     m_copy.setup(global);
-    m_copy.memset(measurement_variance, 0);
+    m_copy.memset(global, 0);
 
 
     // Invoke measurements creation will call create measurements kernel

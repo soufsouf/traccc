@@ -55,7 +55,7 @@ inline void create_measurements(
     //if (globalIndex > 100 && globalIndex < 105) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
 
     // Should not happen
- //assert(clusters_device.empty() == false);
+    assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
     /*if ( globalIndex == 0 ){
