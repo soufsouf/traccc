@@ -107,7 +107,7 @@ void calc_cluster_properties(
      for (const cell& cell : cluster) {
        
         // Translate the cell readout value into a weight.
-        const scalar weight = signal_cell_modelling(cell.activation); 
+        const scalar weight = cell.activation ; 
         
         // Only consider cells over a minimum threshold.
         if (weight > threshold) {
@@ -125,9 +125,9 @@ void calc_cluster_properties(
             }
         }
     }
-    if (cl_link > 1111 && cl_link < 1118) 
-    printf("totalWeight %llu \n",
-            totalWeight); 
+    if (cl_link < 8) 
+    printf("threshold %llu \n",
+            threshold); 
 }
 
 
