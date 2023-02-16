@@ -27,7 +27,7 @@ inline void form_spacepoints(
     if (globalIndex >= Cl_module_link.size())
         return;
 
-printf ("hello fill 4 is here ");
+
 /*********************************************************************************/
     // Initialize the rest of the device containers
    
@@ -46,7 +46,7 @@ printf ("hello fill 4 is here ");
   // if (globalIndex <30) { printf("local_measurement[globalIndex] %llu\n", local_measurement[globalIndex].at(0)); }
     //printf("maissa \n");
     global[globalIndex] = placement_device[module_index].point_to_global(local_3d);
-    //printf("maissa  2\n");
+    printf("maissa  2\n");
 
     
 }
