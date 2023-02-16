@@ -130,7 +130,7 @@ inline void connect_components(
        
        clusters_device[cluster_indice].header = module_idx;
         
-        if (globalIndex < 52) {
+        if (globalIndex < 60) {
         printf(" clusters_device[cluster_indice].header  %llu \n", 
                 clusters_device[cluster_indice].header  );
                  }
