@@ -117,7 +117,7 @@ inline void connect_components(
         (module_idx == 0 ? device_cluster_prefix_sum[0]
                          : device_cluster_prefix_sum[module_idx] -
                                device_cluster_prefix_sum[module_idx - 1]);
-                               printf("device_cluster_prefix_sum[0] %llu \n",device_cluster_prefix_sum[0] );
+                               
 //printf("  global idx : %llu ,n_clusters %u , module: %u device_cluster_prefix_sum[]: %llu  \n",globalIndex,n_clusters,module_idx,device_cluster_prefix_sum[module_idx] );
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
