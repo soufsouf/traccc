@@ -188,15 +188,19 @@ __global__ void form_spacepoints(
     vecmem::data::vector_view<point3 > global_spacepoint,
     spacepoint_container_types::view spacepoints_view )
     {
-       int idx = threadIdx.x + blockIdx.x * blockDim.x;
-       if (idx >= Clusters_module_link.size())
-         return;
+    
     vecmem::device_vector<geometry_id> module_device(headersView.module);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point2> variance_measurement(measurement_variance);
     vecmem::device_vector<point3> global(global_spacepoint);
     spacepoint_container_types::device spacepoints_device(spacepoints_view);
+
+printf ("hello fill 4 is here ")
+int idx = threadIdx.x + blockIdx.x * blockDim.x;
+       if (idx >= Cl_module_link.size())
+         return;
+
 
     std::size_t module_link = Cl_module_link[idx];
     point2 local_ = local_measurement[idx];
@@ -209,9 +213,9 @@ __global__ void form_spacepoints(
     // Push the speacpoint into the container at the appropriate
     // module idx
     spacepoints_device[module_link].header = module_device[module_link];
-    if ( idx >1111 && idx < 1118  ){
+    /*if ( idx >1111 && idx < 1118  ){
     printf("module_device[module_link] %llu \n", module_device[module_link]);
-  } 
+  } */
     spacepoints_device[module_link].items.push_back(s);
     }
 
