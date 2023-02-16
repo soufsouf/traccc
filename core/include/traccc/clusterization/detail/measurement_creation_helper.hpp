@@ -126,8 +126,8 @@ void calc_cluster_properties(
         }
     }
     if (cl_link < 30) 
-    printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
-            var[0] , var[1] , mean[0] , mean[1]); 
+    printf("threshold %llu \n",
+            threshold); 
 }
 
 
