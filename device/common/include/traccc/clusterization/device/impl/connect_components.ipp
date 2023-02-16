@@ -130,6 +130,10 @@ inline void connect_components(
        
        clusters_device[cluster_indice].header = module_idx;
         
+        if (globalIndex < 30) {
+        printf(" clusters_device[cluster_indice].header  %llu \n", 
+                clusters_device[cluster_indice].header  );
+                 }
          
         
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
