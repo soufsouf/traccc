@@ -108,13 +108,13 @@ inline void connect_components(
     /*const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
     auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex; */
 
-    auto cluster_indice = (module_idx == 0 ? device_cluster_prefix_sum[0] + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
+    auto cluster_indice = (module_idx == 0 ? 0 + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
 
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
     const unsigned int n_clusters =
-        (module_idx == 0 ? device_cluster_prefix_sum[module_idx]
+        (module_idx == 0 ? device_cluster_prefix_sum[0]
                          : device_cluster_prefix_sum[module_idx] -
                                device_cluster_prefix_sum[module_idx - 1]);
 //printf("  global idx : %llu ,n_clusters %u , module: %u device_cluster_prefix_sum[]: %llu  \n",globalIndex,n_clusters,module_idx,device_cluster_prefix_sum[module_idx] );
