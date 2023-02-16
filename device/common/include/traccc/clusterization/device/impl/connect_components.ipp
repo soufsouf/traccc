@@ -147,11 +147,11 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
   
    
-    if ( cluster_indice > 1111 && cluster_indice < 1114  ){
+    /*if ( cluster_indice > 1111 && cluster_indice < 1114  ){
        for (const cell& cell : clusters_device[cluster_indice].items){
-    printf("\n cell.channel0 %f \n", cell.activation);
+    printf("\n cell.activation%f \n", cell.activation);
   } 
-  } 
+  } */
     }
 
 /*    __syncthreads();
