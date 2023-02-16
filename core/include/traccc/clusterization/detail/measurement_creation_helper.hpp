@@ -108,7 +108,7 @@ void calc_cluster_properties(
        
      
         // Translate the cell readout value into a weight.
-        const scalar weight = cell.activation; 
+        const scalar weight = signal_cell_modelling(cell.activation); 
         
         // Only consider cells over a minimum threshold.
         if (weight > threshold) {

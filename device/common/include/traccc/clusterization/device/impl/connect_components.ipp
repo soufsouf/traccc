@@ -132,12 +132,12 @@ inline void connect_components(
         
          
         
-      //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
-      //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
-     // cluster_cells.at(cluster_index_atomic[cluster_indice]).activation = activation[globalIndex];  
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
+      cluster_cells.at(cluster_index_atomic[cluster_indice]).activation = activation[globalIndex];  
     
 
-      clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
+      //clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
    
    
     /*if (globalIndex < 30) {
