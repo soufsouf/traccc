@@ -140,11 +140,11 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
    
    
-    if (globalIndex >1111 && globalIndex < 1116) {
+    /*if (globalIndex >1111 && globalIndex < 1116) {
         printf(" clusters_device[cluster_indice].items.at(0).channel0 %llu \n", 
                 clusters_device[cluster_indice].items.at(0).channel0 );      
 
-                 } 
+                 } */
     }
 
 /*    __syncthreads();
