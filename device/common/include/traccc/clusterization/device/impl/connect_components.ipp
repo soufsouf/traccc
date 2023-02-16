@@ -140,7 +140,7 @@ inline void connect_components(
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
    auto cluster_cells = clusters_device.at(cluster_indice).items ; 
-   printf(" clusters_ cell %u \n"cluster_cells[0].channel0);
+   printf(" clusters_ cell %u \n",cluster_cells[0].channel0);
    
     if (globalIndex <= 80) {
         printf(" clusters_device[cluster_indice].items.at(0).channel0 %llu \n", 
