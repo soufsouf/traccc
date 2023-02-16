@@ -160,7 +160,7 @@ __global__ void connect_components(
 
 __global__ void create_measurements(
     cluster_container_types::const_view clusters_view,
-    const traccc::headerView headersView,
+    const traccc::headerView& headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point2 > measurement_variance) {
@@ -171,7 +171,7 @@ __global__ void create_measurements(
 }
 
 __global__ void form_spacepoints(
-    const traccc::headerView headersView,
+    const traccc::headerView& headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point3 > global_spacepoint) {
