@@ -108,7 +108,7 @@ inline void connect_components(
     /*const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
     auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex; */
 
-    auto cluster_indice = (module_idx == 0 ? 0 + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
+    auto cluster_indice = (module_idx == 0 ? device_cluster_prefix_sum[0] + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
 
 
     // Calculate the number of clusters found for this module from the prefix
