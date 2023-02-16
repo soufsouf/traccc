@@ -58,7 +58,7 @@ inline void create_measurements(
   assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    if (globalIndex < 60){
+    if (globalIndex >=0 && globalIndex < 30){
        for (const cell& cell : cluster){
     printf("cell.activation ", cell.activation);
   } }
