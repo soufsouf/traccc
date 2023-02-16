@@ -125,9 +125,9 @@ void calc_cluster_properties(
             }
         }
     }
-    if (cl_link > 1111 &&  cl_link < 1114) 
+    /*if (cl_link > 1111 &&  cl_link < 1114) 
     printf("mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n",
-            mean[0] , mean[1] , var[0] , var[1]); 
+            mean[0] , mean[1] , var[0] , var[1]);  */
 }
 
 
@@ -175,6 +175,10 @@ TRACCC_DEVICE inline void fill_measurement(
         variance_measurement[cl_link]= variance + point2{pitch[0] * pitch[0] / 12, pitch[1] * pitch[1] / 12};
         /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,
             module_link, module.threshold, pitch[0], pitch[1]);*/
+
+            if (cl_link > 1111 &&  cl_link < 1114) 
+            printf("var[0] %llu var[1] %llu\n",
+             var[0] , var[1]);  
     }
 
 }
