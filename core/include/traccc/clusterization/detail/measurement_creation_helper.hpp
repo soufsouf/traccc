@@ -106,7 +106,7 @@ void calc_cluster_properties(
 
      for (const cell& cell : cluster) {
        
-     
+       printf("hello ");
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(cell.activation); 
         
