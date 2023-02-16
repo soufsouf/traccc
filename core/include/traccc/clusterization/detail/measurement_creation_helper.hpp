@@ -160,7 +160,7 @@ TRACCC_DEVICE inline void fill_measurement(
     point2 mean{0., 0.}, var{0., 0.}, variance{0., 0.};
     detail::calc_cluster_properties(cluster, threshold,pixels, mean, var, totalWeight ,cl_link );
 
-     printf("totweight %lf \n",totalWeight);
+     printf("threshold %lf \n",threshold);
     if (totalWeight > 0.)
     {
         // cluster link
