@@ -102,13 +102,15 @@ inline void connect_components(
 
     // Vectors used for cluster indices found by sparse CCL
     unsigned int cindex = labels[globalIndex] - 1 ;
-
+    unsigned int prefix_sum;
+    unsigned int cluster_indice;
     // Get the cluster prefix sum for this module idx
-    
-    /*const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
-    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex; */
+    if (module_idx == 0)   cluster_indice = cindex ; 
+    if (module_idx != 0) {
+     prefix_sum = module_idx - 1;
+     cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;  }
 
-    auto cluster_indice = (module_idx == 0 ? 0 + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
+    //auto cluster_indice = (module_idx == 0 ?  cindex : (device_cluster_prefix_sum[module_idx - 1] + cindex) );
 
 
     // Calculate the number of clusters found for this module from the prefix
@@ -144,12 +146,12 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
   
    
-   /* if ( cluster_indice == 0 ){
+    if ( cluster_indice < 7 ){
        for (const cell& cell : clusters_device[cluster_indice].items){
     printf("\n cell.channel0 %llu \n", cell.channel0);
-    printf("ch0 %llu \n", ch0[0]);
+    printf("ch0 %llu \n", ch0[globalIndex]);
   } 
-  } */
+  } 
     }
 
 /*    __syncthreads();
