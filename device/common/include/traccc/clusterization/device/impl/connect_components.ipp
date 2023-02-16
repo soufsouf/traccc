@@ -101,12 +101,15 @@ inline void connect_components(
     
 
     // Vectors used for cluster indices found by sparse CCL
-    unsigned int cindex = labels[globalIndex] - 1;
+    unsigned int cindex = labels[globalIndex] - 1 ;
 
     // Get the cluster prefix sum for this module idx
     
-    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
-    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
+    /*const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
+    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex; */
+
+    auto cluster_indice = (module_idx == 0 ? 0 + cindex : device_cluster_prefix_sum[module_idx - 1]+ cindex );
+
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
@@ -137,7 +140,7 @@ inline void connect_components(
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
      // cluster_cells.at(cluster_index_atomic[cluster_indice]).activation = activation[globalIndex];  
     
-      if (globalIndex >= 0 &&  globalIndex < 10 ) printf("cluster_indice %llu" , cluster_indice);
+      if ( cluster_indice == 0 ) printf("cluster_indice %llu \n" , cluster_indice);
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
   
    
