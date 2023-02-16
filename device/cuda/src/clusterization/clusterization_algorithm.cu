@@ -432,20 +432,20 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     vecmem::data::vector_buffer<point2> measurement_local(total_clusters, m_mr.main);
     m_copy.setup(measurement_local);
-    //m_copy.memset(measurement_local, 0);
+    m_copy.memset(measurement_local, 0);
 
     vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
 
     vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
     m_copy.setup(global);
-    //m_copy.memset(measurement_variance, 0);
+    m_copy.memset(measurement_variance, 0);
 
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
         clusters_buffer,headersView, Clusters_module_link,measurement_local, measurement_variance);
-    //CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());
    
    
     // Using the same grid size as before
@@ -455,8 +455,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
        headersView, Clusters_module_link,measurement_local,global);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
- kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+    kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
     headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
+    CUDA_ERROR_CHECK(cudaGetLastError());
     
     // Return the buffer. Which may very well not be filled at this point yet.
     return spacepoints_buffer;
