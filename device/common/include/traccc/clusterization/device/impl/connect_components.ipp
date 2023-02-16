@@ -141,10 +141,10 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
    
    
-    /if (globalIndex < 30) {
+    if (globalIndex < 30) {
         printf(" ch0[globalIndex] %llu \n", 
                 ch0[globalIndex] );
-                 } 
+                 }
     }
 
 /*    __syncthreads();
