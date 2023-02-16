@@ -163,12 +163,11 @@ __global__ void create_measurements(
     const traccc::headerView headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point2 > measurement_variance,
-    const cell_container_types::const_view cells_view) {
+    vecmem::data::vector_view<point2 > measurement_variance) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
                                 clusters_view, headersView ,
-                                 Clusters_module_link, measurement_local, measurement_variance , cells_view);
+                                 Clusters_module_link, measurement_local, measurement_variance);
 }
 
 __global__ void form_spacepoints(
@@ -445,7 +444,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     // Invoke measurements creation will call create measurements kernel
     kernels::create_measurements<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        clusters_buffer,headersView, Clusters_module_link,measurement_local, measurement_variance , cells_view);
+        clusters_buffer,headersView, Clusters_module_link,measurement_local, measurement_variance);
     //CUDA_ERROR_CHECK(cudaGetLastError());
    
    
