@@ -197,6 +197,8 @@ __global__ void form_spacepoints(
     vecmem::device_vector<point3> global(global_spacepoint);
     spacepoint_container_types::device spacepoints_device(spacepoints_view);
 
+
+    printf("hello fill4");
 //printf ("hello fill 4 is here ");
 int idx = threadIdx.x + blockIdx.x * blockDim.x;
        if (idx >= Cl_module_link.size())
