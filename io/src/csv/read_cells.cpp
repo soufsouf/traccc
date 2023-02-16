@@ -331,7 +331,7 @@ read_cells2(std::string_view filename,
             (*headersVec).pixel[i] = {binning_data[0].min, binning_data[1].min,
                             binning_data[0].step, binning_data[1].step};
         }
-       (*headersVec).threshold[i] = 0; 
+       (*headersVec).threshold[i] = 0.; 
     }
 
     std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
