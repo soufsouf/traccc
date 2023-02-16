@@ -27,7 +27,7 @@ inline void form_spacepoints(
     if (globalIndex >= Cl_module_link.size())
         return;
 
-
+printf ("hello fill 4 is here ");
 /*********************************************************************************/
     // Initialize the rest of the device containers
    

@@ -38,7 +38,7 @@ inline void create_measurements(
 
     // Create other device containers
     
-printf ("hello fill 4 is here ");
+
     // items: cluster of cells at current idx
     // header: module idx
     //obtenir les cells de cluster: remplacer par deux vec: 
