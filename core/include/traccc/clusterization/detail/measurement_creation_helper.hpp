@@ -125,9 +125,9 @@ void calc_cluster_properties(
             }
         }
     }
-    /*if (cl_link < 8) 
-    printf("threshold %llu \n",
-            threshold); */
+    if (totalWeight < 70) 
+    printf("totalWeight %llu \n",
+            totalWeight); 
 }
 
 

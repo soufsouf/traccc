@@ -58,10 +58,7 @@ inline void create_measurements(
   assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    if (globalIndex < 8){
-  for (const cell& cell : cluster){
-    printf("cell.activation ", cell.activation);
-  } }
+    
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
           , module_link, globalIndex );
 
