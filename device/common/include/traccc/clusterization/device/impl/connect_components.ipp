@@ -105,7 +105,7 @@ inline void connect_components(
 
     // Get the cluster prefix sum for this module idx
     
-    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx );
+    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
     auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
 
     // Calculate the number of clusters found for this module from the prefix
@@ -121,7 +121,7 @@ inline void connect_components(
    auto cluster_cells = clusters_device.at(cluster_indice).items ; 
    
     
-    if (cindex < n_clusters)
+   // if (cindex < n_clusters)
     {
        // atomicAdd(&cluster_index_atomic[cluster_indice], 1);
       vecmem::device_atomic_ref<unsigned int>(
