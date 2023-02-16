@@ -105,7 +105,7 @@ inline void connect_components(
 
     // Get the cluster prefix sum for this module idx
     
-    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
+    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx );
     auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
 
     // Calculate the number of clusters found for this module from the prefix
@@ -139,10 +139,7 @@ inline void connect_components(
     
 
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
-   if (globalIndex < 60) {
-        printf(" clusters_device[cluster_indice]  %llu \n", 
-                clusters_device.get_items().at(cluster_indice).activation  );
-                 }
+   
    
     /*if (globalIndex < 7) {
         printf(" clusters_device[cluster_indice].items.at(0).activation %llu \n", 
