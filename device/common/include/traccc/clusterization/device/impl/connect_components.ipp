@@ -129,7 +129,14 @@ inline void connect_components(
             .fetch_add(1);
        
        clusters_device[cluster_indice].header = module_idx;
-         
+        
+         if (globalIndex >1111 && globalIndex < 1116) {
+        printf(" clusters_device[cluster_indice].header %llu \n", 
+                clusters_device[cluster_indice].header );
+        printf(" module_idx %llu \n", 
+                module_idx );       
+
+                 } 
         
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel0 = ch0[globalIndex];
       //cluster_cells.at(cluster_index_atomic[cluster_indice]).channel1 = ch1[globalIndex];
