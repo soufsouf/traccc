@@ -109,7 +109,7 @@ void calc_cluster_properties(
      
         // Translate the cell readout value into a weight.
         const scalar weight = cell.activation; 
-        if (cl_link < 5) {
+        if (cl_link < 10) {
     printf("weight %llu , cell.activation %llu \n",
             weight , cell.activation); }
         // Only consider cells over a minimum threshold.
