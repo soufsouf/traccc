@@ -163,11 +163,12 @@ __global__ void create_measurements(
     const traccc::headerView headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point2 > measurement_variance) {
+    vecmem::data::vector_view<point2 > measurement_variance,
+    const cell_container_types::const_view cells_view) {
 
     device::create_measurements(threadIdx.x + blockIdx.x * blockDim.x,
                                 clusters_view, headersView ,
-                                 Clusters_module_link, measurement_local, measurement_variance);
+                                 Clusters_module_link, measurement_local, measurement_variance , cells_view);
 }
 
 __global__ void form_spacepoints(
