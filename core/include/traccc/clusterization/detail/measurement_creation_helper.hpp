@@ -176,9 +176,9 @@ TRACCC_DEVICE inline void fill_measurement(
         /*printf("th %llu totweight %lf module %llu[%lf] pitch[%lf, %lf] \n", cl_link, totalWeight,
             module_link, module.threshold, pitch[0], pitch[1]);*/
 
-            if (cl_link > 9000 &&  cl_link < 9004) 
+           /* if (cl_link > 9000 &&  cl_link < 9004) 
             printf("var[0] %llu var[1] %llu\n",
-             var[0] , var[1]);  
+             var[0] , var[1]);   */
     }
 
 }
