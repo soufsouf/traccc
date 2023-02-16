@@ -181,7 +181,7 @@ __global__ void form_spacepoints(
         
         
 }
- __global__ void fill4(const traccc::headerView& headersView,
+ __global__ void fill4(const traccc::headerView headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
     vecmem::data::vector_view<point2 > measurement_variance,
@@ -201,8 +201,10 @@ __global__ void form_spacepoints(
     printf("hello fill4");
 //printf ("hello fill 4 is here ");
 int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
        if (idx >= Cl_module_link.size())
          return;
+
 
 
     std::size_t module_link = Cl_module_link[idx];
