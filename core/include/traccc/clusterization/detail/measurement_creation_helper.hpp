@@ -125,9 +125,9 @@ void calc_cluster_properties(
             }
         }
     }
-    if (cl_link< 51) 
+    /*if (cl_link< 51) 
     printf("totalWeight %llu \n",
-            totalWeight); 
+            totalWeight); */
 }
 
 
