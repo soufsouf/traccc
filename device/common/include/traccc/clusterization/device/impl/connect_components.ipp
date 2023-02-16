@@ -144,12 +144,12 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
   
    
-    if ( cluster_indice == 0 ){
+   /* if ( cluster_indice == 0 ){
        for (const cell& cell : clusters_device[cluster_indice].items){
     printf("\n cell.channel0 %llu \n", cell.channel0);
     printf("ch0 %llu \n", ch0[0]);
   } 
-  }
+  } */
     }
 
 /*    __syncthreads();
