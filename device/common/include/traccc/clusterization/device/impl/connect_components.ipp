@@ -145,7 +145,7 @@ inline void connect_components(
   
    
     if ( cluster_indice == 0 ){
-       for (const cell& cell : cluster){
+       for (const cell& cell : clusters_device[cluster_indice].items){
     printf("cell.channel0 %llu", cell.channel0);
   } 
   }
