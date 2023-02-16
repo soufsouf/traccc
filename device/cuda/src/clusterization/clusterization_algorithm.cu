@@ -198,7 +198,7 @@ __global__ void form_spacepoints(
     spacepoint_container_types::device spacepoints_device(spacepoints_view);
 
 
-    printf("hello fill4");
+    
 //printf ("hello fill 4 is here ");
 int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
