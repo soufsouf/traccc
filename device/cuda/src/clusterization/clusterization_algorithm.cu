@@ -18,7 +18,7 @@
 #include "traccc/clusterization/device/form_spacepoints.hpp"
 #include "traccc/cuda/utils/make_prefix_sum_buff.hpp"
 #include "traccc/device/fill_prefix_sum.hpp"
-
+#include "traccc/device/container_d2h_copy_alg.hpp"
 // Vecmem include(s).
 #include <vecmem/utils/copy.hpp>
 
