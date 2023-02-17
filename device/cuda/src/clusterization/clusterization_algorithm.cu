@@ -466,10 +466,21 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
        headersView, Clusters_module_link,measurement_local,global);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
+    
+
     kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
     headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
     CUDA_ERROR_CHECK(cudaGetLastError());
     
+    spacepoint_container_types::host spacepoint_host;
+    spacepoint_host = spacepoint_copy(spacepoints_buffer);
+    /*{
+        {total_clusters, m_mr.main},
+        {std::vector<std::size_t>(total_clusters, 0),
+         std::vector<std::size_t>(cluster_sizes.begin(), cluster_sizes.end()),
+         m_mr.main, m_mr.host}};
+    m_copy.setup(clusters_buffer.headers);
+    m_copy.setup(clusters_buffer.items);*/
     // Return the buffer. Which may very well not be filled at this point yet.
     return spacepoints_buffer;
 }
