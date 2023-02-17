@@ -219,7 +219,7 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
     // module idx
     spacepoints_device[module_link].header = module_device[module_link];
     if ( idx >1111 && idx < 1118  ){
-    printf("module_device[module_link] %llu \n", module_device[module_link]);
+    printf("module_device[%llu] %llu \n",module_link, module_device[module_link]);
   } 
     spacepoints_device[module_link].items.push_back(s);
     }
