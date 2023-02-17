@@ -207,6 +207,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
                 spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsView, moduleView, headersView);
+                spacepoint_container_types::host spacepoint_host_2;
+                spacepoint_host_2 = spacepoint_copy(spacepoints_cuda_buffer);
+                auto sp2 = spacepoint_host_2.get_headers().at(24);
+                printf("hello mismis2 %llu  | sp2 = %llu \n", spacepoint_host_2.total_size(), sp2);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 
