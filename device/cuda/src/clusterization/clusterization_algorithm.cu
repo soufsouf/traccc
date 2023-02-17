@@ -475,7 +475,8 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     
     spacepoint_container_types::host spacepoint_host;
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
-    printf("hello mismis");
+    printf("hello mismis %llu \n", spacepoint_host.total_size());
+
     /*{
         {total_clusters, m_mr.main},
         {std::vector<std::size_t>(total_clusters, 0),
