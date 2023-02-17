@@ -234,7 +234,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const cell_container_types::const_view& cells_view,
     const traccc::CellView& cellView, const traccc::ModuleView& moduleView , const traccc::headerView& headersView ) const {
 traccc::device::container_d2h_copy_alg<traccc::spacepoint_container_types>
-        spacepoint_copy{mr, copy};
+        spacepoint_copy{m_mr, m_copy};
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
@@ -475,6 +475,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     
     spacepoint_container_types::host spacepoint_host;
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
+    printf("hello mismis");
     /*{
         {total_clusters, m_mr.main},
         {std::vector<std::size_t>(total_clusters, 0),
