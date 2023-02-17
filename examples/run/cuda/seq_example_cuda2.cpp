@@ -202,6 +202,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             // Copy the cell data to the device.
             const traccc::cell_container_types::buffer cells_cuda_buffer =
                 cell_h2d(traccc::get_data(cells_per_event));
+               const spacepoint_container_types::host spacepoint_host_2;
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
@@ -210,7 +211,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
-                spacepoint_container_types::host spacepoint_host_2;
+                
                 spacepoint_host_2 = spacepoint_copy(spacepoints_cuda_buffer);
                 auto sp2 = spacepoint_host_2.get_headers().at(24);
                 printf("hello mismis2 %llu  | sp2 = %llu \n", spacepoint_host_2.total_size(), sp2);
