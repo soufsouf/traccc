@@ -477,7 +477,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
     auto sp = spacepoint_host.get_headers().at(24);
     printf("hello mismis %llu  | sp = %llu \n", spacepoint_host.total_size(), sp);
-    m_stream.synchronize();
+    
 
     /*{
         {total_clusters, m_mr.main},
