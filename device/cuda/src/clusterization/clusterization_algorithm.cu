@@ -450,9 +450,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
     m_copy.memset(measurement_variance, 0);
-    vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
+   /* vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
     m_copy.setup(global);
-    m_copy.memset(global, 0);
+    m_copy.memset(global, 0); */
 
 
     // Invoke measurements creation will call create measurements kernel
@@ -465,7 +465,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Invoke spacepoint formation will call form_spacepoints kernel
 
     kernels::form_spacepoints<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-       headersView, Clusters_module_link,measurement_local,global);
+       headersView, Clusters_module_link,measurement_local,measurement_variance , spacepoints_buffer );
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     
