@@ -174,10 +174,11 @@ __global__ void form_spacepoints(
     const traccc::headerView headersView,
     vecmem::data::vector_view<unsigned int > Clusters_module_link ,
     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point3 > global_spacepoint) {
+    vecmem::data::vector_view<point2 > measurement_variance,
+    spacepoint_container_types::view spacepoints_view) {
 
     device::form_spacepoints(threadIdx.x + blockIdx.x * blockDim.x, headersView,Clusters_module_link,
-     measurement_local ,global_spacepoint);
+     measurement_local , measurement_variance , spacepoints_view );
         
         
 }

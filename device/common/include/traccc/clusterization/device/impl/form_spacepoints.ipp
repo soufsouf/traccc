@@ -45,7 +45,7 @@ inline void form_spacepoints(
     const auto module_link = Cl_module_link[globalIndex];
     const auto local_ = local_measurement[globalIndex];
     const auto variance_ = variance_measurement[globalIndex];
-    const auto local_3d = {local_[0], local_[1], 0.};
+    const point3 local_3d = {local_[0], local_[1], 0.};
     const auto global = placement_device[module_link].point_to_global(local_3d);
     
     measurement m;
