@@ -469,9 +469,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     
 
-    kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
+   /* kernels::fill4<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
     headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
-    CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());  */
     
     spacepoint_container_types::host spacepoint_host;
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
