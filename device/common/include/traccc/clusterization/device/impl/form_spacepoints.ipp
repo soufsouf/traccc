@@ -13,15 +13,18 @@ TRACCC_HOST_DEVICE
 inline void form_spacepoints(
     std::size_t globalIndex,
     const traccc::headerView headersView,
-     vecmem::data::vector_view<unsigned int > Clusters_module_link,
-     vecmem::data::vector_view<point2 > measurement_local,
-    vecmem::data::vector_view<point3 >& global_spacepoint){
-//printf("hello world ****** \n");
+    vecmem::data::vector_view<unsigned int > Clusters_module_link,
+    vecmem::data::vector_view<point2 > measurement_local,
+    vecmem::data::vector_view<point2 > measurement_variance,
+    spacepoint_container_types::view spacepoints_view){
+
+    spacepoint_container_types::device spacepoints_device(spacepoints_view);
+    vecmem::device_vector<geometry_id> module_device(headersView.module);
     vecmem::device_vector<transform3> placement_device(headersView.placement);
-    //printf("hello  ****** \n");
+    vecmem::device_vector<point2> variance_measurement(measurement_variance);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
-    vecmem::device_vector<point3> global(global_spacepoint);
+    
 
     // Ignore if idx is out of range
     if (globalIndex >= Cl_module_link.size())
@@ -37,21 +40,22 @@ inline void form_spacepoints(
     /*********************************************************************************/
     
     /*********************************************************************************/
-    const auto module_index = Cl_module_link[globalIndex];
-    
-    point2 local =  local_measurement[globalIndex];
-    //const auto& placement = placement_device[module_index];
-    point3 local_3d = {local[0], local[1], 0.};
-   // if (globalIndex < 30) { printf("local[0] %llu\n", local_3d.at(0)); }
-  // if (globalIndex <30) { printf("local_measurement[globalIndex] %llu\n", local_measurement[globalIndex].at(0)); }
-    //printf("maissa \n");
-    global[globalIndex] = placement_device[module_index].point_to_global(local_3d);
-    
-    if ( globalIndex < 7 ){
-    printf("\n global[globalIndex] : %llu \n", global[globalIndex].at(0));
-  } 
 
+
+    const auto module_link = Cl_module_link[globalIndex];
+    const auto local_ = local_measurement[globalIndex];
+    const auto variance_ = variance_measurement[globalIndex];
+    const auto local_3d = {local_[0], local_[1], 0.};
+    const auto global = placement_device[module_link].point_to_global(local_3d);
     
+    measurement m;
+    m.cluster_link = module_link;
+    m.local = local_;
+    m.variance = variance_;
+
+  spacepoint s({global, m});
+  spacepoints_device[module_link].header = module_device[module_link];
+  spacepoints_device[module_link].items.push_back(s);  
 }
 
 }  // namespace traccc::device

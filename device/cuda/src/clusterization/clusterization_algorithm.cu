@@ -73,7 +73,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
   midx[is+doffset] = module_id_s[is+doffset];
  //printf(" activation: %f | activation_s : %f \n", activation[is+doffset],activation_s[is+doffset] );
  }  
- printf("aya hello ");
+// printf("aya hello ");
  //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
 /*
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -218,9 +218,9 @@ int idx = threadIdx.x + blockIdx.x * blockDim.x;
     // Push the speacpoint into the container at the appropriate
     // module idx
     spacepoints_device[module_link].header = module_device[module_link];
-    if ( idx >2258 && idx < 2270  ){
+   /* if ( idx >2258 && idx < 2270  ){
     printf("module_device[%llu] %llu \n",module_link, module_device[module_link]);
-  } 
+  } */
     spacepoints_device[module_link].items.push_back(s);
     }
 
@@ -476,7 +476,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     spacepoint_container_types::host spacepoint_host;
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
     auto sp = spacepoint_host.get_headers().at(72);
-    printf("hello mismis %llu  | sp = %llu \n", spacepoint_host.total_size(), sp);
+   // printf("hello mismis %llu  | sp = %llu \n", spacepoint_host.total_size(), sp);
     
 
     /*{

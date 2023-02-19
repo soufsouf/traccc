@@ -39,7 +39,8 @@ inline void form_spacepoints(
     const traccc::headerView headersView,
      vecmem::data::vector_view<unsigned int > Clusters_module_link,
      vecmem::data::vector_view<point2 > measurement_local,
-      vecmem::data::vector_view<point3 >& global_spacepoint);
+     vecmem::data::vector_view<point2 > measurement_variance,
+     spacepoint_container_types::view spacepoints_view);
 
 }  // namespace traccc::device
 
