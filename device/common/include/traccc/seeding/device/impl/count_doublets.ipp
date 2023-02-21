@@ -18,7 +18,7 @@
 
 namespace traccc::device {
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void count_doublets(
     std::size_t globalIndex, const seedfinder_config& config,
     const sp_grid_const_view& sp_view,
