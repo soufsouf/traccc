@@ -212,10 +212,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             }  // stop measuring clusterization cuda timer
                 traccc::spacepoint_container_types::host spacepoint_host_2;
                 spacepoint_host_2 = spacepoint_copy(spacepoints_cuda_buffer);
-                auto spp =  spacepoint_host_2.get_items ; 
-                if ( globalIndex < 50 ){
-                printf("\n s : %lf  local1 : %lf \n", spp.at(1).local[0] , spp.at(1).local[1]);
-                } 
+                auto sp2 = spacepoint_host_2.get_headers().at(72);
+                printf("hello mismis2 %llu  | sp2 = %llu \n", spacepoint_host_2.total_size(), sp2);
             if (run_cpu) {
 
                 /*-----------------------------

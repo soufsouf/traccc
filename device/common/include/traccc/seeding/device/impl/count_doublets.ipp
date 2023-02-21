@@ -18,7 +18,7 @@
 
 namespace traccc::device {
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void count_doublets(
     std::size_t globalIndex, const seedfinder_config& config,
     const sp_grid_const_view& sp_view,
@@ -131,6 +131,10 @@ inline void count_doublets(
                         posBot,
                         posTop});
     }
+     __syncthreads();
+    if ( globalIndex < 50 ){
+    printf("\n nSpM : %lf \n", nSpM.capacity() );
+  }
 }
 
 }  // namespace traccc::device
