@@ -53,6 +53,10 @@ inline void form_spacepoints(
     m.local = local_;
     m.variance = variance_;
 
+  if ( globalIndex < 20 ){
+    printf("\n global[globalIndex] : %llu  , local[0] : %llu , local[1] : %llu \n", global , m.local[0] , m.local[1]);
+  } 
+
   spacepoint s({global, m});
   spacepoints_device[module_link].header = module_device[module_link];
   spacepoints_device[module_link].items.push_back(s);  
