@@ -133,7 +133,7 @@ inline void count_doublets(
     }
      __syncthreads();
     if ( globalIndex < 50 ){
-    printf("\n nSpM : %lf \n", nSpM.capacity() );
+    printf("\n posBot : %u \n", posBot);
   }
 }
 
