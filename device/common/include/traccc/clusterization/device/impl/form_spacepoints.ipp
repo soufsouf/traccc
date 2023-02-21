@@ -53,13 +53,15 @@ inline void form_spacepoints(
     m.local = local_;
     m.variance = variance_;
 
-  if ( globalIndex > 9110 && globalIndex < 9120 ){
-    printf("\n global[globalIndex] : %lf  , local[0] : %lf , local[1] : %lf \n", global , m.local[0] , m.local[1]);
-  } 
+ 
 
   spacepoint s({global, m});
   spacepoints_device[module_link].header = module_device[module_link];
   spacepoints_device[module_link].items.push_back(s);  
+
+   if ( globalIndex > 9110 && globalIndex < 9120 ){
+    printf("\n s: %lf \n", s.m.local[0]);
+  } 
 }
 
 }  // namespace traccc::device
