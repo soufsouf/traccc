@@ -53,7 +53,7 @@ inline void form_spacepoints(
     m.local = local_;
     m.variance = variance_;
 
-  if ( globalIndex < 20 ){
+  if ( globalIndex > 9110 && globalIndex < 9120 ){
     printf("\n global[globalIndex] : %llu  , local[0] : %llu , local[1] : %llu \n", global , m.local[0] , m.local[1]);
   } 
 
