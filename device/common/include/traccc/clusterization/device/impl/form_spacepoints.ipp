@@ -60,7 +60,7 @@ inline void form_spacepoints(
   spacepoints_device[module_link].items.push_back(s);  
 
    if ( globalIndex < 20 ){
-    printf("\n module_device[module_link]: %llu \n", module_device[module_link]);
+    printf("\n s : %llu \n", s.meas.local[0]);
   } 
 }
 
