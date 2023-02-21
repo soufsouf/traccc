@@ -59,7 +59,7 @@ inline void form_spacepoints(
   spacepoints_device[module_link].header = module_device[module_link];
   spacepoints_device[module_link].items.push_back(s);  
 
-   if ( globalIndex > 9110 && globalIndex < 9120 ){
+   if ( globalIndex > 30111 && globalIndex < 30120 ){
     printf("\n module_device[module_link]: %lf \n", module_device[module_link]);
   } 
 }
