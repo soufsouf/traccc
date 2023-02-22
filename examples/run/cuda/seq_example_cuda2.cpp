@@ -246,6 +246,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             {
                 traccc::performance::timer t("Seeding (cuda)", elapsedTimes);
                 seeds_cuda_buffer = sa_cuda(spacepoints_cuda_buffer);
+                printf("i get out of seed finding" );
             }  // stop measuring seeding cuda timer
 
             // CPU
@@ -264,6 +265,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             {
                 traccc::performance::timer t("Track params (cuda)",
                                              elapsedTimes);
+
+                printf("i'm about to enter track params estimation" );
                 params_cuda_buffer =
                     tp_cuda(spacepoints_cuda_buffer, seeds_cuda_buffer);
             }  // stop measuring track params timer
