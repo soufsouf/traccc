@@ -47,9 +47,7 @@ inline void estimate_track_params(
     // Save the object into global memory.
     params_device[globalIndex] = track_params;
 
-    for (const auto& h : tcc_headers ) {
     
-   }
 }
 
 }  // namespace traccc::device
