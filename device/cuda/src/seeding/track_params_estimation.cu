@@ -71,8 +71,10 @@ track_params_estimation::output_type track_params_estimation::operator()(
         spacepoints_view, seeds_view, params_buffer);
 
     // cuda error check
-    //CUDA_ERROR_CHECK(cudaGetLastError());
-    //CUDA_ERROR_CHECK(cudaDeviceSynchronize());
+    CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaDeviceSynchronize());
+
+    printf ("hello if u see me ")
 
     return params_buffer;
 }
