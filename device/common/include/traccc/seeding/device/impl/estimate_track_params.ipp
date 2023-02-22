@@ -36,6 +36,9 @@ inline void estimate_track_params(
 
     const seed& this_seed = seeds_device.at(globalIndex);
 
+    if (globalIndex < 50)
+      printf("seed element : %llu \n" , this_seed); 
+
     // Get bound track parameter
     bound_track_parameters track_params;
     track_params.set_vector(seed_to_bound_vector(spacepoints_device, this_seed,
@@ -43,6 +46,10 @@ inline void estimate_track_params(
 
     // Save the object into global memory.
     params_device[globalIndex] = track_params;
+
+    for (const auto& h : tcc_headers ) {
+    
+   }
 }
 
 }  // namespace traccc::device
