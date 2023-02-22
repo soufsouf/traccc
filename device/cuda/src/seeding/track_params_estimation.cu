@@ -46,7 +46,7 @@ track_params_estimation::output_type track_params_estimation::operator()(
 
     // Get the size of the seeds view
     const std::size_t seeds_size = m_copy->get_size(seeds_view);
-
+printf("hi i'm inside track_params_estimation" );
     // Create device buffer for the parameters
     bound_track_parameters_collection_types::buffer params_buffer(seeds_size,
                                                                   m_mr.main);
