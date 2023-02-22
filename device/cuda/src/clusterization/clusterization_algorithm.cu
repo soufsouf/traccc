@@ -18,7 +18,7 @@
 #include "traccc/clusterization/device/form_spacepoints.hpp"
 #include "traccc/cuda/utils/make_prefix_sum_buff.hpp"
 #include "traccc/device/fill_prefix_sum.hpp"
-#include "traccc/device/container_d2h_copy_alg.hpp"
+//#include "traccc/device/container_d2h_copy_alg.hpp"
 // Vecmem include(s).
 #include <vecmem/utils/copy.hpp>
 
@@ -193,8 +193,8 @@ clusterization_algorithm2::clusterization_algorithm2(
 clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const cell_container_types::const_view& cells_view,
     const traccc::CellView& cellView, const traccc::ModuleView& moduleView , const traccc::headerView& headersView ) const {
-traccc::device::container_d2h_copy_alg<traccc::spacepoint_container_types>
-        spacepoint_copy{m_mr, m_copy};
+/*traccc::device::container_d2h_copy_alg<traccc::spacepoint_container_types>
+        spacepoint_copy{m_mr, m_copy}; */
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
@@ -408,7 +408,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     vecmem::data::vector_buffer<point2> measurement_variance(total_clusters, m_mr.main);
     m_copy.setup(measurement_variance);
-    m_copy.memset(measurement_variance, 0);
+    //m_copy.memset(measurement_variance, 0);
    /* vecmem::data::vector_buffer<point3> global(total_clusters, m_mr.main);
     m_copy.setup(global);
     m_copy.memset(global, 0); */
