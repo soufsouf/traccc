@@ -217,7 +217,6 @@ inline void select_seeds(
             seed_device.push_back(aSeed);   ////  vector of struct 
         }
     }
-    if (globalIndex < 50) { printf(" seed_device[0].spB.m_link %llu  , seed_device[0].spM.m_link %llu \n " , seed_device[0].at(0) , seed_device[0].at(1) ); }
 }
 
 }  // namespace traccc::device
