@@ -25,7 +25,7 @@ inline void estimate_track_params(
     if (globalIndex >= seeds_device.size()) {
         return;
     }
-printf("hi i'm inside track_params_estimation ipp " );
+
     const spacepoint_container_types::const_device spacepoints_device(
         spacepoints_view);
 
