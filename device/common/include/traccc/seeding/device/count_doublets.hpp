@@ -30,7 +30,7 @@ namespace traccc::device {
 /// @param[in] sp_ps_view    Prefix sum for iterating over the spacepoint grid
 /// @param[out] doublet_view Container storing the number of doublets
 ///
-TRACCC_DEVICE
+TRACCC_HOST_DEVICE
 inline void count_doublets(
     std::size_t globalIndex, const seedfinder_config& config,
     const sp_grid_const_view& sp_view,
