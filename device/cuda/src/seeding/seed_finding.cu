@@ -223,7 +223,7 @@ seed_collection_types::buffer seed_finding::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());
     CUDA_ERROR_CHECK(cudaDeviceSynchronize());
 
-    for (int i = 0 ; i < 100 ; i++ ) { printf(" mb_buffer_sizes %llu" , mb_buffer_sizes[i]); }
+    
 
     // Count the number of triplets that we need to produce.
     kernels::count_triplets<<<nTripletCountBlocks, nTripletCountThreads>>>(
