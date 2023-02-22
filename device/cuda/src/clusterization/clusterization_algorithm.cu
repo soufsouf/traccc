@@ -433,7 +433,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     headersView, Clusters_module_link,measurement_local, measurement_variance,global,spacepoints_buffer );
     CUDA_ERROR_CHECK(cudaGetLastError());  */
     
-   /* spacepoint_container_types::host spacepoint_host;
+    /*spacepoint_container_types::host spacepoint_host;
     spacepoint_host = spacepoint_copy(spacepoints_buffer);
     auto sp = spacepoint_host.get_headers().at(72);
    // printf("hello mismis %llu  | sp = %llu \n", spacepoint_host.total_size(), sp); */
