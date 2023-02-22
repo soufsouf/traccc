@@ -74,7 +74,7 @@ track_params_estimation::output_type track_params_estimation::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());
     CUDA_ERROR_CHECK(cudaDeviceSynchronize());
 
-    printf ("hello if u see me ")
+    printf ("hello if u see me say hi");
 
     return params_buffer;
 }
