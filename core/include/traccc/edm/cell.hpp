@@ -13,6 +13,13 @@
 #include "traccc/edm/container.hpp"
 #include "traccc/geometry/pixel_data.hpp"
 
+// VecMem include(s).
+#include <vecmem/memory/cuda/device_memory_resource.hpp>
+#include <vecmem/memory/cuda/host_memory_resource.hpp>
+#include <vecmem/memory/host_memory_resource.hpp>
+#include <vecmem/utils/cuda/async_copy.hpp>
+#include <vecmem/utils/cuda/copy.hpp>
+
 // System include(s).
 #include <cmath>
 #include <limits>
@@ -72,74 +79,204 @@ struct cell_module {
 
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 
-using int_vec = std::vector<unsigned int>;
-using scalar_vec = std::vector<scalar>;
-struct CellVec {
-    int_vec channel0;
-    int_vec channel1;
-    scalar_vec activation;
-    scalar_vec time;
-    int_vec module_id;
-    int_vec cluster_id;
-    std::size_t size;
-    std::size_t module_size;
-};
+using int_vec = vecmem::vector<unsigned int>;
+using scalar_vec = vecmem::vector<scalar>;
 
 using int_buf = vecmem::data::vector_buffer<unsigned int>;
 using scalar_buf = vecmem::data::vector_buffer<scalar>;
-struct CellBuf {
-    int_buf channel0;
-    int_buf channel1;
-    scalar_buf activation;
-    scalar_buf time;
-    int_buf module_id;
-    int_buf cluster_id;
-};
 
 using int_view = vecmem::data::vector_view<unsigned int>;
 using scalar_view = vecmem::data::vector_view<scalar>;
-struct CellView {
+
+using int_device = vecmem::device_vector<unsigned int>;
+using scalar_device = vecmem::device_vector<scalar>;
+
+struct CellsHost {
+    int_vec     channel0;
+    int_vec     channel1;
+    scalar_vec  activation;
+    scalar_vec  time;
+    int_vec     module_id;
+    int_vec     cluster_id;
+    std::size_t size;
+};
+
+class CellsDevice {
+public:
+    int_buf m_channel0;
+    int_buf m_channel1;
+    scalar_buf m_activation;
+    scalar_buf m_time;
+    int_buf m_module_id;
+    int_buf m_cluster_id;
+
     int_view channel0;
     int_view channel1;
     scalar_view activation;
     scalar_view time;
     int_view module_id;
     int_view cluster_id;
+
+    std::size_t size;
+
+    CellsDevice()
+        : size(0) {
+        m_channel0   = int_buf();
+        m_channel1   = int_buf();
+        m_activation = scalar_buf();
+        m_time       = scalar_buf();
+        m_module_id  = int_buf();
+        m_cluster_id = int_buf();
+
+        channel0   = int_view();
+        channel1   = int_view();
+        activation = scalar_view();
+        time       = scalar_view();
+        module_id  = int_view();
+        cluster_id = int_view();
+    }
+
+    CellsDevice(const traccc::CellsDevice &c) {
+        channel0 = c.channel0;
+        channel1 = c.channel1;
+        activation = c.activation;
+        time = c.time;
+        module_id = c.module_id;
+        cluster_id = c.cluster_id;
+
+        size = c.size;
+    }
+
+    void SetSize(std::size_t s, vecmem::memory_resource& mr,
+                 vecmem::cuda::async_copy& copy) {
+        size = s;
+        m_channel0   = int_buf(s, mr);
+        m_channel1   = int_buf(s, mr);
+        m_activation = scalar_buf(s, mr);
+        m_time       = scalar_buf(s, mr);
+        m_module_id  = int_buf(s, mr);
+        m_cluster_id = int_buf(s, mr);
+        copy.setup(m_channel0);
+        copy.setup(m_channel1);
+        copy.setup(m_activation);
+        copy.setup(m_time);
+        copy.setup(m_module_id);
+        copy.setup(m_cluster_id);
+        channel0   = vecmem::get_data(m_channel0);
+        channel1   = vecmem::get_data(m_channel1);
+        activation = vecmem::get_data(m_activation);
+        time       = vecmem::get_data(m_time);
+        module_id  = vecmem::get_data(m_module_id);
+        cluster_id = vecmem::get_data(m_cluster_id);
+    }
+
+    void CopyToDevice(const CellsHost &cellsHost,
+                      vecmem::cuda::async_copy& copy) {
+        copy(vecmem::get_data(cellsHost.channel0), channel0,
+             vecmem::copy::type::copy_type::host_to_device);
+        copy(vecmem::get_data(cellsHost.channel1), channel1,
+             vecmem::copy::type::copy_type::host_to_device);
+        copy(vecmem::get_data(cellsHost.activation), activation,
+             vecmem::copy::type::copy_type::host_to_device);
+        copy(vecmem::get_data(cellsHost.time), time,
+             vecmem::copy::type::copy_type::host_to_device);
+        copy(vecmem::get_data(cellsHost.module_id), module_id,
+             vecmem::copy::type::copy_type::host_to_device);
+        copy(vecmem::get_data(cellsHost.cluster_id), cluster_id,
+             vecmem::copy::type::copy_type::host_to_device);
+    }
 };
 
-using int_device = vecmem::device_vector<unsigned int>;
-using scalar_device = vecmem::device_vector<scalar>;
-struct CellVecDevice {
+
+struct CellsRefDevice {
     int_device channel0;
     int_device channel1;
     scalar_device activation;
     scalar_device time;
     int_device module_id;
     int_device cluster_id;
+
+/*TRACCC_DEVICE
+    CellsRefDevice(const traccc::CellsDevice &c)
+    : channel0(int_device(c.channel0)) {
+        channel1   = int_device(c.channel1);
+        activation = scalar_device(c.activation);
+        time       = scalar_device(c.time);
+        module_id  = int_device(c.module_id);
+        cluster_id = int_device(c.cluster_id);
+    }   */ 
 };
 
-struct Cluster {
-    int_view cells_prefix_sum;
-    int_view module_id;
-};
-
-struct ModuleView {
-    int_view cells_prefix_sum;
-    int_view clusters_prefix_sum;
-};
-
-struct ModuleVec {
+struct ModulesHost {
     int_vec cells_prefix_sum;
     int_vec clusters_prefix_sum;
     std::size_t size;
 };
-struct ModuleBuf {
-    int_buf cells_prefix_sum;
-    int_buf clusters_prefix_sum;
+
+class ModulesDevice {
+public:
+    int_buf m_cells_prefix_sum;
+    int_buf m_clusters_prefix_sum;
+
+    int_view cells_prefix_sum;
+    int_view clusters_prefix_sum;
+
+    std::size_t size;
+
+    ModulesDevice()
+        : size(0) {
+        m_cells_prefix_sum    = int_buf();
+        m_clusters_prefix_sum = int_buf();
+        cells_prefix_sum      = int_view();
+        clusters_prefix_sum   = int_view();
+    }
+
+    ModulesDevice(const ModulesDevice &m) {
+        cells_prefix_sum = m.cells_prefix_sum;
+        clusters_prefix_sum = m.clusters_prefix_sum;
+
+        size = m.size;
+    }
+
+    void SetSize(std::size_t s, vecmem::memory_resource& mr,
+                 vecmem::cuda::async_copy& copy) {
+        size = s;
+        m_cells_prefix_sum    = int_buf(s, mr);
+        m_clusters_prefix_sum = int_buf(s, mr);
+        copy.setup(m_cells_prefix_sum);
+        copy.setup(m_clusters_prefix_sum);
+        cells_prefix_sum   = vecmem::get_data(m_cells_prefix_sum);
+        clusters_prefix_sum   = vecmem::get_data(m_clusters_prefix_sum);
+    }
+
+    void CopyToDevice(const ModulesHost &modulesHost,
+                      vecmem::cuda::async_copy& copy) {
+        copy(vecmem::get_data(modulesHost.cells_prefix_sum),
+                   cells_prefix_sum,
+                   vecmem::copy::type::copy_type::host_to_device);
+        /* async_copy(vecmem::get_data(modulesHost.clusters_prefix_sum),
+                      clusters_prefix_sum,
+                      vecmem::copy::type::copy_type::host_to_device); */
+    }
 };
-struct ModuleVecDevice {
+
+struct ModulesRefDevice {
     int_device cells_prefix_sum;
     int_device clusters_prefix_sum;
+};
+
+struct ClustersDevice {
+    int_view cells_prefix_sum;
+    int_view module_id;
+
+    vecmem::memory_resource& m_mr;
+    vecmem::copy& m_copy;
+    std::size_t size;
+};
+
+struct ClustersRefDevice {
+    int_device cells_prefix_sum;
+    int_device module_id;
 };
 
 /// Equality operator for cell module
