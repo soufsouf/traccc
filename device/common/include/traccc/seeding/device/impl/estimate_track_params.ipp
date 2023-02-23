@@ -40,7 +40,7 @@ inline void estimate_track_params(
 
     // Get bound track parameter
     bound_track_parameters track_params;
-    track_params.set_vector(seed_to_bound_vector(spacepoints_device, this_seed,
+    if (globalIndex < 50) track_params.set_vector(seed_to_bound_vector(spacepoints_device, this_seed,
                                                  bfield, PION_MASS_MEV));
 
     // Save the object into global memory.
