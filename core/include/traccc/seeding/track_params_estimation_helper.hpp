@@ -140,7 +140,7 @@ inline TRACCC_HOST_DEVICE bound_vector seed_to_bound_vector(
     }
 
 
-      printf("seed element : %llu \n" , params); 
+      printf(" params : %llu \n" , params); 
 
     return params;
 }
