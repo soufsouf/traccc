@@ -191,11 +191,11 @@ cell_container_types::host read_cells(std::string_view filename,
 
 cell_container_types::host
 read_cells2(std::string_view filename,
-                                       CellVec *cellsVec,
-                                       ModuleVec *moduleVec,
-                                      const geometry* geom,
-                                      const digitization_config* dconfig,
-                                      vecmem::memory_resource* mr) {
+            CellsHost *cellsVec,
+            ModulesHost *moduleVec,
+            const geometry* geom,
+            const digitization_config* dconfig,
+            vecmem::memory_resource* mr) {
                                     
     std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
     // Construct the cell reader object.
@@ -239,21 +239,21 @@ read_cells2(std::string_view filename,
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
     // The number of modules that have cells in them.
-    const std::size_t size = modules.size();
-    const std::size_t allCellsCount = allCells.size();
+    const std::size_t modulesCount = modules.size();
+    const std::size_t cellsCount = allCells.size();
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
-    (*cellsVec).channel0 = int_vec(allCellsCount); //channel0
-    (*cellsVec).channel1 = int_vec(allCellsCount); // channel1
-    (*cellsVec).activation = scalar_vec(allCellsCount); // activation
-    (*cellsVec).time = scalar_vec(allCellsCount); // time
-    (*cellsVec).module_id = int_vec(allCellsCount); // module_id
-    (*cellsVec).cluster_id = int_vec(allCellsCount); // cluster_id
-    (*cellsVec).size = allCellsCount;
+    (*cellsVec).channel0 = int_vec(cellsCount); //channel0
+    (*cellsVec).channel1 = int_vec(cellsCount); // channel1
+    (*cellsVec).activation = scalar_vec(cellsCount); // activation
+    (*cellsVec).time = scalar_vec(cellsCount); // time
+    (*cellsVec).module_id = int_vec(cellsCount); // module_id
+    (*cellsVec).cluster_id = int_vec(cellsCount); // cluster_id
+    (*cellsVec).size = cellsCount;
 
-    (*moduleVec).cells_prefix_sum = int_vec(size);
-    (*moduleVec).clusters_prefix_sum = int_vec(size);
-    (*moduleVec).size = size;
+    (*moduleVec).cells_prefix_sum = int_vec(modulesCount);
+    (*moduleVec).clusters_prefix_sum = int_vec(modulesCount);
+    (*moduleVec).size = modulesCount;
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
@@ -273,13 +273,13 @@ read_cells2(std::string_view filename,
     // Construct the result container, and set up its headers.
     cell_container_types::host result;
     if (mr != nullptr) {
-        result = cell_container_types::host{size, mr};
+        result = cell_container_types::host{modulesCount, mr};
     } else {
         result = cell_container_types::host{
-            cell_container_types::host::header_vector{size},
-            cell_container_types::host::item_vector{size}};
+            cell_container_types::host::header_vector{modulesCount},
+            cell_container_types::host::item_vector{modulesCount}};
     }
-    for (std::size_t i = 0; i < size; ++i) {
+    for (std::size_t i = 0; i < modulesCount; ++i) {
 
         // Make sure that we would have just the right amount of space available
         // for the cells.
