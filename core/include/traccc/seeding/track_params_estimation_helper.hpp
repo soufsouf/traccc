@@ -139,6 +139,9 @@ inline TRACCC_HOST_DEVICE bound_vector seed_to_bound_vector(
             getter::norm(sp_global_positions[0]) / v;
     }
 
+if (globalIndex < 50)
+      printf("seed element : %llu \n" , params); 
+
     return params;
 }
 

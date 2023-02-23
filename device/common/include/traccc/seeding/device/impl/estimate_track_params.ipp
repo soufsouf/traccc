@@ -36,8 +36,7 @@ inline void estimate_track_params(
 
     const seed& this_seed = seeds_device.at(globalIndex);
 
-    if (globalIndex < 50)
-      printf("seed element : %llu \n" , this_seed); 
+    
 
     // Get bound track parameter
     bound_track_parameters track_params;
@@ -46,6 +45,7 @@ inline void estimate_track_params(
 
     // Save the object into global memory.
     params_device[globalIndex] = track_params;
+    
 
     
 }
