@@ -18,7 +18,7 @@ inline void count_cluster_cells(
     std::size_t globalIndex,
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,   /// not used 
-    const CellView& cellView,
+    const CellsDevice& cellView,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view
     )   {
 
@@ -72,9 +72,12 @@ inline void count_cluster_cells(
             device_cluster_sizes[cluster_indice])
             .fetch_add(1);*/
     }
-   /* printf("device_cluster_sizes[cluster_indice] : %u \n", device_cluster_sizes[cluster_indice]);
-printf("fin count cluster");*/
-    }  
+
+    /*if (globalIndex < 100)
+        printf("th %llu device_cluster_sizes[cluster_indice] : %u \n", globalIndex,
+            device_cluster_sizes[cluster_indice]);*/
+   //printf("fin count cluster");
+}  
     
    // __syncthreads();
     // brust prefix sum (scan operation)

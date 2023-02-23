@@ -73,7 +73,7 @@ inline void connect_components(
 TRACCC_DEVICE
 inline void connect_components(
     std::size_t globalIndex,
-    const CellView& cellView,
+    const CellsDevice& cellView,
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
@@ -88,8 +88,6 @@ inline void connect_components(
     vecmem::device_vector<unsigned int> labels(celllabel);
     vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);
     vecmem::device_vector<std::size_t> device_cluster_prefix_sum(cluster_prefix_sum_view);
-    
-
 
     if (globalIndex >= labels.size())
         return;
@@ -104,9 +102,8 @@ inline void connect_components(
     unsigned int cindex = labels[globalIndex] - 1;
 
     // Get the cluster prefix sum for this module idx
-    
-    const std::size_t prefix_sum = (module_idx == 0 ? 0 : module_idx - 1);
-    auto cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex;
+    auto cluster_indice = (module_idx==0 ? cindex: 
+                                device_cluster_prefix_sum[module_idx - 1]+ cindex);
 
     // Calculate the number of clusters found for this module from the prefix
     // sums
@@ -118,8 +115,7 @@ inline void connect_components(
     // Push back the cells to the correct item vector indicated
     // by the cluster prefix sum  -
 
-   auto cluster_cells = clusters_device.at(cluster_indice).items ; 
-   
+   auto cluster_cells = clusters_device.at(cluster_indice).items;
     
     if (cindex < n_clusters)
     {
@@ -135,7 +131,8 @@ inline void connect_components(
       cluster_cells[cluster_index_atomic[cluster_indice]].activation = activation[globalIndex]; */ 
 
 
-      clusters_device[cluster_indice].items.push_back({ch0[globalIndex] , ch1[globalIndex] , activation[globalIndex] , 0.  });
+      clusters_device[cluster_indice].items.push_back(
+        {ch0[globalIndex], ch1[globalIndex], activation[globalIndex], 0.});
     }
 
 /*    __syncthreads();

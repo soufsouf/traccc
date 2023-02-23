@@ -29,7 +29,7 @@ inline void create_measurements(
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point2> variance_measurement(measurement_variance);
     
-  
+
     // Ignore if idx is out of range
     if (globalIndex >= Cl_module_link.size()) /// faux 
         return;
@@ -52,7 +52,7 @@ inline void create_measurements(
             globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
 
     // Should not happen
-   assert(clusters_device.empty() == false);
+   //assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
     

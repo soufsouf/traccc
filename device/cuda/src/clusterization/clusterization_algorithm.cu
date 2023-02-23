@@ -26,135 +26,43 @@
 #include <algorithm>
 
 
-std::size_t cellcount;
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 namespace traccc::cuda {
     
 namespace kernels {
 
-__global__ void fill_buffers(const cell_container_types::const_view cells_view,
-                             vecmem::data::vector_view<unsigned int> channel0,
-                             vecmem::data::vector_view<unsigned int> channel1,
-                             vecmem::data::vector_view<scalar> activat,
-                             vecmem::data::vector_view<unsigned int> cumulsize,
-                             vecmem::data::vector_view<unsigned int> moduleidx,
-                             const CellView cellView,
-                             const ModuleView moduleView) {
-
-    cell_container_types::const_device cells_device(cells_view);
-    vecmem::device_vector<unsigned int> ch0(channel0);
-    vecmem::device_vector<unsigned int> ch1(channel1);
-    vecmem::device_vector<scalar> activation(activat);
-    vecmem::device_vector<unsigned int> sum(cumulsize);
-    vecmem::device_vector<unsigned int> midx(moduleidx);
-/*    CellVecDevice cellbuf(cell_buf);
-    CellVecDevice cell_device(cellView);
-    ModuleVecDevice modulebuf(module_buf);
-    ModuleVecDevice module_device(moduleView);
-  */
- vecmem::device_vector<unsigned int> ch0_s(cellView.channel0);
- vecmem::device_vector<unsigned int> ch1_s(cellView.channel1);
- vecmem::device_vector<scalar> activation_s(cellView.activation);
- vecmem::device_vector<scalar>  time_s(cellView.time);
- vecmem::device_vector<unsigned int> module_id_s(cellView.module_id);
- vecmem::device_vector<unsigned int> prefix_sum_s(moduleView.cells_prefix_sum);
- int idx = threadIdx.x + blockIdx.x * blockDim.x;
-  sum[idx] = prefix_sum_s[idx];
-//if (idx < 60)
-//printf(" prefix_sum_s : %u, sum :  %u  \n",prefix_sum_s[idx], sum[idx]);
-//printf(" somme module : %u et thread : %d | channel_s 1 : %u | module_id_s : %u |  activation_s : %f \n", prefix_sum_s[idx], idx,  ch1_s[idx],module_id_s[idx],activation_s[idx] );
-
-  unsigned int doffset = (idx==0? 0 : sum[idx-1]);
-  unsigned int n_cells = sum[idx] - doffset;
- for(unsigned int is =0  ; is < n_cells ; is++ ){
-   ch0[is +doffset ] = ch0_s[is+doffset];
-   ch1[is+doffset] = ch1_s[is+doffset];
-   activation[is+doffset] = activation_s[is+doffset];
-  midx[is+doffset] = module_id_s[is+doffset];
- //printf(" activation: %f | activation_s : %f \n", activation[is+doffset],activation_s[is+doffset] );
- }  
- printf("aya hello ");
- //printf("prefix sum : %u et channel 0 : %u\n",prefix_sum_s[idx] , ch0[idx]);
-/*
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-    if (idx >= cells_device.size())
-        return;
-
-    const auto& cells = cells_device.at(idx).items;
-    
-    unsigned int doffset = 0;
-    for (int i=0; i < idx; i++) {
-        doffset+= cells_device.at(i).items.size();
-    }
-    sum.at(idx) = doffset;
-
-    if (idx == cells_device.size() - 1) {
-        sum.at(idx+1) = doffset + cells_device.at(idx).items.size();
-    }
-
-    std::size_t n_cells = cells.size();
-    for (int i=0; i < n_cells; i++) {
-        ch0.at(i+doffset) = cells[i].channel0;
-        ch1.at(i+doffset) = cells[i].channel1;
-activation.at(i+doffset)=cells[i].activation;
-        midx.at(i+doffset) = idx;
-    }*/
-}
-
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
-    const CellView cellView,
-    const ModuleView moduleView,
+    const CellsDevice cellsDevice,
+    const ModulesDevice modulesDevice,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
-                          cellView,moduleView,
+                          cellsDevice,modulesDevice,
                           label_view, clusters_per_module_view);
 }
-
-__global__ void fill2(vecmem::data::vector_view<unsigned int> label_view,
-                      vecmem::data::jagged_vector_view<unsigned int> sparse_ccl_indices_view,
-                      vecmem::data::vector_view<unsigned int> cumulsize) {
-
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
-    if (idx >= cumulsize.size()-1)
-        return;
-    
-    vecmem::device_vector<unsigned int> labels(label_view);
-    vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
-        sparse_ccl_indices_view);
-    vecmem::device_vector<unsigned int> sum(cumulsize);
-
-    unsigned int doffset = sum[idx];
-    const unsigned int n_cells = sum[idx+1] - doffset;
-    for (int i=0; i < n_cells; i++) {
-        device_sparse_ccl_indices[idx][i] = labels[i+doffset];
-    }
-}
-
- 
 
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    const CellView cellView,
+    const CellsDevice cellsDevice,
     vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
         threadIdx.x + blockIdx.x * blockDim.x, label_view,
-        cluster_prefix_sum_view , cellView , clusters_view );
+        cluster_prefix_sum_view , cellsDevice , clusters_view );
 }
 
 __global__ void connect_components(
-     const CellView cellView,
+     const CellsDevice cellsDevice,
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
      cluster_container_types::view  clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
-                               cellView, label_view,
+                               cellsDevice, label_view,
                                cluster_prefix_sum_view, cluster_idx_atomic,
                                clusters_view);
 }
@@ -223,51 +131,15 @@ clusterization_algorithm2::clusterization_algorithm2(
 
 clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const cell_container_types::const_view& cells_view,
-    const traccc::CellView& cellView, const traccc::ModuleView& moduleView ) const {
+    const traccc::CellsDevice& cellsDevice, const traccc::ModulesDevice& modulesDevice ) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
     // Number of modules
     const cell_container_types::const_device::header_vector::size_type
-        num_modules = m_copy.get_size(cells_view.headers);
+    num_modules = modulesDevice.size;
 
-    // Work block size for kernel execution
-    const std::size_t threadsPerBlock = 512;
-    // Get the sizes of the cells in each module
-    const std::vector<
-        cell_container_types::const_device::item_vector::value_type::size_type>
-        cell_sizes = m_copy.get_sizes(cells_view.items);
-
-    cellcount = 0;
-    for (int i=0; i < cell_sizes.size(); i++) {
-        cellcount += cell_sizes[i];
-    }
-
-   
-                
-    //for (int i = 0 ; i< 60 ; i++ )
-        //printf("cellsView.channel0 : %u  \n", cc[i]);
-
-    //cellvec cells;
-   /* vecmem::data::vector_buffer<unsigned int> channel0(cellcount, m_mr.main);
-    m_copy.setup(channel0);
-    vecmem::data::vector_buffer<unsigned int> channel1(cellcount, m_mr.main);
-    m_copy.setup(channel1);
-    vecmem::data::vector_buffer<scalar> activation(cellcount, m_mr.main);
-    m_copy.setup(activation);
-    vecmem::data::vector_buffer<unsigned int> moduleidx(cellcount, m_mr.main);
-    m_copy.setup(moduleidx);
-    vecmem::data::vector_buffer<unsigned int> prefixsum(num_modules, m_mr.main);
-    m_copy.setup(prefixsum);
-    
-*/ 
-
-    std::size_t blocksPerGrid = (num_modules + threadsPerBlock - 1) / threadsPerBlock;
-    /*kernels::fill_buffers<<<blocksPerGrid, threadsPerBlock, 0, stream>>>
-                            (cells_view, channel0, channel1,activation, prefixsum,moduleidx ,cellView,
-                              moduleView);
-    CUDA_ERROR_CHECK(cudaGetLastError());*/
     /*
      * Helper container for sparse CCL calculations.
      * Each inner vector corresponds to 1 module.
@@ -275,12 +147,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      * and will indicate to which cluster, a particular cell in the module
      * belongs to.
      */
-    /*vecmem::data::jagged_vector_buffer<unsigned int> sparse_ccl_indices_buff(
-        std::vector<std::size_t>(cell_sizes.begin(), cell_sizes.end()),
-        m_mr.main, m_mr.host);
-    m_copy.setup(sparse_ccl_indices_buff);*/
-
-    vecmem::data::vector_buffer<unsigned int> label_buff(cellcount, m_mr.main);
+    vecmem::data::vector_buffer<unsigned int> label_buff(cellsDevice.size, m_mr.main);
     m_copy.setup(label_buff);
 
     /*
@@ -311,19 +178,20 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      * kernel. The remaining host vector - clusters_per_module_host, will be
      * needed to allocate memory for other buffers later in the code.
      */
-    
-    
-    
-    vecmem::data::vector_buffer<std::size_t> cl_per_module_prefix_buff(num_modules, m_mr.main);
+
+    vecmem::data::vector_buffer<std::size_t>
+        cl_per_module_prefix_buff(num_modules, m_mr.main);
     m_copy.setup(cl_per_module_prefix_buff);
 
+    // Work block size for kernel execution
+    const std::size_t threadsPerBlock = 64;
     // Calculating grid size for cluster finding kernel
-    blocksPerGrid =
+    std::size_t blocksPerGrid =
         (num_modules + threadsPerBlock - 1) / threadsPerBlock;
 
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, cellView, moduleView, label_buff, cl_per_module_prefix_buff);
+        cells_view, cellsDevice, modulesDevice, label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
@@ -388,14 +256,14 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     //printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cellcount + threadsPerBlock - 1) /
+    blocksPerGrid = (cellsDevice.size + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
 
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        label_buff, cl_per_module_prefix_buff, cellView,
+        label_buff, cl_per_module_prefix_buff, cellsDevice,
         cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
@@ -426,7 +294,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cellView, label_buff,
+        cellsDevice, label_buff,
         cl_per_module_prefix_buff, cluster_index_atomic,
         clusters_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError()); 
