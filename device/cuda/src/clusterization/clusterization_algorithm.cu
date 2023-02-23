@@ -91,7 +91,7 @@ __global__ void fill_buffers(const cell_container_types::const_view cells_view,
     if (idx == cells_device.size() - 1) {
         sum.at(idx+1) = doffset + cells_device.at(idx).items.size();
     }
-
+ 
     std::size_t n_cells = cells.size();
     for (int i=0; i < n_cells; i++) {
         ch0.at(i+doffset) = cells[i].channel0;
