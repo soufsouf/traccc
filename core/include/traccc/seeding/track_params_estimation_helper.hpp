@@ -53,6 +53,8 @@ inline TRACCC_HOST_DEVICE bound_vector seed_to_bound_vector(
     sp_global_positions[1] = spM.global;
     sp_global_positions[2] = spT.global;
 
+    printf(" spB.global : %llu , spM.global : %llu  spT.global  : %llu \n" , spB.global , spM.global , spT.global); 
+
     // Define a new coordinate frame with its origin at the bottom space
     // point, z axis long the magnetic field direction and y axis
     // perpendicular to vector from the bottom to middle space point.
@@ -140,7 +142,7 @@ inline TRACCC_HOST_DEVICE bound_vector seed_to_bound_vector(
     }
 
 
-      printf(" params : %llu \n" , params); 
+      
 
     return params;
 }
