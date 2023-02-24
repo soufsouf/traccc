@@ -119,7 +119,8 @@ inline void connect_components(
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
     }
 
-    
+       if (globalIndex > 100) { printf("header %llu \n", clusters_device[globalIndex].header); }
+ 
 }
 
 }  // namespace traccc::device
