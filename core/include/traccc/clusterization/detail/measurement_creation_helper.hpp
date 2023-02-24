@@ -126,9 +126,9 @@ void calc_cluster_properties(
             }
         }
     }
-    /*if (cl_link > 1111 &&  cl_link < 1114) 
+    if (cl_link > 1111 &&  cl_link < 1114) 
     printf("mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n",
-            mean[0] , mean[1] , var[0] , var[1]);  */
+            mean[0] , mean[1] , var[0] , var[1]);  
 }
 
 
