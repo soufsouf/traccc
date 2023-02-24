@@ -147,9 +147,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         cellsView, modulesView, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
-    // Create prefix sum buffer
-    vecmem::data::vector_buffer cells_prefix_sum_buff =
-        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream);
+    
 
     vecmem::vector<unsigned int> cl_per_module_prefix_host(
         m_mr.host ? m_mr.host : &(m_mr.main));
