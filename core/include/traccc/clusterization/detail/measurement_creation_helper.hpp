@@ -110,7 +110,7 @@ void calc_cluster_properties(
         // Translate the cell readout value into a weight.
         const scalar weight = cell.activation ; 
 
-        printf("pixels.pitch_x %llu  , pixels.pitch_y %llu  \n", pixels.pitch_x , pixels.pitch_y ); 
+         
 
         // Only consider cells over a minimum threshold.
         if (weight > threshold) {
@@ -128,9 +128,8 @@ void calc_cluster_properties(
             }
         }
     }
-    /*if (cl_link > 1111 &&  cl_link < 1114) 
-    printf("mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n",
-            mean[0] , mean[1] , var[0] , var[1]);  */
+   
+    printf("diff %llu , diff %llu\n", diff[0] , diff[1]); 
 }
 
 
