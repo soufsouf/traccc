@@ -41,8 +41,7 @@ inline void form_spacepoints(
     m.local = local_;
     m.variance = variance_;
 
-  printf("th %llu module geo %llu %lf %lf\n", globalIndex, module_device[module_link],
-      m.local[0], m.local[1]);
+  printf(" %lf %lf\n", m.local[0], m.local[1]);
   spacepoint s({global, m});
   spacepoints_device[module_link].header = module_device[module_link];
   spacepoints_device[module_link].items.push_back(s);
