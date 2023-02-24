@@ -119,7 +119,7 @@ inline void connect_components(
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
     }
 
-       if (globalIndex > 100) { printf("header %llu \n", clusters_device[globalIndex].header); }
+       if (globalIndex > 100) { printf(" module_idx  %llu header %llu \n", module_idx,clusters_device[globalIndex].header ); }
  
 }
 
