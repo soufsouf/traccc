@@ -57,11 +57,11 @@ inline void create_measurements(
     //assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    /*if ( globalIndex == 0 ){
+    if ( globalIndex > 1110 && globalIndex <  1120 ){
        for (const cell& cell : cluster){
     printf("cell.channel0 %llu", cell.channel0);
   } 
-  } */
+  } 
    
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
           , module_link, globalIndex );

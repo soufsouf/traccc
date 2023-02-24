@@ -129,8 +129,8 @@ void calc_cluster_properties(
         }
     }
    
-    printf("cl_link %u , mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n", cl_link
-             , mean[0] , mean[1] , var[0] , var[1]);  
+    /*printf("cl_link %u , mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n", cl_link
+             , mean[0] , mean[1] , var[0] , var[1]);   */
 }
 
 
