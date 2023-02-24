@@ -58,7 +58,7 @@ inline void create_measurements(
     if ( globalIndex > 10000  && globalIndex < 10010  ){
        /*for (const cell& cell : cluster ){
     printf("cell.activation %llu , globalIndex  %llu \n  ",  cell.activation, globalIndex ); } */
-    printf ("yes i'm here ")
+    printf ("yes i'm here ");
   } 
    
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
