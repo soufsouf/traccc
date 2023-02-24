@@ -110,7 +110,7 @@ void calc_cluster_properties(
         // Translate the cell readout value into a weight.
         const scalar weight = cell.activation ; 
 
-        printf("threshold %lf \n", threshold); 
+        printf("pixels.pitch_x %llu  , pixels.pitch_y %llu  \n", pixels.pitch_x , pixels.pitch_y ); 
 
         // Only consider cells over a minimum threshold.
         if (weight > threshold) {
