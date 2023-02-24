@@ -115,11 +115,13 @@ inline void connect_components(
     if (cindex < n_clusters)
     {
        clusters_device[cluster_indice].header = module_idx;
-      clusters_device[cluster_indice].items.push_back({ch0[globalIndex] ,
+              if (globalIndex < 1011 && globalIndex  > 1020) { printf(" header %llu \n", clusters_device[globalIndex].header ); }
+
+       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] ,
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
     }
 
-       if (globalIndex > 100) { printf(" module_idx  %llu header %llu \n", module_idx,clusters_device[globalIndex].header ); }
+      // if (globalIndex > 100) { printf(" module_idx  %llu header %llu \n", module_idx,clusters_device[globalIndex].header ); }
  
 }
 
