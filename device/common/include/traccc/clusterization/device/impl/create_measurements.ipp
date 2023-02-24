@@ -51,7 +51,7 @@ inline void create_measurements(
     const pixel_data pixels = pixel_device[module_link] ;
     
     
-    if (globalIndex > 10000  && globalIndex < 10010) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
+    if (globalIndex > 10000  && globalIndex < 10010) { printf("header %llu \n", clusters_device[globalIndex].header); }
 
     
     // Should not happen
