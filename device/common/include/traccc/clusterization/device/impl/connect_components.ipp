@@ -123,7 +123,7 @@ inline void connect_components(
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
 
                 if ( globalIndex > 10000  && globalIndex < 10010  ){
-       for (const cell& cell : cluster ){
+       for (const cell& cell : clusters_device[cluster_indice].items ){
     printf("cell.activation %llu , globalIndex  %llu \n  ",  cell.activation, globalIndex );
   } 
   }
