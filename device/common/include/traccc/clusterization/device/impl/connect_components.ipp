@@ -122,9 +122,9 @@ inline void connect_components(
        clusters_device[cluster_indice].items.push_back({ch0[globalIndex] ,
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
 
-                if ( globalIndex > 1111  && globalIndex < 1120 ){
+                if ( globalIndex > 11 && globalIndex < 20 ){
        
-    printf("cluster_indice %llu \n  ", cluster_indice  );
+              printf("cluster_indice %llu \n  ", cluster_indice  );
    
   }
     }
