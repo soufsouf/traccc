@@ -51,15 +51,18 @@ inline void create_measurements(
     const pixel_data pixels = pixel_device[module_link] ;
     
     
+    if (globalIndex > 10000  && globalIndex < 10010) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
+
+    
     // Should not happen
     assert(cluster.empty() == false);
    
     // Fill measurement from cluster
-    if ( globalIndex > 10000  && globalIndex < 10010  ){
-       /*for (const cell& cell : cluster ){
-    printf("cell.activation %llu , globalIndex  %llu \n  ",  cell.activation, globalIndex ); } */
-    printf ("yes i'm here ");
+   /* if ( globalIndex > 10000  && globalIndex < 10010  ){
+       for (const cell& cell : cluster ){
+    printf("cell.activation %llu , globalIndex  %llu \n  ",  cell.activation, globalIndex );
   } 
+  } */
    
     detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
           , module_link, globalIndex );
