@@ -59,7 +59,7 @@ inline void create_measurements(
     // Fill measurement from cluster
     if ( globalIndex  < 100  ){
        for (const cell& cell : cluster){
-    printf("cell.channel0 %llu , globalIndex  %llu \n  ", globalIndex , cell.channel0);
+    printf("cell.channel0 %llu , globalIndex  %llu \n  ",  cell.channel0, globalIndex );
   } 
   } 
    
