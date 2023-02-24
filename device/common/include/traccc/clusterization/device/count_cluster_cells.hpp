@@ -40,9 +40,8 @@ namespace traccc::device {
 TRACCC_DEVICE
 inline void count_cluster_cells(
     std::size_t globalIndex,
-   vecmem::data::vector_view<unsigned int> label_view,
-    vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-     const CellView& cellView,
+    vecmem::data::vector_view<unsigned int> cluster_prefix_sum_view,
+     const CellsView &cellsView,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view);
 
 }  // namespace traccc::device

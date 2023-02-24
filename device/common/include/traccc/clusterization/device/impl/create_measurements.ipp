@@ -16,7 +16,7 @@ TRACCC_DEVICE
 inline void create_measurements(
     std::size_t globalIndex, 
     cluster_container_types::const_view clusters_view,
-    const cell_container_types::const_view cells_view,
+    const traccc::HeadersView &headersView,
     vecmem::data::vector_view<unsigned int >& Clusters_module_link,
     vecmem::data::vector_view<point2 > &measurement_local,
     vecmem::data::vector_view<point2 >& measurement_variance) {
@@ -24,12 +24,13 @@ inline void create_measurements(
     // Initialize device vector that gives us the execution range
     
     const cluster_container_types::const_device clusters_device(clusters_view);
-    cell_container_types::const_device cells_device(cells_view);
+    vecmem::device_vector<pixel_data> pixel_device(headersView.pixel);
+    vecmem::device_vector<scalar> threshold_device(headersView.threshold);
     vecmem::device_vector<unsigned int> Cl_module_link(Clusters_module_link);
     vecmem::device_vector<point2> local_measurement(measurement_local);
     vecmem::device_vector<point2> variance_measurement(measurement_variance);
     
-  
+
     // Ignore if idx is out of range
     if (globalIndex >= Cl_module_link.size()) /// faux 
         return;
@@ -46,19 +47,24 @@ inline void create_measurements(
     const auto& cluster = clusters_device[globalIndex].items;
     const auto& module_link = clusters_device[globalIndex].header;
     Cl_module_link[globalIndex] = module_link;
-    auto &module = cells_device.at(module_link).header; // c quoi header
-
-    /*printf("th %llu cluster %llu cell %u module %llu nbr cell per cluster %llu\n",
-            globalIndex, idx_cluster, idx_cell, module_link, nbr_cell_per_cluster);*/
+    const scalar threshold = threshold_device[module_link] ;
+    const pixel_data pixels = pixel_device[module_link] ;
+    
+    
+    //if (globalIndex > 100 && globalIndex < 105) { printf("cluster.at(1) %llu \n", cluster.at(1).activation); }
 
     // Should not happen
-   assert(clusters_device.empty() == false);
+    //assert(clusters_device.empty() == false);
    
     // Fill measurement from cluster
-    
-
-    detail::fill_measurement(local_measurement,variance_measurement, cluster,  
-          module, module_link, globalIndex);
+    /*if ( globalIndex == 0 ){
+       for (const cell& cell : cluster){
+    printf("cell.channel0 %llu", cell.channel0);
+  } 
+  } */
+   
+    detail::fill_measurement(local_measurement,variance_measurement, cluster,  threshold,pixels
+          , module_link, globalIndex );
 
         
     

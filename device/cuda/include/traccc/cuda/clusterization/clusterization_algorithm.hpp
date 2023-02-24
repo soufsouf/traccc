@@ -63,7 +63,8 @@ class clusterization_algorithm
 
 class clusterization_algorithm2
     : public algorithm<spacepoint_container_types::buffer(
-        const cell_container_types::const_view&, const traccc::CellView&, const traccc::ModuleView&)> {
+        const traccc::CellsView&,
+        const traccc::ModulesView&, const traccc::HeadersView&)> {
 
     public:
     /// Constructor for clusterization algorithm
@@ -83,8 +84,9 @@ class clusterization_algorithm2
     /// @return a spacepoint container (buffer) - jagged vector of spacepoints
     /// per module.
     output_type operator()(
-        const cell_container_types::const_view& cells_view,
-        const traccc::CellView& cellsView, const traccc::ModuleView& moduleView) const override;
+        const traccc::CellsView& cellsView,
+        const traccc::ModulesView& moduleView,
+        const traccc::HeadersView& headersView) const override;
 //
     private:
     /// The memory resource(s) to use

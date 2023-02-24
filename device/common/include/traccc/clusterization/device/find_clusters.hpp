@@ -42,10 +42,10 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    const CellView& cellView,
-    const ModuleView& moduleView,
+    const CellsView& cellsView,
+    const ModulesView& modulesView,
     vecmem::data::vector_view<unsigned int> label_view,
-    vecmem::data::vector_view<std::size_t> clusters_per_module_view);
+    vecmem::data::vector_view<unsigned int> clusters_per_module_view);
 
 }  // namespace traccc::device
 

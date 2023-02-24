@@ -73,9 +73,9 @@ namespace traccc::io::csv {
 /// @return A cell (host) container
 ///
 
-cell_container_types::host read_cells2(
-    std::string_view filename, CellVec *cellsVec, ModuleVec *moduleVec,
-    const geometry *geom = nullptr,
+void read_cells2(
+    std::string_view filename, CellsHost *cellsHost, ModulesHost *modulesHost,
+    HeadersHost *headersHost, const geometry *geom = nullptr,
     const digitization_config *dconfig = nullptr,
     vecmem::memory_resource *mr = nullptr);
 
