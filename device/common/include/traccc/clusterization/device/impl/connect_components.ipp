@@ -114,8 +114,10 @@ inline void connect_components(
 
     if (cindex < n_clusters)
     {
-       clusters_device[cluster_indice].header = module_idx;
-              if (globalIndex > 1011 && globalIndex  < 1020) { printf(" header %llu \n", module_idx ); }
+
+       clusters_device[cluster_indice].header = module_idx; 
+
+              if (globalIndex > 1011 && globalIndex  < 1020) { printf(" cluster_indice %llu \n", cluster_indice ); }
 
        clusters_device[cluster_indice].items.push_back({ch0[globalIndex] ,
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
