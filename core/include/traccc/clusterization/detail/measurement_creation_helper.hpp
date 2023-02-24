@@ -89,9 +89,9 @@ void calc_cluster_properties(
             }
         }
     }
-   /* if (cl_link <= 64) {
+   if (cl_link <= 100) {
     printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
-            var[0] , var[1] , mean[0] , mean[1]); } */
+            var[0] , var[1] , mean[0] , mean[1]); } 
 }
 template <typename cell_collection_t>
 TRACCC_DEVICE
