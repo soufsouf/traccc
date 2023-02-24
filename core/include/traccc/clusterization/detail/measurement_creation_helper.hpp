@@ -68,7 +68,7 @@ void calc_cluster_properties(
         // Translate the cell readout value into a weight.
         const scalar weight = signal_cell_modelling(cell.activation, module);
         
-/// print 
+      /// print 
     
        // printf("weight   %llu module.threshold   %llu\n", totalWeight , module.threshold );
                  
@@ -89,9 +89,7 @@ void calc_cluster_properties(
             }
         }
     }
-   if (cl_link <= 100) {
-    printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
-            var[0] , var[1] , mean[0] , mean[1]); } 
+   
 }
 template <typename cell_collection_t>
 TRACCC_DEVICE
@@ -105,7 +103,7 @@ void calc_cluster_properties(
 
     // Loop over the cells of the cluster.
 
-     for (const cell& cell : cluster) {
+    for (const cell& cell : cluster) {
     
         // Translate the cell readout value into a weight.
         const scalar weight = cell.activation ; 
@@ -129,8 +127,9 @@ void calc_cluster_properties(
         }
     }
    
-    /*printf("cl_link %u , mean [0] %llu  mean [1] %llu var[0] %llu var[1] %llu\n", cl_link
-             , mean[0] , mean[1] , var[0] , var[1]);   */
+    if (cl_link <= 100) {
+    printf("var[0] %llu var[1] %llu mean[0] %llu mean[1] %llu \n",
+            var[0] , var[1] , mean[0] , mean[1]); } 
 }
 
 
