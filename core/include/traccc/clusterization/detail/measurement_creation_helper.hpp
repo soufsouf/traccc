@@ -120,7 +120,7 @@ void calc_cluster_properties(
             const point2 cell_position = position_from_cell(cell, pixels);
             const point2 prev = mean;
             const point2 diff = cell_position - prev;
-
+            printf("diff %llu , diff %llu\n", diff[0] , diff[1]); 
             mean = prev + (weight / totalWeight) * diff;
             for (unsigned int j = 0; j < 2; ++j) {
                 var[j] =
@@ -129,7 +129,7 @@ void calc_cluster_properties(
         }
     }
    
-    printf("diff %llu , diff %llu\n", diff[0] , diff[1]); 
+    
 }
 
 
