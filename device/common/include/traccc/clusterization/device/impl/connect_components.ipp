@@ -118,6 +118,12 @@ inline void connect_components(
       clusters_device[cluster_indice].items.push_back({ch0[globalIndex] ,
                 ch1[globalIndex] , activation[globalIndex] , 0.  });
     }
+
+    if ( globalIndex > 100 ){
+       for (const cell& cell : clusters_device[cluster_indice].items){
+    printf("cell.activation %llu , globalIndex  %llu \n  ",  cell.activation, globalIndex );
+  } 
+  } 
 }
 
 }  // namespace traccc::device
