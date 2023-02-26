@@ -347,6 +347,7 @@ void read_cells2(std::string_view filename, CellsHost* cellsHost,
             (*cellsHost).activation[lb + j] = allCells[currentModule[j].second].value;
             (*cellsHost).time[lb + j]       = allCells[currentModule[j].second].timestamp;
             (*cellsHost).module_id[lb + j]  = i;
+            printf("channel 0 : %llu | channel 1 : %llu | midx : %llu | \n",  (*cellsHost).channel0[lb + j],(*cellsHost).channel1[lb + j],(*cellsHost).module_id[lb + j])
         }
     }
 
