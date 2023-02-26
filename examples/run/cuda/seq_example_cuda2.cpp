@@ -85,7 +85,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::cuda::track_params_estimation tp_cuda(mr);
     traccc::device::container_d2h_copy_alg<traccc::spacepoint_container_types>
         spacepoint_copy{mr, copy};
-        traccc::device::container_d2h_copy_alg<cell_container_types>
+        traccc::device::container_d2h_copy_alg<traccc::cell_container_types>
         cells_copy{m_mr, copy};
     
     traccc::HeadersHost headersHost;
