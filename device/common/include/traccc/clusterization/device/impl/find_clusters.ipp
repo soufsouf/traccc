@@ -31,12 +31,12 @@ inline void find_clusters(
     if (globalIndex >= sum.size())
         return;
 
+    if  (globalIndex <20 ) { printf(" channel0 %llu channel1 %llu | midx %llu \n" , ch0[globalIndex],ch1[globalIndex], midx[globalIndex] );  } 
 
     // Run the sparse CCL algorithm
     unsigned int n_clusters = detail::sparse_ccl( globalIndex, ch0, ch1,
                                         sum, midx, labels);
 
-    //if  (globalIndex <20 ) { printf(" midx %llu , channel1 %llu" , ch1[globalIndex], midx[globalIndex] );  } 
     
     vecmem::device_vector<unsigned int> device_clusters_per_module(
         clusters_per_module_view);
