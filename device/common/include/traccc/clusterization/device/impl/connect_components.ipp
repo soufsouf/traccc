@@ -108,6 +108,8 @@ inline void connect_components(
                          : device_cluster_prefix_sum[module_idx] -
                                device_cluster_prefix_sum[module_idx - 1]);
 
+    printf(" module_idx %llu cindex %llu device_cluster_prefix_sum[0] %llu device_cluster_prefix_sum[module] %llu \n  ", module_idx , cindex  ,device_cluster_prefix_sum[0], device_cluster_prefix_sum[module_idx]  );
+
     if (cindex < n_clusters)
     {
 
@@ -124,11 +126,10 @@ inline void connect_components(
    
   }*/
     }
-    if ( globalIndex > 1111  && globalIndex < 1120 ){
+    
        
-    printf("cluster_indice %llu cindex %llu n_clusters %llu \n  ", cluster_indice , cindex  ,n_clusters  );
-   
-  }
+
+  
 
       // if (globalIndex > 100) { printf(" module_idx  %llu header %llu \n", module_idx,clusters_device[globalIndex].header ); }
  
