@@ -68,7 +68,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     vecmem::cuda::device_memory_resource device_mr;
     traccc::memory_resource mr{device_mr, &cuda_host_mr};
 
-    traccc::clusterization_algorithm ca(host_spacepoint_container_typesmr);
+    traccc::clusterization_algorithm ca(host_mr);
     traccc::spacepoint_formation sf(host_mr);
     traccc::seeding_algorithm sa(host_mr);
     traccc::track_params_estimation tp(host_mr);
