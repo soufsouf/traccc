@@ -141,17 +141,15 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
-          /**  for( int id = 0 ; id <1000; id ++)
-            printf("channel 0 : %llu | channel 1 : %llu | midx : %llu | \n",  cellsHost.channel0[id],cellsHost.channel1[id],cellsHost.module_id[id]);
-*/
+         
             cellsBuffer.Resize(cellsHost.size, device_mr, async_copy);
             cellsBuffer.CopyToDevice(cellsHost, async_copy);
             modulesBuffer.Resize(modulesHost.size, device_mr, async_copy);
             modulesBuffer.CopyToDevice(modulesHost, async_copy);
             headersBuffer.Resize(headersHost.size, device_mr, async_copy);
             headersBuffer.CopyToDevice(headersHost, async_copy);
-           traccc::cell_container_types::host cl ;
-            cells_copy(cellsBuffer, cl, mr);
+          /* traccc::cell_container_types::host cl ;
+            cells_copy(cellsBuffer, cl, mr);*/
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
             -----------------------------*/
