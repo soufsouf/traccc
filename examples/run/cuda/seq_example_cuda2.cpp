@@ -151,7 +151,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             headersBuffer.Resize(headersHost.size, device_mr, async_copy);
             headersBuffer.CopyToDevice(headersHost, async_copy);
            traccc::cell_container_types::host cl ;
-            cl = cells_copy(cellsBuffer);
+            cl = cells_copy(cellsBuffer&);
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
             -----------------------------*/
