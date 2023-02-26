@@ -148,7 +148,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             modulesBuffer.CopyToDevice(modulesHost, async_copy);
             headersBuffer.Resize(headersHost.size, device_mr, async_copy);
             headersBuffer.CopyToDevice(headersHost, async_copy);
-
+           cell_container_types::host cl ;
+            cl = copy(cellsBuffer);
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
             -----------------------------*/
@@ -162,6 +163,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 spacepoints_cuda_buffer = ca_cuda(
                     cellsBuffer, modulesBuffer, headersBuffer);
                 stream.synchronize();
+                
             }  // stop measuring clusterization cuda timer
 
             if (run_cpu) {
