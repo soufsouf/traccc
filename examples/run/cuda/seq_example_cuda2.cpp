@@ -213,7 +213,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::spacepoint_container_types::host spacepoint_host_2;
                 spacepoint_host_2 = spacepoint_copy(spacepoints_cuda_buffer);
                 auto sp2 = spacepoint_host_2.get_headers().at(72);
-                printf("hello mismis2 %llu  | sp2 = %llu \n", spacepoint_host_2.total_size(), sp2);
+               // printf("hello mismis2 %llu  | sp2 = %llu \n", spacepoint_host_2.total_size(), sp2);
             if (run_cpu) {
 
                 /*-----------------------------
