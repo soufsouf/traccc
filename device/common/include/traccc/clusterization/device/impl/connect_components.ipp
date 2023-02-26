@@ -98,13 +98,9 @@ inline void connect_components(
     // Vectors used for cluster indices found by sparse CCL
     unsigned int cindex = labels[globalIndex] - 1 ;
     unsigned int prefix_sum;
-    unsigned int cluster_indice;
+    unsigned int cluster_indice = (module_idx == 0 ? cindex : device_cluster_prefix_sum[module_idx-1]+ cindex);
     // Get the cluster prefix sum for this module idx
-    if (module_idx == 0)   cluster_indice = cindex ; 
-    if (module_idx != 0) {
-        prefix_sum = module_idx - 1;
-        cluster_indice = device_cluster_prefix_sum[prefix_sum]+ cindex; 
-    }
+    
     // Calculate the number of clusters found for this module from the prefix
     // sums
     const unsigned int n_clusters =
