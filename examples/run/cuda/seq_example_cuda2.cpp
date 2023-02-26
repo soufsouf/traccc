@@ -140,7 +140,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
             for( int id = 0 ; id <1000; id ++)
-            printf("channel 0 : %llu | channel 1 : %llu | midx : %llu | \n",  (*cellsHost).channel0[id],(*cellsHost).channel1[id],(*cellsHost).module_id[id]);
+            printf("channel 0 : %llu | channel 1 : %llu | midx : %llu | \n",  cellsHost.channel0[id],cellsHost.channel1[id],cellsHost.module_id[id]);
 
             cellsBuffer.Resize(cellsHost.size, device_mr, async_copy);
             cellsBuffer.CopyToDevice(cellsHost, async_copy);
