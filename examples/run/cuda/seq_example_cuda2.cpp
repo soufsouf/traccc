@@ -86,7 +86,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::device::container_d2h_copy_alg<traccc::spacepoint_container_types>
         spacepoint_copy{mr, copy};
         traccc::device::container_d2h_copy_alg<traccc::cell_container_types>
-        cells_copy{m_mr, copy};
+        cells_copy{mr, copy};
     
     traccc::HeadersHost headersHost;
     traccc::HeadersBuff headersBuffer;
