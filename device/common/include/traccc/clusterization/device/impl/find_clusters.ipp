@@ -12,8 +12,8 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex,
-    const CellsView& cellsView,
-    const ModulesView& modulesView,
+    const CellsView cellsView,
+    const ModulesView modulesView,
     vecmem::data::vector_view<unsigned int> clusters_per_module_view) {
 
     // Initialize the device container for cells
@@ -36,9 +36,9 @@ inline void find_clusters(
     unsigned int n_clusters = detail::sparse_ccl( globalIndex, ch0, ch1,
                                         sum, midx, labels);
 
-    /*if  (globalIndex > 0 && globalIndex <=1 ) { printf(" channel1 %llu" , ch1[globalIndex] ); 
-                              printf(" globalIndex %llu" , globalIndex ); } */
-   
+    if  (globalIndex <20 ) { printf(" midx %llu , channel1 %llu" , ch1[globalIndex], midx[globalIndex] ); 
+                               } 
+    
     vecmem::device_vector<unsigned int> device_clusters_per_module(
         clusters_per_module_view);
     device_clusters_per_module[globalIndex] = n_clusters;
