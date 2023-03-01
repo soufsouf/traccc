@@ -198,6 +198,7 @@ __global__ void ccl_kernel(
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
+        printf(" bloc: %llu | thread: %llu | target cells per partition %u | start : %llu | end : %llu \n", blockIdx.x, tid , target_cells_per_partition,start,end);
     }
     __syncthreads();
 
