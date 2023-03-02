@@ -200,7 +200,7 @@ __global__ void ccl_kernel(
         }
     }
     __syncthreads();
-    printf(" bloc: %llu | thread: %llu | target cells per partition %u | start : %llu | end : %llu \n", blockIdx.x, tid , target_cells_per_partition,start,end);
+    printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
 
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
