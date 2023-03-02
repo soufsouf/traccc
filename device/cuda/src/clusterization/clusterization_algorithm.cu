@@ -200,7 +200,7 @@ __global__ void ccl_kernel(
         }
     }
     __syncthreads();
-    printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
+    //printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
 
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
@@ -386,6 +386,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
+    printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
