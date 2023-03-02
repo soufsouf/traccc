@@ -83,7 +83,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
                 index_t q = gf[adjv[tst][k]];
-
+       printf("q = %u \n", q);
                 if (gf[cid] > q) {
                     f[f[cid]] = q;
                     f[cid] = q;
@@ -240,7 +240,7 @@ __global__ void ccl_kernel(
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         /*
          * Look for adjacent cells to the current one.
-         */
+         */   
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
