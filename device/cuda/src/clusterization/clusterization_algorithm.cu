@@ -203,10 +203,11 @@ __global__ void ccl_kernel(
     }
     __syncthreads();
     //print 1
-    //printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
+    if (blockIdx.x ==70)
+    printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
     // print 5
-    for (int i = 71698 ; i < 71707 ; i ++) 
-          printf(" cells_device [%u] = %u \n", i , cells_device [i].c.channel1 );
+    /*for (int i = 71698 ; i < 71707 ; i ++) 
+          printf(" cells_device [%u] = %u \n", i , cells_device [i].c.channel1 );*/
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
 
