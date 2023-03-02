@@ -170,7 +170,7 @@ __global__ void ccl_kernel(
          */
         start = blockIdx.x * target_cells_per_partition;
         //print 4
-        printf("bloc blockIdx.x %u \n", blockIdx.x);
+        //printf("bloc blockIdx.x %u \n", blockIdx.x);
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
@@ -204,7 +204,9 @@ __global__ void ccl_kernel(
     __syncthreads();
     //print 1
     //printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
-
+    // print 5
+    for (int i = 0 ; i < 7 ; i++) 
+          printf(" cells_device [%u] = %u \n", i + 71699, cells_device [i + 71699] );
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
 
