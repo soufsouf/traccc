@@ -148,7 +148,7 @@ __global__ void ccl_kernel(
 
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
-    printf("bloc dim %u \n", blckDim);
+    //printf("bloc dim %u \n", blckDim); print 3 
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
@@ -169,6 +169,8 @@ __global__ void ccl_kernel(
          * Initialize shared variables.
          */
         start = blockIdx.x * target_cells_per_partition;
+        //print 4
+        printf("bloc blockIdx.x %u \n", blockIdx.x);
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
@@ -200,6 +202,7 @@ __global__ void ccl_kernel(
         }
     }
     __syncthreads();
+    //print 1
     //printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
 
     const index_t size = end - start;
@@ -386,6 +389,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
+    //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
