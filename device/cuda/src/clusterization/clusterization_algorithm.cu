@@ -236,7 +236,7 @@ __global__ void ccl_kernel(
     
  //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
 
-    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+   // extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -247,8 +247,10 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */   
+       /* device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
+                                    adjv[tst], cluster_map);*/
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst], cluster_map);
+                                    adjv[tst]);
     }
     
        
