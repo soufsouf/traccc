@@ -148,7 +148,7 @@ __global__ void ccl_kernel(
 
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
-
+    printf(" blckDim  %hu \n ", blckDim);
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
@@ -241,7 +241,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-    if (blckDim < 3 ) printf(" tid %hu size %hu \n ", tid , size);
+    
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
