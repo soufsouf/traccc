@@ -209,10 +209,10 @@ __global__ void ccl_kernel(
         
         const index_t cell_id = iter * blckDim + tid;
         if (start == 0 ) break;
-        if ( cells_device[start + cell_id - 1].module_link ==
-                   cells_device[start + cell_id].module_link &&
-               cells_device[start + cell_id].c.channel1 <=
-                   cells_device[start + cell_id - 1].c.channel1 + 1) {
+        if ( cells_device[start + cell_id - 1].module_link !=
+                cells_device[start + cell_id].module_link &&
+                cells_device[start + cell_id].c.channel1 <=
+                cells_device[start + cell_id - 1].c.channel1 + 1) {
                     start = start + cell_id;
                     flag[0] = 1 ; 
                    }
@@ -225,7 +225,7 @@ __global__ void ccl_kernel(
         
         const index_t cell_id = iter * blckDim + tid;
         
-        if ( end < num_cells && cells_device[end + cell_id - 1].module_link ==
+        if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link &&
                cells_device[end + cell_id].c.channel1 <=
                    cells_device[end + cell_id - 1].c.channel1 + 1) {
