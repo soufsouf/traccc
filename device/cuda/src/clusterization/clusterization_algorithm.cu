@@ -233,7 +233,7 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-    __shared__ char shared_mem[3*max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
+    __shared__ char shared_mem[3*max_cells_per_partition * sizeof(uint64_t)];
  
     if (threadIdx.x == 0) {
     extern __shared__ std::unordered_map<uint64_t , std::list<index_t>>* cluster_map;
