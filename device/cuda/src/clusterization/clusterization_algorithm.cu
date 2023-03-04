@@ -234,11 +234,11 @@ __global__ void ccl_kernel(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
     
- __shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
+ //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
 
     if (threadIdx.x == 0) {
    std::unordered_map<uint64_t, std::list<index_t>>* cluster_map = 
-  new (shared_mem) std::unordered_map<uint64_t, std::list<index_t>>();
+   new std::unordered_map<uint64_t, std::list<index_t>>();
     }
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -263,7 +263,7 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ index_t shared_v[2*max_cells_per_partition];
+    extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
     index_t* f_next = &shared_v[max_cells_per_partition];
 
