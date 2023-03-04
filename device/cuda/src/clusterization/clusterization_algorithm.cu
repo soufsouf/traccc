@@ -164,14 +164,14 @@ __global__ void ccl_kernel(
      * shift both the start and the end of the block forward (to a later point
      * in the array); start and end may be moved different amounts.
      */
-    //if (tid == 0) {
+    if (tid == 0) {
         /*
          * Initialize shared variables.
-         
+         */
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
-        outi = 0; */
+        outi = 0;  }
 
         /*
          * Next, shift the starting point to a position further in the array;
@@ -204,7 +204,7 @@ __global__ void ccl_kernel(
     locating the start and the end of the partition
     */
    __shared__ short flag[2];  
-   #pragma unroll   
+   //#pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
         
         const index_t cell_id = iter * blckDim + tid;
@@ -220,7 +220,7 @@ __global__ void ccl_kernel(
         if (flag[0] == 1) break;   
     }
     
-    #pragma unroll  
+    //#pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
         const index_t cell_id = iter * blckDim + tid;
@@ -239,7 +239,7 @@ __global__ void ccl_kernel(
 
 //////////
 
-    __syncthreads();
+    //__syncthreads();
 
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
