@@ -232,7 +232,7 @@ __global__ void ccl_kernel(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
     if(tid == 0)
-extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
@@ -243,7 +243,7 @@ extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
          * Look for adjacent cells to the current one.
          */   
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst]);
+                                    adjv[tst],cluster_map);
     }
    
     /*

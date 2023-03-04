@@ -27,11 +27,12 @@ namespace traccc::device {
 /// @param[out] ajc     Number of adjacent cells
 /// @param[out] ajv     Indices of adjacent cells
 ///
+using index_t = unsigned short;
 TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8]);
+    unsigned char& adjc, unsigned short adjv[8], std::unordered_map<index_t, std::list<index_t>>* cluster_map);
 
 }  // namespace traccc::device
 
