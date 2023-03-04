@@ -203,9 +203,7 @@ __global__ void ccl_kernel(
     /*
     locating the start and the end of the partition
     */
-
-   /// remove the case when start = 0 
-   __shared__ short flag[2] = {0,0};  
+   __shared__ short flag[2];  
    #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
         
@@ -235,7 +233,7 @@ __global__ void ccl_kernel(
                     flag[1] = 1 ; 
                    }
         __syncthreads();
-        if (flag[1] = 1) break;
+        if (flag[1] == 1) break;
         
     }
 
