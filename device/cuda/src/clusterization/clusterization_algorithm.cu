@@ -234,7 +234,7 @@ __global__ void ccl_kernel(
     extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
      if (tid == 0)
     {
-        (&cluster_map) = std::unordered_map<int, float>();
+        (*cluster_map) = std::unordered_map<int, float>();
     }
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
