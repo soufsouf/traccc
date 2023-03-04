@@ -211,7 +211,7 @@ __global__ void ccl_kernel(
         if (start == 0 ) break;
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link &&
-                cells_device[start + cell_id].c.channel1 >=
+                cells_device[start + cell_id].c.channel1 <=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
                     start = start + cell_id;
                     flag[0] = 1 ; 
@@ -227,7 +227,7 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link &&
-               cells_device[end + cell_id].c.channel1 >=
+               cells_device[end + cell_id].c.channel1 <=
                    cells_device[end + cell_id - 1].c.channel1 + 1) {
                     end = end + cell_id;
                     flag[1] = 1 ; 
@@ -241,7 +241,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-     printf(" tid %hu size %hu \n ", tid , size);
+    if (blockIdx.x < 3) printf(" tid %hu size %hu \n ", tid , size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
