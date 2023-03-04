@@ -240,9 +240,9 @@ __global__ void ccl_kernel(
     
     __syncthreads();  // synchronize all threads in the block before accessing the map
     if (threadIdx.x == 0) {
-    void* mem_ptr = static_cast<void*>(shared_mem);
     std::unordered_map<uint64_t, std::list<index_t>>* cluster_map =
-        new (mem_ptr) std::unordered_map<uint64_t, std::list<index_t>>();
+    new (reinterpret_cast<std::unordered_map<uint64_t, std::list<index_t>>*>
+    (shared_mem)) std::unordered_map<uint64_t, std::list<index_t>>();
     }
 
 #pragma unroll
