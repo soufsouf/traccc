@@ -236,14 +236,14 @@ __global__ void ccl_kernel(
     
  //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
 
-    extern __shared__ char shared_mem[];
-    
-    __syncthreads();  // synchronize all threads in the block before accessing the map
+     extern __shared__ char shared_mem[];
+    auto cluster_map = reinterpret_cast<std::unordered_map<int, int>*>(shared_mem);
+
     if (threadIdx.x == 0) {
-    void* ptr = static_cast<void*>(shared_mem);
-std::unordered_map<uint64_t, std::list<index_t>>* cluster_map = 
-    new (ptr) std::unordered_map<uint64_t, std::list<index_t>>();
+        new (cluster_map) std::unordered_map<int, int>();
     }
+
+    __syncthreads();
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
