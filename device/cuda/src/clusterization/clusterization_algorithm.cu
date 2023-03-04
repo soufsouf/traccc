@@ -242,7 +242,7 @@ extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
          * Look for adjacent cells to the current one.
          */   
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst]);
+                                    adjv[tst],cluster_map);
     }
    
     /*
