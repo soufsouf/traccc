@@ -83,7 +83,6 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
                 index_t q = gf[adjv[tst][k]];
-       printf("q = %u \n", q);
                 if (gf[cid] > q) {
                     f[f[cid]] = q;
                     f[cid] = q;
@@ -244,7 +243,13 @@ __global__ void ccl_kernel(
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
-
+    for(int i = 0 ; i < MAX_CELLS_PER_THREAD ; i ++ )
+    {
+        for( int j =0 ; j < 8 ; j ++)
+        {
+            printf(" thread %hu | bloc : %hu | adjv[%u][%u] = %u \n", tid,blockIdx.x, i , j , adjv[i][j]);
+        }
+    }
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
