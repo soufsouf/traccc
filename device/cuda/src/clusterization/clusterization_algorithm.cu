@@ -241,7 +241,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-     printf(" tid %hu size %hu ", size , tid);
+     printf(" tid %hu size %hu \n ", size , tid);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
