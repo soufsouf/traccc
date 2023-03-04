@@ -145,10 +145,11 @@ __global__ void ccl_kernel(
     const unsigned short target_cells_per_partition,
     alt_measurement_collection_types::view measurements_view,
     unsigned int& measurement_count) {
-
+    
+    printf(" blockDim.x  %llu \n ", blockDim.x);
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
-    printf(" blckDim  %hu \n ", blckDim);
+    
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
