@@ -267,10 +267,7 @@ __global__ void ccl_kernel(
          */
         f[cid] = cid;
         f_next[cid] = cid;
-         for( int j =0 ; j < 8 ; j ++)
-        {
-            printf(" thread %hu | bloc : %hu | cell %u | adjv[0][%u] = %u \n", tid,blockIdx.x, cid  , j , adjv[0][j]);
-        } 
+
     }
 
     /*
