@@ -267,11 +267,12 @@ __global__ void ccl_kernel(
          */
         f[cid] = cid;
         f_next[cid] = cid;
-    }
- for( int j =0 ; j < 8 ; j ++)
+         for( int j =0 ; j < 8 ; j ++)
         {
-            printf(" thread %hu | bloc : %hu | cell %u | adjv[%u][%u] = %u \n", tid,blockIdx.x, cid , i , j , adjv[0][j]);
+            printf(" thread %hu | bloc : %hu | cell %u | adjv[0][%u] = %u \n", tid,blockIdx.x, cid  , j , adjv[0][j]);
         }
+    }
+
     /*
      * Now that the data has initialized, we synchronize again before we
      * move onto the actual processing part.
