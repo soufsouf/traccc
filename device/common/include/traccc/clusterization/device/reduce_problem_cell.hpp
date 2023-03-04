@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <unordered_map>
 #include <list>
+#include <cub/cub.cuh>
 namespace traccc::device {
 
 /// Function for looking for adjacent cells. The cell ids will range from 0 to

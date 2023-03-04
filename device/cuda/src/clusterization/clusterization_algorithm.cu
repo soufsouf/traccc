@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <list>
+#include <cub/cub.cuh>
 namespace traccc::cuda {
 
 namespace {
@@ -231,11 +232,11 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
-     if (tid == 0)
-    {
-        cluster_map = std::unordered_map<int, float>();
-    }
+    //extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+    __shared__ cub::KeyValuePair<index_t, std::list<index_t>> shared_mem[max_cells_per_partition]; 
+    using hash_map = std::unordered_map<index_t, std::list<index_t>>;
+    __shared__ hash_map cluster_map;
+    cluster_map.reserve(max_cells_per_partition);
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
