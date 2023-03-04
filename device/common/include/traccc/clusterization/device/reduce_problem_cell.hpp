@@ -13,7 +13,8 @@
 
 // System include(s).
 #include <cstddef>
-
+#include <unordered_map>
+#include <list>
 namespace traccc::device {
 
 /// Function for looking for adjacent cells. The cell ids will range from 0 to
