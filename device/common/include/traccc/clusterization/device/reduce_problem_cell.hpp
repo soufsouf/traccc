@@ -34,7 +34,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8], std::unordered_map<uint64_t, std::list<index_t>>* cluster_map);
+    unsigned char& adjc, unsigned short adjv[8], std::unordered_map<index_t, std::list<index_t>>* cluster_map);
 
 }  // namespace traccc::device
 

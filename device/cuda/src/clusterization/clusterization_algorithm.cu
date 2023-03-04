@@ -236,7 +236,7 @@ __global__ void ccl_kernel(
     
  //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
 
-    extern __shared__ std::unordered_map< short, std::list<short>>* cluster_map;
+    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
