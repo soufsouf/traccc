@@ -164,33 +164,33 @@ __global__ void ccl_kernel(
      * shift both the start and the end of the block forward (to a later point
      * in the array); start and end may be moved different amounts.
      */
-    if (tid == 0) {
+    //if (tid == 0) {
         /*
          * Initialize shared variables.
-         */
+         
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
-        outi = 0;
+        outi = 0; */
 
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
          * cells that have been claimed by the previous block (if any).
-         */
+         
         while (start != 0 &&
                cells_device[start - 1].module_link ==
                    cells_device[start].module_link &&
                cells_device[start].c.channel1 <=
                    cells_device[start - 1].c.channel1 + 1) {
             ++start;
-        }
+        }  */
 
         /*
          * Then, claim as many cells as we need past the naive end of the
          * current block to ensure that we do not end our partition on a cell
          * that is not a possible boundary!
-         */
+         
         while (end < num_cells &&
                cells_device[end - 1].module_link ==
                    cells_device[end].module_link &&
@@ -198,7 +198,49 @@ __global__ void ccl_kernel(
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
+    }  */
+
+    /*
+    locating the start and the end of the partition
+    */
+
+   /// remove the case when start = 0 
+   __shared__ short flag[2] = {0,0};  
+   #pragma unroll   
+    for (index_t iter = 0; iter < 8; ++iter) {
+        
+        const index_t cell_id = iter * blckDim + tid;
+        if (start == 0 ) break;
+        if ( cells_device[start + cell_id - 1].module_link ==
+                   cells_device[start + cell_id].module_link &&
+               cells_device[start + cell_id].c.channel1 <=
+                   cells_device[start + cell_id - 1].c.channel1 + 1) {
+                    start = start + cell_id;
+                    flag[0] = 1 ; 
+                   }
+        __syncthreads();
+        if (flag[0] == 1) break;   
     }
+    
+    #pragma unroll  
+    for (index_t iter = 0; iter < 8; ++iter) {
+        
+        const index_t cell_id = iter * blckDim + tid;
+        
+        if ( end < num_cells && cells_device[end + cell_id - 1].module_link ==
+                   cells_device[end + cell_id].module_link &&
+               cells_device[end + cell_id].c.channel1 <=
+                   cells_device[end + cell_id - 1].c.channel1 + 1) {
+                    end = end + cell_id;
+                    flag[1] = 1 ; 
+                   }
+        __syncthreads();
+        if (flag[1] = 1) break;
+        
+    }
+
+//////////
+
     __syncthreads();
 
     const index_t size = end - start;
