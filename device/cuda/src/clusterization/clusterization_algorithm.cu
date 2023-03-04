@@ -244,8 +244,7 @@ __global__ void ccl_kernel(
     std::unordered_map<uint64_t, std::list<index_t>>* cluster_map =
         new (mem_ptr) std::unordered_map<uint64_t, std::list<index_t>>();
     }
-    std::unordered_map<uint64_t, std::list<index_t>>* cluster_map = 
-    new (shared_mem) std::unordered_map<uint64_t, std::list<index_t>>();
+
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
