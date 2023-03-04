@@ -241,7 +241,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-    if (blockIdx.x > 6 && blockIdx.x < 7) printf(" tid %hu size %hu \n ", tid , size);
+    printf("  blckDim %hu tid %hu size %hu \n ", blckDim,tid , size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
