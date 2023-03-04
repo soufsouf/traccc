@@ -207,11 +207,11 @@ __global__ void ccl_kernel(
    //#pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
         
-        const index_t cell_id = iter * blckDim + tid;
+        const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
         if (start == 0 ) break;
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link &&
-                cells_device[start + cell_id].c.channel1 <=
+                cells_device[start + cell_id].c.channel1 >=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
                     start = start + cell_id;
                     flag[0] = 1 ; 
