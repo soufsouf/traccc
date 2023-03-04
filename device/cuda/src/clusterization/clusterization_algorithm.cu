@@ -22,6 +22,10 @@
 #include <algorithm>
 #include <unordered_map>
 #include <list>
+#include <cuda.h>
+#include <cuda_runtime.h>
+
+
 
 namespace traccc::cuda {
 
