@@ -8,7 +8,7 @@
 #pragma once
 
 namespace traccc::device {
-
+using index_t = unsigned short;
 /*
  * Check if two cells are considered close enough to be part of the same
  * cluster.

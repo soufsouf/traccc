@@ -18,7 +18,7 @@
 #include <list>
 
 namespace traccc::device {
-
+using index_t = unsigned short;
 /// Function for looking for adjacent cells. The cell ids will range from 0 to
 /// max_cells_per_partition and the number of blocks will equal the number of
 /// partitions, hence checking all cells.
