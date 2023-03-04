@@ -227,7 +227,7 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link &&
-               cells_device[end + cell_id].c.channel1 <=
+               cells_device[end + cell_id].c.channel1 >=
                    cells_device[end + cell_id - 1].c.channel1 + 1) {
                     end = end + cell_id;
                     flag[1] = 1 ; 
