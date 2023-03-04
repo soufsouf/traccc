@@ -234,8 +234,7 @@ __global__ void ccl_kernel(
     unsigned char adjc[MAX_CELLS_PER_THREAD];
     //extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
     __shared__ cub::KeyValuePair<index_t, std::list<index_t>> shared_mem[1536]; 
-    using hash_map = std::unordered_map<index_t, std::list<index_t>>;
-    __shared__ hash_map cluster_map;
+      __shared__ std::unordered_map<index_t, std::list<index_t>> cluster_map;
     cluster_map.reserve(1536);
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
