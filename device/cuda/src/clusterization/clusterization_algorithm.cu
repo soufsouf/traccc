@@ -240,7 +240,7 @@ __global__ void ccl_kernel(
 //////////
 
     //__syncthreads();
-
+    printf("size %hu ", size);
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
 
