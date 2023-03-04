@@ -24,10 +24,10 @@ struct cell {
     uint32_t channel1 = 0;
     float timestamp = 0.;
     float value = 0.;
-
+    uint64_t index_cluster = 2000;
     // geometry_id,hit_id,channel0,channel1,timestamp,value
     DFE_NAMEDTUPLE(cell, geometry_id, hit_id, channel0, channel1, timestamp,
-                   value);
+                   value, index_cluster);
 };
 
 }  // namespace traccc::io::csv

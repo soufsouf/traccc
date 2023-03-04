@@ -20,6 +20,8 @@
 
 // System include(s).
 #include <algorithm>
+#include <unordered_map>
+#include <list>
 
 namespace traccc::cuda {
 
@@ -151,6 +153,7 @@ __global__ void ccl_kernel(
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
+   
     /*
      * This variable will be used to write to the output later.
      */
@@ -230,7 +233,12 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-
+    __shared__ char shared_mem[3*max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
+ 
+    if (threadIdx.x == 0) {
+    extern __shared__ std::unordered_map<uint64_t , std::list<index_t>>* cluster_map;
+    cluster_map = new (shared_mem) std::unordered_map<uint64_t , std::list<index_t>>();
+    }
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
@@ -255,8 +263,8 @@ __global__ void ccl_kernel(
      * but the algorithm would be decidedly slower in that case.
      */
     extern __shared__ index_t shared_v[];
-    index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];
+    index_t* f = &shared_v[max_cells_per_partition];
+    index_t* f_next = &shared_v[2*max_cells_per_partition];
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -267,7 +275,7 @@ __global__ void ccl_kernel(
          */
         f[cid] = cid;
         f_next[cid] = cid;
-
+ 
     }
 
     /*
@@ -397,7 +405,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                     3 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
