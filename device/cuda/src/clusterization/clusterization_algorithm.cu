@@ -22,10 +22,6 @@
 #include <algorithm>
 #include <unordered_map>
 #include <list>
-#include <cuda.h>
-#include <cuda_runtime.h>
-
-
 
 namespace traccc::cuda {
 
@@ -240,14 +236,7 @@ __global__ void ccl_kernel(
     
  //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
 
-     extern __shared__ char shared_mem[];
-    auto cluster_map = reinterpret_cast<std::unordered_map<int, int>*>(shared_mem);
-
-    if (threadIdx.x == 0) {
-        new (cluster_map) std::unordered_map<int, int>();
-    }
-
-    __syncthreads();
+    extern __shared__ char std::unordered_map<uint64_t, std::list<index_t>>* cluster_map;
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
