@@ -13,12 +13,9 @@
 
 // System include(s).
 #include <cstddef>
-#include <algorithm>
-#include <unordered_map>
-#include <list>
 
 namespace traccc::device {
-using index_t = unsigned short;
+
 /// Function for looking for adjacent cells. The cell ids will range from 0 to
 /// max_cells_per_partition and the number of blocks will equal the number of
 /// partitions, hence checking all cells.
@@ -34,7 +31,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8]/*, std::unordered_map<index_t, std::list<index_t>>* cluster_map*/);
+    unsigned char& adjc, unsigned short adjv[8]);
 
 }  // namespace traccc::device
 

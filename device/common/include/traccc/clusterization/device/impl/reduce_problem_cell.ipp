@@ -8,7 +8,7 @@
 #pragma once
 
 namespace traccc::device {
-using index_t = unsigned short;
+
 /*
  * Check if two cells are considered close enough to be part of the same
  * cluster.
@@ -26,10 +26,11 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8]/*, std::unordered_map<index_t, std::list<index_t>>* cluster_map*/) {
+    unsigned char& adjc, unsigned short adjv[8]) {
 
     const unsigned int pos = cid + start;
     //pos - 1= (tst * blckDim + tid )
+
     // Check if this code can benefit from changing to structs of arrays, as the
     // recurring accesses to cell data in global memory is slow right now.
     const channel_id c0 = cells[pos].c.channel0;
@@ -58,7 +59,6 @@ inline void reduce_problem_cell(
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc++] = j - start;
-
         }
     }
 

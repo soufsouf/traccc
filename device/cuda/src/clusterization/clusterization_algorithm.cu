@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <unordered_map>
 #include <list>
-
 namespace traccc::cuda {
 
 namespace {
@@ -153,7 +152,6 @@ __global__ void ccl_kernel(
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
-   
     /*
      * This variable will be used to write to the output later.
      */
@@ -233,11 +231,7 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-    
- //__shared__ char shared_mem[max_cells_per_partition * sizeof(std::pair<uint64_t, std::list<index_t>>)];
-
-   // extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
-
+extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
@@ -247,14 +241,10 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */   
-       /* device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst], cluster_map);*/
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
-    
-       
-    
+   
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
@@ -276,7 +266,6 @@ __global__ void ccl_kernel(
          */
         f[cid] = cid;
         f_next[cid] = cid;
- 
     }
 
     /*
@@ -406,7 +395,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                      2* max_cells_per_partition * sizeof(index_t), stream>>>(
+                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
