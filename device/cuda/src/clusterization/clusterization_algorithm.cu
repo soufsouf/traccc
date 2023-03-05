@@ -253,6 +253,7 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link ) {
+                    printf(" i'm here \n");
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
@@ -278,7 +279,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    printf(" size %hu", size);
+    //printf(" size %hu", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
