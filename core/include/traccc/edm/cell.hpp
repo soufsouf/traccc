@@ -29,7 +29,7 @@ struct cell {
     channel_id channel1 = 0;
     scalar activation = 0.;
     scalar time = 0.;
-    unsigned int cluster_indice ;
+    unsigned int cluster_indice = 0;
 };
 
 /// Comparison / ordering operator for cells
