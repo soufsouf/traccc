@@ -178,6 +178,7 @@ __global__ void ccl_kernel(
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
          * cells that have been claimed by the previous block (if any).
+         */
          
         while (start != 0 &&
                cells_device[start - 1].module_link ==
@@ -185,12 +186,13 @@ __global__ void ccl_kernel(
                cells_device[start].c.channel1 <=
                    cells_device[start - 1].c.channel1 + 1) {
             ++start;
-        }  */
+        }  
 
         /*
          * Then, claim as many cells as we need past the naive end of the
          * current block to ensure that we do not end our partition on a cell
          * that is not a possible boundary!
+         */
          
         while (end < num_cells &&
                cells_device[end - 1].module_link ==
@@ -199,11 +201,11 @@ __global__ void ccl_kernel(
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
-    }  */
+    }  
 
     /*
     locating the start and the end of the partition
-    */
+    
    __shared__ short flag[2];  
    //#pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
@@ -236,13 +238,13 @@ __global__ void ccl_kernel(
         __syncthreads();
         if (flag[1] == 1) break;
         
-    }
+    } */
 
 //////////
 
     //__syncthreads();
     const index_t size = end - start;
-    if (blockIdx.x == 125) printf(" size %hu  \n ", size);
+    
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -426,6 +428,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
+    printf(" num_partitions %u", num_partitions);
+    printf(" threads_per_partition %u", threads_per_partition);
+
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
