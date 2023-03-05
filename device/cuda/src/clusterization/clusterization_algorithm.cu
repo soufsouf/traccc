@@ -224,8 +224,9 @@ __global__ void ccl_kernel(
    unsigned int short cell = 0; 
    // #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
-         printf(" i'm in 1 \n ");
+         
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
+        printf(" cell_id %hu \n " , cell_id);
         if (start == 0 ) break;
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link &&
@@ -247,7 +248,7 @@ __global__ void ccl_kernel(
     cell = 0;
     //#pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
-        printf(" i'm in 2 \n ");
+        
         const index_t cell_id = iter * blckDim + tid;
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
