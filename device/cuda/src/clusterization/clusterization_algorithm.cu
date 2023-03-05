@@ -242,7 +242,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-    printf(" size %hu  \n ", size);
+    if (blockIdx.x < 3) printf(" size %hu  \n ", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
