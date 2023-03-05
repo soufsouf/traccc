@@ -231,7 +231,7 @@ __global__ void ccl_kernel(
         if (start == 0 ) break;
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ) {
-                      printf("i'm inside if");
+                      
                       cell = cell_id;
                     }
         // find minimum value in the warp          
@@ -254,6 +254,7 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link ) {
+                    printf("i'm inside if");
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
