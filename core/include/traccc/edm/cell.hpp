@@ -31,6 +31,7 @@ struct cell {
     scalar time = 0.;
   
 };
+using index_t = unsigned short;
 struct idx_cluster {
     index_t id_cluster = 0 ;
     index_t write = 0 ;
