@@ -173,25 +173,30 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
+    }
+    __syncthreads();
 
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
          * cells that have been claimed by the previous block (if any).
-         */
+         
+
+        
+
         while (start != 0 &&
                cells_device[start - 1].module_link ==
                    cells_device[start].module_link &&
                cells_device[start].c.channel1 <=
                    cells_device[start - 1].c.channel1 + 1) {
             ++start;
-        }
+        }  */
 
         /*
          * Then, claim as many cells as we need past the naive end of the
          * current block to ensure that we do not end our partition on a cell
          * that is not a possible boundary!
-         */
+         
         while (end < num_cells &&
                cells_device[end - 1].module_link ==
                    cells_device[end].module_link &&
@@ -199,10 +204,71 @@ __global__ void ccl_kernel(
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
+    } */
+
+    /*
+    locating the start and the end of the partition
+    */
+   __shared__ short flag[2];  
+   unsigned int short cell = 0; 
+    #pragma unroll   
+    for (index_t iter = 0; iter < 8; ++iter) {
+        
+        const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
+        if (start == 0 ) break;
+        if ( cells_device[start + cell_id - 1].module_link !=
+                cells_device[start + cell_id].module_link &&
+                cells_device[start + cell_id].c.channel1 <=
+                cells_device[start + cell_id - 1].c.channel1 + 1) {
+                      cell = cell_id;
+                    }
+        // find minimum value in the warp          
+        int warp_min = warpReduceMin(cell);
+        if (tid % WARP_SIZE == 0 ) {
+            start = start + warp_min;
+            flag[0] = 1 ; 
+        }
+                   
+        __syncthreads();
+        if (flag[0] == 1) break;   
     }
-    __syncthreads();
+
+    cell = 0;
+    #pragma unroll  
+    for (index_t iter = 0; iter < 8; ++iter) {
+        
+        const index_t cell_id = iter * blckDim + tid;
+        
+        if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
+                   cells_device[end + cell_id].module_link &&
+               cells_device[end + cell_id].c.channel1 <=
+                   cells_device[end + cell_id - 1].c.channel1 + 1) {
+                    cell = cell_id;
+                    }  /// if : end >= num_cells , the value of "end" will not change 
+                    
+        // find minimum value in the warp          
+        int warp_min = warpReduceMin(cell);
+        // thread with lane id 0 writes the result to global memory
+        if (tid % WARP_SIZE == 0 ) {
+            end = end + warp_min;
+            flag[1] = 1 ; 
+        }
+                   
+        __syncthreads();   // obligatoire 
+        if (flag[1] == 1) break;   
+    }      
+              /*end = end + cell_id;
+                    flag[1] = 1 ; 
+                   }
+        __syncthreads();
+        if (flag[1] == 1) break;
+        
+    } */
+
+    
 
     const index_t size = end - start;
+    //printf(" size %hu", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -391,10 +457,10 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
 
     kernels::
-        ccl_kernel<<<num_partitions, threads_per_partition,
+        ccl_kernel<<<1256, 32,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
-            m_target_cells_per_partition, measurements_buffer,
+            256, measurements_buffer,
             *num_measurements_device);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
