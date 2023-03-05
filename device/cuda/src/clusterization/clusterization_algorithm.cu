@@ -146,7 +146,7 @@ __global__ void ccl_kernel(
     alt_measurement_collection_types::view measurements_view,
     unsigned int& measurement_count) {
     
-    printf(" blockDim.x  %llu \n ", blockDim.x);
+    
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
     
@@ -242,7 +242,7 @@ __global__ void ccl_kernel(
 
     //__syncthreads();
     const index_t size = end - start;
-    
+    printf(" blockIdx.x  %llu  , size %hu  \n ", blockIdx.x , size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
