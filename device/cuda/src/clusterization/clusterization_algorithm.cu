@@ -224,16 +224,16 @@ __global__ void ccl_kernel(
    unsigned int short cell = 0; 
 
    __syncthreads();
-   // #pragma unroll   
+    #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
          
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
-         printf("cells_device[start + cell_id].module_link %lu \n " , cells_device[start + cell_id].module_link);
         //if (start == 0 ) break;
         if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
-                cells_device[start + cell_id].module_link &&
+                cells_device[start + cell_id].module_link /*&&
                 cells_device[start + cell_id].c.channel1 <=
-                cells_device[start + cell_id - 1].c.channel1 + 1) {
+                cells_device[start + cell_id - 1].c.channel1 + 1*/) {
+                    printf(" i'm inside if");
                       cell = cell_id;
                     }
         // find minimum value in the warp          
@@ -249,15 +249,15 @@ __global__ void ccl_kernel(
 
     cell = 0;
     __syncthreads();
-    //#pragma unroll  
+    #pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
         const index_t cell_id = iter * blckDim + tid;
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
-                   cells_device[end + cell_id].module_link &&
+                   cells_device[end + cell_id].module_link /*&&
                cells_device[end + cell_id].c.channel1 <=
-                   cells_device[end + cell_id - 1].c.channel1 + 1) {
+                   cells_device[end + cell_id - 1].c.channel1 + 1*/) {
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
