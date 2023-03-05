@@ -222,12 +222,12 @@ __global__ void ccl_kernel(
     */
    __shared__ short flag[2];  
    unsigned int short cell = 0; 
-    #pragma unroll   
+   // #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
         
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
         if (start == 0 ) break;
-        if ( cells_device[start + cell_id - 1].module_link ==
+        if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link &&
                 cells_device[start + cell_id].c.channel1 <=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
@@ -246,12 +246,12 @@ __global__ void ccl_kernel(
     }
 
     cell = 0;
-    #pragma unroll  
+    //#pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
         const index_t cell_id = iter * blckDim + tid;
         
-        if ( end < num_cells && cells_device[end + cell_id - 1].module_link ==
+        if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link &&
                cells_device[end + cell_id].c.channel1 <=
                    cells_device[end + cell_id - 1].c.channel1 + 1) {
