@@ -49,7 +49,7 @@ inline void reduce_problem_cell(
     unsigned int i = pos - 1; 
     bool find = false;
     auto& cluster_map_ref = *cluster_map;
-    unsigned int& val = cells[pos].c.cluster_indice;
+    const unsigned int& val = cells[pos].c.cluster_indice;
     while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
     {
         if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
