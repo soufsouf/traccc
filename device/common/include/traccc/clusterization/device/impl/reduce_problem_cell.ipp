@@ -56,7 +56,7 @@ inline void reduce_problem_cell(
             unsigned int idx = cells[i].c.cluster_indice;
             if( idx != 2000)
             {  
-                &cells[pos].c.cluster_indice = idx;
+                (*cells[pos].c.cluster_indice) = idx;
                 std::list<index_t>& values = cluster_map_ref[idx];
                 values.push_back(pos);
                 find = true;
