@@ -53,7 +53,7 @@ inline void reduce_problem_cell(
     while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
     {
         if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
-            uint64_t idx = cells[i].c.cluster_indice;
+            unsigned int idx = cells[i].c.cluster_indice;
             if( idx != 2000)
             {  
                 cells[pos].c.cluster_indice = idx;
