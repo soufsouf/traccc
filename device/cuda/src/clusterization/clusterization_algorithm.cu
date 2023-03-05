@@ -222,6 +222,8 @@ __global__ void ccl_kernel(
     */
    __shared__ short flag[2];  
    unsigned int short cell = 0; 
+
+   __syncthreads();
    // #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
          
@@ -232,7 +234,6 @@ __global__ void ccl_kernel(
                 cells_device[start + cell_id].module_link &&
                 cells_device[start + cell_id].c.channel1 <=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
-                    printf(" cell_id %hu \n " , cell_id);
                       cell = cell_id;
                     }
         // find minimum value in the warp          
@@ -247,6 +248,7 @@ __global__ void ccl_kernel(
     }
 
     cell = 0;
+    __syncthreads();
     //#pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
