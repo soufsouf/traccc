@@ -20,9 +20,7 @@
 
 // System include(s).
 #include <algorithm>
-//warp level premitive 
-#include <cuda.h>
-#include <cuda_runtime.h>
+
 
 namespace traccc::cuda {
 
@@ -55,6 +53,16 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
+
+__device__ int warpReduceMin(int val)
+{
+    for (int offset = warpSize / 2; offset > 0; offset /= 2) {
+        val = min(val, __shfl_down_sync(0xffffffff, val, offset));
+        __syncwarp();
+    }
+    return val;
+}
+
 __device__ void fast_sv_1(index_t* f, index_t* gf,
                           unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][8], index_t tid,
