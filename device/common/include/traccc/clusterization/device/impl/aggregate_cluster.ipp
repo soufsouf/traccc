@@ -19,7 +19,7 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const unsigned int start,  std::list<index_t> values,
+    const unsigned int start, std::list<index_t> values,
     alt_measurement& out) {
 
     
