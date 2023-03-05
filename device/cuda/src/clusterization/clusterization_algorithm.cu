@@ -230,7 +230,6 @@ __global__ void ccl_kernel(
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
         if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ) {
-                      printf("i'm inside if");
                       cell = cell_id;
                     }
         if (start == 0 ) break;
@@ -279,7 +278,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    //printf(" size %hu", size);
+    printf(" size %hu", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
