@@ -234,12 +234,12 @@ __global__ void ccl_kernel(
                 cells_device[start + cell_id].module_link &&
                 cells_device[start + cell_id].c.channel1 <=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
-                    printf("i'm here ");
                       cell = cell_id;
                     }
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
         if (tid % WARP_SIZE == 0 ) {
+            printf("i'm here ");
             start = start + warp_min;
             flag[0] = 1 ; 
         }
