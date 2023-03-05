@@ -229,13 +229,16 @@ __global__ void ccl_kernel(
          
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
         if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
-                cells_device[start + cell_id].module_link ) {
+                cells_device[start + cell_id].module_link &&
+                cells_device[start + cell_id].c.channel1 <=
+                cells_device[start + cell_id - 1].c.channel1 + 1 ) {
                       cell = cell_id;
                     }
         if (start == 0 ) break;
-        // find minimum value in the warp          
+        // find minimum value in the warp  
+        __syncthreads();        
         int warp_min = warpReduceMin(cell);
-        printf(" warp_min  %u \n" , warp_min );
+        // thread with lane id 0 writes the result to global memory
         if (tid % WARP_SIZE == 0 && warp_min != 0 ) {
             start = start + warp_min;
             flag[0] = 1 ; 
@@ -253,14 +256,16 @@ __global__ void ccl_kernel(
         const index_t cell_id = iter * blckDim + tid;
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
-                   cells_device[end + cell_id].module_link  ) {
+                   cells_device[end + cell_id].module_link  &&
+                   cells_device[end + cell_id].c.channel1 <=
+                   cells_device[end + cell_id - 1].c.channel1 + 1 ) {
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
-                    
+        __syncthreads();            
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result to global memory
-        if (tid % WARP_SIZE == 0 && warp_min !=0 ) {
+        if (tid % WARP_SIZE == 0 && warp_min != 0 ) {
             end = end + warp_min;
             flag[1] = 1 ; 
         }
