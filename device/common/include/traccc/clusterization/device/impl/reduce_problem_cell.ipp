@@ -4,6 +4,8 @@
  *
  * Mozilla Public License Version 2.0
  */
+#include <unordered_map>
+#include <list>
 
 #pragma once
 
@@ -68,7 +70,7 @@ inline void reduce_problem_cell(
        new_pair.push_back(pos);
        cells[pos].c.cluster_indice = cluster_map.size();
     }
-    
+
     for (unsigned int j = pos - 1; j < pos; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell

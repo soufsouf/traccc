@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <unordered_map>
 #include <list>
+#include <iostream>
 #include <cub/cub.cuh>
 namespace traccc::device {
 

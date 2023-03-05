@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <list>
+#include <iostream>
+
 namespace traccc::cuda {
 
 namespace {
