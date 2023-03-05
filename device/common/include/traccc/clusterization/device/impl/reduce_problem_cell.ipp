@@ -49,7 +49,7 @@ inline void reduce_problem_cell(
     unsigned int i = pos - 1; 
     bool find = false;
     auto& cluster_map_ref = *cluster_map;
-    const unsigned int& val = cells[pos].c.cluster_indice;
+     //unsigned int& val = cells[pos].c.cluster_indice;
     while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
     {
         if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
@@ -57,7 +57,7 @@ inline void reduce_problem_cell(
           
             if( idx != 2000)
             {  
-                val = idx;
+                //val = idx;
                 std::list<index_t>& values = cluster_map_ref[idx];
                 values.push_back(pos);
                 find = true;
@@ -72,7 +72,7 @@ inline void reduce_problem_cell(
        cluster_map_ref.insert(std::pair(cluster_map_ref.size(), std::list<index_t>()));
        std::list<index_t>& new_pair = cluster_map_ref[cluster_map_ref.size()];
        new_pair.push_back(pos);
-       val = cluster_map_ref.size();
+       //val = cluster_map_ref.size();
     }
 
     for (unsigned int j = pos - 1; j < pos; --j) {
