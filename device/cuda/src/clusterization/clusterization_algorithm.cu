@@ -247,7 +247,6 @@ __global__ void ccl_kernel(
         // find minimum value in the warp  
         __syncthreads();        
         int warp_max = warpReduceMax(cell);
-        printf(" warp_max %u \n", warp_max);
         // thread with lane id 0 writes the result to global memory
         if (tid % WARP_SIZE == 0 && warp_max != 0) {
             start = start + warp_max;
