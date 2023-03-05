@@ -21,7 +21,7 @@ struct cell {
     uint64_t geometry_id = 0;
     uint64_t hit_id = 0;
     uint32_t channel0 = 0;
-    //uint32_t channel1 = 0;
+    uint32_t channel1 = 0;
     float timestamp = 0.;
     float value = 0.;
     uint64_t cluster_indice = 2000; 
