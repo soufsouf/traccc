@@ -228,12 +228,12 @@ __global__ void ccl_kernel(
     for (index_t iter = 0; iter < 8; ++iter) {
          
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
-        if (start == 0 ) break;
-        if ( cells_device[start + cell_id - 1].module_link !=
+        if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ) {
-                      
+                      printf("i'm inside if");
                       cell = cell_id;
                     }
+        if (start == 0 ) break;
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
         if (tid % WARP_SIZE == 0 && warp_min !=0 ) {
@@ -254,7 +254,6 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link ) {
-                    printf("i'm inside if");
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
