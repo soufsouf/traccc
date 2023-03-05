@@ -13,9 +13,8 @@
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
 
 namespace traccc::device {
-
-TRACCC_HOST_DEVICE
 using index_t = unsigned short;
+TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
