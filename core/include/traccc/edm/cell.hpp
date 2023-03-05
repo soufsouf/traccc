@@ -29,9 +29,12 @@ struct cell {
     channel_id channel1 = 0;
     scalar activation = 0.;
     scalar time = 0.;
-    unsigned int cluster_indice = 2000;
+  
 };
-
+struct idx_cluster {
+    index_t id_cluster = 0 ;
+    index_t write = 0 ;
+};
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE
 inline bool operator<(const cell& lhs, const cell& rhs) {

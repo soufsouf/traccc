@@ -15,7 +15,7 @@
 #include <list>
 // System include(s).
 #include <cstddef>
-
+#include "traccc/edm/cell.hpp"
 namespace traccc::device {
 
 /// Function which looks for cells which share the same "parent" index and

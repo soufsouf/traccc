@@ -9,7 +9,7 @@
 
 // Project include(s)
 #include <vecmem/memory/device_atomic_ref.hpp>
-
+#include "traccc/edm/cell.hpp"
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
 
 namespace traccc::device {
@@ -31,10 +31,12 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
+    const cell_module this_module;
+    const auto module_link;
     for (index_t value : values) 
     {
-            const auto module_link = cells[value + start].module_link;
-            const cell_module this_module = modules.at(module_link);
+            module_link = cells[value + start].module_link;
+            this_module = modules.at(module_link);
             const cell this_cell = cells[value + start].c;
             const float weight = traccc::detail::signal_cell_modelling(
                         this_cell.activation, this_module);

@@ -9,7 +9,7 @@
 #include "../utils/utils.hpp"
 #include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
 #include "traccc/cuda/utils/definitions.hpp"
-
+#include "traccc/edm/cell.hpp"
 // Project include(s)
 #include "traccc/clusterization/device/aggregate_cluster.hpp"
 #include "traccc/clusterization/device/form_spacepoints.hpp"
@@ -33,10 +33,7 @@ using index_t = unsigned short;
 
 static constexpr int TARGET_CELLS_PER_THREAD = 8;
 static constexpr int MAX_CELLS_PER_THREAD = 12;
-struct idx_cluster {
-    index_t id_cluster = 0 ;
-    index_t write = 0 ;
-};
+
 }  // namespace
 
 namespace kernels {
