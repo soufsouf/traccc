@@ -21,7 +21,8 @@
 // System include(s).
 #include <algorithm>
 //warp level premitive 
-#include <device_functions.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 namespace traccc::cuda {
 
