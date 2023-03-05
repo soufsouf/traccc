@@ -237,6 +237,7 @@ __global__ void ccl_kernel(
         int warp_min = warpReduceMin(cell);
         if (tid % WARP_SIZE == 0 && warp_min !=0 ) {
             start = start + warp_min;
+            printf(" start %u \n", start);
             flag[0] = 1 ; 
         }
                    
@@ -253,7 +254,6 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link  ) {
-                    printf(" i'm here \n");
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
