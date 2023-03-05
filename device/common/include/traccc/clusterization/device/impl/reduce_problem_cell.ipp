@@ -55,7 +55,7 @@ inline void reduce_problem_cell(
             if( idx != 2000)
             {
                 cells[pos].c.cluster_indice = idx;
-                list<index_t>& values = cluster_map[idx];
+                std::list<index_t>& values = cluster_map[idx];
                 values.push_back(pos);
                 find = true;
                 break;
@@ -66,7 +66,7 @@ inline void reduce_problem_cell(
     {
        
        cluster_map.insert(make_pair(cluster_map.size(), list<index_t>()));
-       list<index_t>& new_pair = cluster_map[cluster_map.size()];
+       std::list<index_t>& new_pair = cluster_map[cluster_map.size()];
        new_pair.push_back(pos);
        cells[pos].c.cluster_indice = cluster_map.size();
     }
