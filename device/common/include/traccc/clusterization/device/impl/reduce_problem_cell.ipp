@@ -65,7 +65,7 @@ inline void reduce_problem_cell(
     if ( find ==false)
     {
        
-       cluster_map.insert(std::make_pair(cluster_map.size(), std::list<index_t>()));
+       cluster_map.insert(std::pair(cluster_map.size(), std::list<index_t>()));
        std::list<index_t>& new_pair = cluster_map[cluster_map.size()];
        new_pair.push_back(pos);
        cells[pos].c.cluster_indice = cluster_map.size();
