@@ -15,7 +15,7 @@
 namespace traccc::device {
 
 TRACCC_HOST_DEVICE
-
+using index_t = unsigned short;
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,

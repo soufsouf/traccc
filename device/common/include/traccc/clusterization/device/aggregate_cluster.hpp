@@ -29,6 +29,7 @@ namespace traccc::device {
 /// @param[in] end      partition end point this cell belongs to
 /// @param[in] cid      current cell id
 /// @param[out] out     cluster to fill
+using index_t = unsigned short;
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
