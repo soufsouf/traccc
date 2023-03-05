@@ -231,6 +231,7 @@ __global__ void ccl_kernel(
                 cells_device[start + cell_id].module_link &&
                 cells_device[start + cell_id].c.channel1 <=
                 cells_device[start + cell_id - 1].c.channel1 + 1) {
+                     printf(" i'm in 1 \n ");
                       cell = cell_id;
                     }
         // find minimum value in the warp          
@@ -254,6 +255,7 @@ __global__ void ccl_kernel(
                    cells_device[end + cell_id].module_link &&
                cells_device[end + cell_id].c.channel1 <=
                    cells_device[end + cell_id - 1].c.channel1 + 1) {
+                    printf(" i'm in 2 \n ");
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
                     
@@ -279,7 +281,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    printf(" size %hu", size);
+    //printf(" size %hu", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
