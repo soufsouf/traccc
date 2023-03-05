@@ -237,11 +237,11 @@ __global__ void ccl_kernel(
         if (start == 0 ) break;
         // find minimum value in the warp  
         __syncthreads();        
-        int warp_min = warpReduceMin(cell);
+        int warp_max = warpReduceMax(val);
+        printf(" warp_max %u \n", warp_max);
         // thread with lane id 0 writes the result to global memory
-        if (tid % WARP_SIZE == 0 /*&& warp_min != 0*/ ) {
-            printf(" warp_min %u \n", warp_min);
-            start = start + warp_min;
+        if (tid % WARP_SIZE == 0 && warp_max != 0) {
+            start = start + warp_max;
             flag[0] = 1 ; 
         }
                    
@@ -264,10 +264,10 @@ __global__ void ccl_kernel(
                     }  /// if : end >= num_cells , the value of "end" will not change 
         __syncthreads();            
         // find minimum value in the warp          
-        int warp_min = warpReduceMin(cell);
+        int warp_max = warpReduceMax(val);
         // thread with lane id 0 writes the result to global memory
-        if (tid % WARP_SIZE == 0 /*&& warp_min != 0*/ ) {
-            end = end + warp_min;
+        if (tid % WARP_SIZE == 0 && warp_max != 0 ) {
+            end = end + warp_max;
             flag[1] = 1 ; 
         }
                    
