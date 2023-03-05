@@ -145,11 +145,11 @@ __global__ void ccl_kernel(
     const unsigned short target_cells_per_partition,
     alt_measurement_collection_types::view measurements_view,
     unsigned int& measurement_count) {
-    
+
     
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
-    
+   
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
@@ -172,28 +172,26 @@ __global__ void ccl_kernel(
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
-        outi = 0;  }
+        outi = 0;
 
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
          * cells that have been claimed by the previous block (if any).
          */
-         
         while (start != 0 &&
                cells_device[start - 1].module_link ==
                    cells_device[start].module_link &&
                cells_device[start].c.channel1 <=
                    cells_device[start - 1].c.channel1 + 1) {
             ++start;
-        }  
+        }
 
         /*
          * Then, claim as many cells as we need past the naive end of the
          * current block to ensure that we do not end our partition on a cell
          * that is not a possible boundary!
          */
-         
         while (end < num_cells &&
                cells_device[end - 1].module_link ==
                    cells_device[end].module_link &&
@@ -201,50 +199,10 @@ __global__ void ccl_kernel(
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
-    }  
-
-    /*
-    locating the start and the end of the partition
-    
-   __shared__ short flag[2];  
-   //#pragma unroll   
-    for (index_t iter = 0; iter < 8; ++iter) {
-        
-        const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
-        if (start == 0 ) break;
-        if ( cells_device[start + cell_id - 1].module_link !=
-                cells_device[start + cell_id].module_link &&
-                cells_device[start + cell_id].c.channel1 <=
-                cells_device[start + cell_id - 1].c.channel1 + 1) {
-                    start = start + cell_id;
-                    flag[0] = 1 ; 
-                   }
-        __syncthreads();
-        if (flag[0] == 1) break;   
     }
-    
-    //#pragma unroll  
-    for (index_t iter = 0; iter < 8; ++iter) {
-        
-        const index_t cell_id = iter * blckDim + tid;
-        
-        if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
-                   cells_device[end + cell_id].module_link &&
-               cells_device[end + cell_id].c.channel1 <=
-                   cells_device[end + cell_id - 1].c.channel1 + 1) {
-                    end = end + cell_id;
-                    flag[1] = 1 ; 
-                   }
-        __syncthreads();
-        if (flag[1] == 1) break;
-        
-    } */
+    __syncthreads();
 
-//////////
-
-    //__syncthreads();
     const index_t size = end - start;
-    
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -428,8 +386,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
-    printf(" num_partitions %u", num_partitions);
-    printf(" threads_per_partition %u", threads_per_partition);
+   printf("num_partitions %u" , num_partitions );
+   printf("threads_per_partition %u" , threads_per_partition );
+
 
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
