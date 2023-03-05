@@ -386,8 +386,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
-   printf("num_partitions %u" , num_partitions );
-   printf("threads_per_partition %u" , threads_per_partition );
+   
+   printf("max_cells_per_partition \n %u" , max_cells_per_partition );
 
 
     kernels::
