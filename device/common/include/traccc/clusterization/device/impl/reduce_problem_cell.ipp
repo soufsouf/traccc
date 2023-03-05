@@ -44,6 +44,31 @@ inline void reduce_problem_cell(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
+    unsigned int i = pos - 1; 
+    bool find = false;
+    while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
+    {
+        if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
+            uint64_t idx = cells[i].c.cluster_indice;
+            if( idx != 2000)
+            {
+                cells[pos].c.cluster_indice = idx;
+                list<index_t>& values = cluster_map[idx];
+                values.push_back(pos);
+                find = true;
+                break;
+            }
+        }
+    }
+    if ( find ==false)
+    {
+       
+       cluster_map.insert(make_pair(cluster_map.size(), list<index_t>()));
+       list<index_t>& new_pair = cluster_map[cluster_map.size()];
+       new_pair.push_back(pos);
+       cells[pos].c.cluster_indice = cluster_map.size();
+    }
+    
     for (unsigned int j = pos - 1; j < pos; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
