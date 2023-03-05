@@ -33,6 +33,10 @@ using index_t = unsigned short;
 
 static constexpr int TARGET_CELLS_PER_THREAD = 8;
 static constexpr int MAX_CELLS_PER_THREAD = 12;
+struct idx_cluster {
+    index_t id_cluster = 0 ;
+    index_t write = 0 ;
+};
 }  // namespace
 
 namespace kernels {
@@ -224,7 +228,7 @@ __global__ void ccl_kernel(
         measurements_view);
 
     // Vector of indices of the adjacent cells
-    index_t adjv[MAX_CELLS_PER_THREAD][8];
+    //index_t adjv[MAX_CELLS_PER_THREAD][8];
     /*
      * The number of adjacent cells for each cell must start at zero, to
      * avoid uninitialized memory. adjv does not need to be zeroed, as
@@ -232,21 +236,21 @@ __global__ void ccl_kernel(
      * is set.
      */
     // Number of adjacent cells
-    unsigned char adjc[MAX_CELLS_PER_THREAD];
-extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
-#pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        adjc[tst] = 0;
-    }
 
+    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+    extern __shared__ idx_cluster cluster_id[];
+    idx_cluster* index = &cluster_id[max_cells_per_partition];
+
+#pragma unroll
+   
+    
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst],cluster_map);
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_map ,cluster_id);
     }
-   
+   __syncthreads();
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
@@ -255,46 +259,32 @@ extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ index_t shared_v[];
+    /*extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];
-
-#pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;
-        /*
-         * At the start, the values of f and f_next should be equal to the
-         * ID of the cell.
-         */
-        f[cid] = cid;
-        f_next[cid] = cid;
-    }
-
+    index_t* f_next = &shared_v[max_cells_per_partition];*/
     /*
      * Now that the data has initialized, we synchronize again before we
      * move onto the actual processing part.
      */
-    __syncthreads();
+  
 
     /*
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
-
-    __syncthreads();
+   
 
     /*
      * Count the number of clusters by checking how many cells have
      * themself assigned as a parent.
      */
-    for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+   /* for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (f[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
 
-    __syncthreads();
+    __syncthreads();*/
 
     /*
      * Add the number of clusters of each thread block to the total
@@ -304,40 +294,37 @@ extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
-    if (tid == 0) {
-        outi = atomicAdd(&measurement_count, outi);
+     if (tid == 0) {
+        outi = atomicAdd(&measurement_count, cluster_map.size());
     }
+
 
     __syncthreads();
 
     /*
      * Get the position to fill the measurements found in this thread group.
      */
+    
     const unsigned int groupPos = outi;
 
     __syncthreads();
 
-    if (tid == 0) {
-        outi = 0;
-    }
 
-    __syncthreads();
 
-    vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
+   
+     if (tid <= cluster_map.size())
+        {
+            //auto& cluster_map_ref = *cluster_map;
+             
+            std::list<index_t> values = (*cluster_map)[key];
+             device::aggregate_cluster(cells_device, modules_device,
+                                      start, values,
+                                      measurements_device[groupPos + tid]);
 
-    for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
-            /*
-             * If we are a cluster owner, atomically claim a position in the
-             * output array which we can write to.
-             */
-            const unsigned int id = atomicAdd(&outi, 1);
-            device::aggregate_cluster(cells_device, modules_device, f_view,
-                                      start, end, cid,
-                                      measurements_device[groupPos + id]);
+  
+  
         }
     }
-}
 
 __global__ void form_spacepoints(
     alt_measurement_collection_types::const_view measurements_view,
