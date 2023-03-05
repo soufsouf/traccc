@@ -279,7 +279,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    //printf(" size %hu", size);
+    printf(" size %hu", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -464,7 +464,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Launch ccl kernel. Each thread will handle a single cell.
    
-   printf("m_target_cells_per_partition %u \n " , m_target_cells_per_partition );
+   //printf("m_target_cells_per_partition %u \n " , m_target_cells_per_partition );
 
 
     kernels::
