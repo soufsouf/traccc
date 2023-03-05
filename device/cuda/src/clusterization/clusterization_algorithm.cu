@@ -293,7 +293,6 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    printf(" size %hu \n ", size);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -306,7 +305,8 @@ __global__ void ccl_kernel(
 
     alt_measurement_collection_types::device measurements_device(
         measurements_view);
-
+    
+    printf(" as 1");
     // Vector of indices of the adjacent cells
     index_t adjv[MAX_CELLS_PER_THREAD][8];
     /*
@@ -317,7 +317,7 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-
+    printf(" as 2");
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
@@ -330,7 +330,7 @@ __global__ void ccl_kernel(
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
-
+    printf(" as 3");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
