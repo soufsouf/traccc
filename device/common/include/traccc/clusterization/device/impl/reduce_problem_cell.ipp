@@ -69,8 +69,10 @@ inline void reduce_problem_cell(
     if ( find ==false)
     {
        
-       cluster_map_ref.insert(std::pair(cluster_map_ref.size(), std::list<index_t>()));
-       std::list<index_t>& new_pair = cluster_map_ref[cluster_map_ref.size()];
+       cluster_map_ref.insert(std::pair(cluster_map_ref.end() + 1, std::list<index_t>()));
+       std::list<index_t>& new_pair = cluster_map_ref[cluster_map_ref.end() + 1];
+       /*auto it = cluster_map_ref.find();
+        if (it != map.end()) {*/
        new_pair.push_back(pos);
        //val = cluster_map_ref.size();
     }
