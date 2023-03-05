@@ -253,7 +253,7 @@ __global__ void ccl_kernel(
         
         if ( end < num_cells && cells_device[end + cell_id - 1].module_link !=
                    cells_device[end + cell_id].module_link &&
-                   cells_device[end + cell_id].c.channel1 <=
+                   cells_device[end + cell_id].c.channel1 >=
                    cells_device[end + cell_id - 1].c.channel1 + 1 ) {
                     printf(" i'm here \n");
                     cell = cell_id;
