@@ -237,6 +237,7 @@ __global__ void ccl_kernel(
                     }
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
+        printf(" after warpMin");
         if (tid % WARP_SIZE == 0 && warp_min !=0 ) {
             start = start + warp_min;
             flag[0] = 1 ; 
