@@ -35,7 +35,7 @@ inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
     const unsigned int start,  std::list<index_t> values,
-    index_t mod_link,
+    unsigned int mod_link,
     alt_measurement& out);
 
 }  // namespace traccc::device

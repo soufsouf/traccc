@@ -48,7 +48,7 @@ inline void reduce_problem_cell(
      unsigned int i = pos - 1; 
      bool find = false;
      auto& cluster_map_ref = *cluster_map;
-     index_t& idx = index[cid].id_cluster;
+     unsigned int& idx = index[cid].id_cluster;
 
      unsigned short write_done;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
@@ -60,10 +60,9 @@ inline void reduce_problem_cell(
           }
     __threadfence();
 
-          index_t idx_cells = index[i - start].id_cluster;
-             //val = idx;
-             index_t& t = index[pos - start].id_cluster;
-          atomicAdd(t, idx_cells);
+          unsigned int idx_cells = index[i - start].id_cluster;
+            
+          atomicAdd(&index[pos - start].id_cluster, idx_cells);
           __threadfence();
        
           std::list<index_t>& values = cluster_map_ref[idx];
