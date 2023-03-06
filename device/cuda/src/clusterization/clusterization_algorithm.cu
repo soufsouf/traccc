@@ -20,7 +20,6 @@
 
 // System include(s).
 #include <algorithm>
-#include <cuda/std/unordered_map>
 #include <list>
 #include <iostream>
 

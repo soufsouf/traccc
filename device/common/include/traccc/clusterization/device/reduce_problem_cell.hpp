@@ -13,7 +13,7 @@
 #include "traccc/edm/cell.hpp"
 // System include(s).
 #include <cstddef>
-#include <cuda/std/unordered_map>
+
 #include <list>
 
 namespace traccc::device {
