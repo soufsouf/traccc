@@ -48,7 +48,7 @@ inline void reduce_problem_cell(
      unsigned int i = pos - 1; 
      bool find = false;
      auto& cluster_map_ref = *cluster_map;
-     const unsigned int& idx = index[cid];
+     index_t& idx = index[cid].id_cluster;
 
      unsigned short write_done;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
