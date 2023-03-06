@@ -291,8 +291,9 @@ __global__ void ccl_kernel(
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
+    size_t map_size = (*cluster_map).size();
      if (tid == 0) {
-        outi = atomicAdd(&measurement_count, cluster_map.size());
+        outi = atomicAdd(&measurement_count, map_size);
     }
 
 
@@ -309,7 +310,7 @@ __global__ void ccl_kernel(
 
 
    
-     if (tid <= cluster_map.size())
+     if (tid <= map_size)
         {
             //auto& cluster_map_ref = *cluster_map;
              
