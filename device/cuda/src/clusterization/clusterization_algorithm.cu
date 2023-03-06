@@ -293,6 +293,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
+    printf(" it starts from here %u with size %hu", start, size );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
@@ -486,9 +487,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, 385,
             256, measurements_buffer,
-            *num_measurements_device);
+            *num_measurements_device);    /// with this params , it work in acts new clust
 
-    //CUDA_ERROR_CHECK(cudaGetLastError());
+    CUDA_ERROR_CHECK(cudaGetLastError());
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
