@@ -384,7 +384,7 @@ printf("hello from clusterization \n");
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     4 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
