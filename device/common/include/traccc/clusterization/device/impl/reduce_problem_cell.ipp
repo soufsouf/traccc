@@ -62,7 +62,7 @@ inline void reduce_problem_cell(
 
           index_t idx_cells = index[i - start].id_cluster;
              //val = idx;
-          atomicAdd(*index[pos - start].id_cluster, idx_cells);
+          atomicAdd(index[pos - start].id_cluster, idx_cells);
           __threadfence();
        
           std::list<index_t>& values = cluster_map_ref[idx];
