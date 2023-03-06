@@ -47,27 +47,27 @@ inline void reduce_problem_cell(
      */
      unsigned int i = pos - 1; 
      bool find = false;
-     unsigned int& idx = index[cid].id_cluster;
+     
 
-     unsigned short write_done;
+     unsigned int empl;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
        {
          if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
           while (!index[i - start].write) 
           {
-          write_done = 0;
+          empl = 0;
           }
          __threadfence();
 
           unsigned int idx_cluster = index[i - start].id_cluster ;
-          index[pos - start].module_link= mod_id;
-          atomicExch(&index[pos - start].id_cluster, idx_cluster );
+          index[cid].module_link= mod_id;
+          atomicExch(&index[cid].id_cluster, idx_cluster );
           __threadfence();
-          unsigned int empl = index[i - start].emplacement + 1 ;
-          index[pos - start].emplacement= empl;
+        empl = index[i - start].emplacement + 1 ;
+          index[cid].emplacement= empl;
           cluster_group[idx_cluster*8 + empl].cluster_cell = pos;
           cluster_group[idx_cluster].write = 1 ;
-          atomicExch(&index[pos - start].write, 1); 
+          atomicExch(&index[cid].write, 1); 
           find = true;
          break;
             }
@@ -76,14 +76,14 @@ inline void reduce_problem_cell(
         
     
     if ( find ==false)
-    {   index[pos - start].module_link = mod_id;
+    {   index[cid].module_link = mod_id;
         atomicAdd(&cluster_count, 1);
-       atomicExch(&index[pos - start].id_cluster,cluster_count );
-       index[pos - start].emplacement = cluster_count*8 ;
+       atomicExch(&index[cid].id_cluster,cluster_count );
+       index[cid].emplacement = cluster_count*8 ;
        cluster_group[cluster_count*8].cluster_cell= pos;
        cluster_group[cluster_count*8].write = 1 ;
        __threadfence();
-       atomicExch(&index[pos - start].write, 1); 
+       atomicExch(&index[cid].write, 1); 
        
     }
 
