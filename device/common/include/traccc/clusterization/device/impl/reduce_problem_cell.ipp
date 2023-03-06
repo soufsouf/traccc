@@ -60,7 +60,7 @@ inline void reduce_problem_cell(
           }
     __threadfence();
 
-          unsigned int idx_cells = index[i - start].id_cluster;
+          index_t idx_cells = index[i - start].id_cluster;
              //val = idx;
           atomicExch(&index[pos - start].id_cluster, idx_cells);
           __threadfence();
