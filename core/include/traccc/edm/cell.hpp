@@ -35,6 +35,7 @@ using index_t = unsigned short;
 struct idx_cluster {
     index_t id_cluster = 0 ;
     index_t write = 0 ;
+    index_t module_link ;
 };
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE

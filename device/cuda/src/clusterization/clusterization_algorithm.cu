@@ -313,9 +313,9 @@ __global__ void ccl_kernel(
         {
             //auto& cluster_map_ref = *cluster_map;
              
-            std::list<index_t> values = (*cluster_map)[key];
+            std::list<index_t> values = (*cluster_map)[tid];
              device::aggregate_cluster(cells_device, modules_device,
-                                      start, values,
+                                      start, values, cluster_id[tid].module_link,
                                       measurements_device[groupPos + tid]);
 
   

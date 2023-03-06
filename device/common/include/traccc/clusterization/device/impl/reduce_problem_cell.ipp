@@ -49,6 +49,7 @@ inline void reduce_problem_cell(
      bool find = false;
      auto& cluster_map_ref = *cluster_map;
      unsigned int& idx = index[cid];
+
      auto write_done;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
       {
@@ -70,11 +71,12 @@ inline void reduce_problem_cell(
           find = true;
          break;
             }
+            i -- ;
         }
-        i -- ;
+        
     
     if ( find ==false)
-    {
+    {   index[pos - start].module_link = mod_id;
        atomicExch(&index[pos - start].id_cluster,cluster_map_ref.size() + 1 );
        __threadfence();
         cluster_map_ref.insert(std::pair(cluster_map_ref.size() + 1, std::list<index_t>()));

@@ -18,7 +18,7 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const unsigned int start, std::list<index_t> values,
+    const unsigned int start, std::list<index_t> values, index_t mod_link,
     alt_measurement& out) {
 
     
@@ -31,12 +31,9 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const cell_module this_module;
-    const auto module_link;
-    for (index_t value : values) 
+    const cell_module this_module = modules.at(mod_link);
+     for (index_t value : values) 
     {
-            module_link = cells[value + start].module_link;
-            this_module = modules.at(module_link);
             const cell this_cell = cells[value + start].c;
             const float weight = traccc::detail::signal_cell_modelling(
                         this_cell.activation, this_module);
@@ -68,7 +65,7 @@ inline void aggregate_cluster(
      */
     out.local = mean;
     out.variance = var;
-    out.module_link = module_link;
+    out.module_link = mod_link;
 }
 
 }  // namespace traccc::device
