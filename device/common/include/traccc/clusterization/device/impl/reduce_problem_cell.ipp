@@ -56,7 +56,7 @@ inline void reduce_problem_cell(
         if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
           while (!index[i - start].write) 
           {
-          write_done = atomicAdd(&write_done, 0);
+          write_done = 0;
           }
     __threadfence();
 
