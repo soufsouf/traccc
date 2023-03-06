@@ -478,7 +478,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Launch ccl kernel. Each thread will handle a single cell.
    
-   printf("max_cells_per_partition %u \n " , max_cells_per_partition );
+   
 
     
     kernels::
@@ -507,8 +507,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_blocks =
         (*num_measurements_host + spacepointsLocalSize - 1) /
         spacepointsLocalSize;
-
-    // Turn 2D measurements into 3D spacepoints
+    printf("CC kernel is finish ");
     kernels::form_spacepoints<<<num_blocks, spacepointsLocalSize, 0, stream>>>(
         measurements_buffer, modules, *num_measurements_host,
         spacepoints_buffer);
