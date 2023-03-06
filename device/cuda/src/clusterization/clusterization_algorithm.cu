@@ -67,7 +67,7 @@ __device__ int warpReduceMax(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = max(val, __shfl_down_sync(0xffffffff, val, offset));
-        __syncwarp();
+        __syncwarp();   /// maybe we do not need it 
     }
     return val;
 }
@@ -247,7 +247,7 @@ __global__ void ccl_kernel(
         // find minimum value in the warp  
         __syncthreads();        
         int warp_max = warpReduceMax(cell);
-        // thread with lane id 0 writes the result to global memory
+        // thread with lane id 0 writes the result 
         if (tid % WARP_SIZE == 0 && warp_max != 0) {
             start = start + warp_max;
             flag[0] = 1 ; 
@@ -306,7 +306,7 @@ __global__ void ccl_kernel(
     alt_measurement_collection_types::device measurements_device(
         measurements_view);
     
-    printf(" as 1 \n");
+    
     // Vector of indices of the adjacent cells
     index_t adjv[MAX_CELLS_PER_THREAD][8];
     /*
@@ -317,7 +317,7 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-    printf(" as 2 \n");
+    
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
@@ -330,7 +330,7 @@ __global__ void ccl_kernel(
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
-    printf(" as 3 \n ");
+    
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
@@ -478,9 +478,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Launch ccl kernel. Each thread will handle a single cell.
    
-   //printf("m_target_cells_per_partition %u \n " , m_target_cells_per_partition );
+   printf("max_cells_per_partition %u \n " , max_cells_per_partition );
 
-
+    
     kernels::
         ccl_kernel<<<1256, 32,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
