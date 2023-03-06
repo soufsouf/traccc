@@ -247,6 +247,7 @@ __global__ void ccl_kernel(
          * Look for adjacent cells to the current one.
          */   
         device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,index);
+        printf("cluster group : %u \n",cluster_group[tst]);
     }
    __syncthreads();
     /*
