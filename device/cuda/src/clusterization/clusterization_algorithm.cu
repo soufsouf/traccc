@@ -488,8 +488,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
             256, measurements_buffer,
             *num_measurements_device);
 
-    CUDA_ERROR_CHECK(cudaGetLastError());
-     printf("CC kernel is finish ****************************");
+    //CUDA_ERROR_CHECK(cudaGetLastError());
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
