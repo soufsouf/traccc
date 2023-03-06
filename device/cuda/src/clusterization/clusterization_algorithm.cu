@@ -293,7 +293,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    printf(" it starts from here %u with size %hu \n", start, size );
+    printf(" blockIdx.x %u with size %hu \n", blockIdx.x, size );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
