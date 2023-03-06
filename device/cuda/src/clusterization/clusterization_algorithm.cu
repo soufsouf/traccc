@@ -234,9 +234,11 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 
-    extern __shared__ cuda::std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+    extern __shared__ grp_cluster cluster_vector[];
     extern __shared__ idx_cluster cluster_id[];
-    idx_cluster* index = &cluster_id[max_cells_per_partition];
+    grp_cluster* cluster_group = &cluster_vector[0];
+    idx_cluster* index = &cluster_id[0];
+    __shared__ index_t cluster_count;
 
 #pragma unroll
    
@@ -245,7 +247,7 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_map ,cluster_id);
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,cluster_id);
     }
    __syncthreads();
     /*
@@ -291,9 +293,9 @@ __global__ void ccl_kernel(
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
-    size_t map_size = (*cluster_map).size();
+   
      if (tid == 0) {
-        outi = atomicAdd(&measurement_count, map_size);
+        outi = atomicAdd(&measurement_count, cluster_count);
     }
 
 
@@ -310,11 +312,11 @@ __global__ void ccl_kernel(
 
 
    
-     if (tid <= map_size)
+     if (tid <=cluster_count )
         {
             //auto& cluster_map_ref = *cluster_map;
-             
-            std::list<index_t> values = (*cluster_map)[tid];
+            grp_cluster* values = &cluster_group[tid * 8];
+            
              device::aggregate_cluster(cells_device, modules_device,
                                       start, values, cluster_id[tid].module_link,
                                       measurements_device[groupPos + tid]);

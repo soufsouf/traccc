@@ -37,6 +37,10 @@ struct idx_cluster {
     unsigned int write = 0 ;
     unsigned int module_link ;
 };
+struct grp_cluster {
+    unsigned int write = 0 ;
+    index_t cluster_link ;
+};
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE
 inline bool operator<(const cell& lhs, const cell& rhs) {

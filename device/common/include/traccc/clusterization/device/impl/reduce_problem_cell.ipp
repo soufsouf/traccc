@@ -29,7 +29,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end, 
-    cuda::std::unordered_map<index_t, std::list<index_t>>* cluster_map, idx_cluster* index) {
+    grp_cluster* cluster_group,index_t cluster_count, idx_cluster* index) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
@@ -47,26 +47,24 @@ inline void reduce_problem_cell(
      */
      unsigned int i = pos - 1; 
      bool find = false;
-     auto& cluster_map_ref = *cluster_map;
      unsigned int& idx = index[cid].id_cluster;
 
      unsigned short write_done;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
-      {
-        if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
+       {
+         if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
           while (!index[i - start].write) 
           {
           write_done = 0;
           }
-    __threadfence();
+         __threadfence();
 
-          unsigned int idx_cells = index[i - start].id_cluster;
-            
-          atomicAdd(&index[pos - start].id_cluster, idx_cells);
+          unsigned int idx_cells = index[i - start].id_cluster + 1;
+          index[pos - start].module_link= mod_id;
+          atomicExch(&index[pos - start].id_cluster, idx_cells );
           __threadfence();
-       
-          std::list<index_t>& values = cluster_map_ref[idx];
-          values.push_back(pos);
+          cluster_group[idx_cells].cluster_link = pos;
+          cluster_group[idx_cells].write = 1 ;
           atomicExch(&index[pos - start].write, 1); 
           find = true;
          break;
@@ -77,11 +75,11 @@ inline void reduce_problem_cell(
     
     if ( find ==false)
     {   index[pos - start].module_link = mod_id;
-       atomicExch(&index[pos - start].id_cluster,cluster_map_ref.size() + 1 );
+        atomicAdd(&cluster_count, 1);
+       atomicExch(&index[pos - start].id_cluster,cluster_count );
+       cluster_group[cluster_count*8].cluster_link= pos;
+       cluster_group[cluster_count*8].write = 1 ;
        __threadfence();
-        cluster_map_ref.insert(std::pair(cluster_map_ref.size() + 1, std::list<index_t>()));
-       std::list<index_t>& new_pair = cluster_map_ref[cluster_map_ref.size() + 1 ];
-       new_pair.push_back(pos);
        atomicExch(&index[pos - start].write, 1); 
        
     }
