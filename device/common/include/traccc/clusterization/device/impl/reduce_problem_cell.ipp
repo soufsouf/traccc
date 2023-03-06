@@ -25,7 +25,7 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
     return p0 * p0 <= 1 && p1 * p1 <= 1;
 }
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end, 
