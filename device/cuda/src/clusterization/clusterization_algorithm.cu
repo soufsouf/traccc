@@ -221,7 +221,7 @@ __global__ void ccl_kernel(
     locating the start and the end of the partition
     */
    __shared__ short flag[2];  
-   unsigned int short cell = 99; 
+   unsigned int short cell = 999; 
 
    __syncthreads();
     #pragma unroll   
@@ -240,7 +240,7 @@ __global__ void ccl_kernel(
         int warp_min = warpReduceMin(cell);
         printf(" warp_min %u \n", warp_min );
         // thread with lane id 0 writes the result 
-        if (tid % WARP_SIZE == 0 && warp_min != 99) {
+        if (tid % WARP_SIZE == 0 && warp_min != 999) {
             start = start + warp_min;
             flag[0] = 1 ; 
         }
@@ -249,7 +249,7 @@ __global__ void ccl_kernel(
         if (flag[0] == 1) break;   
     }
 
-    cell = 99;
+    cell = 999;
     __syncthreads();
     #pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
@@ -266,7 +266,7 @@ __global__ void ccl_kernel(
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result to global memory
-        if (tid % WARP_SIZE == 0 && warp_min != 99 ) {
+        if (tid % WARP_SIZE == 0 && warp_min != 999 ) {
             end = end + warp_min;
             flag[1] = 1 ; 
         }
