@@ -35,7 +35,7 @@ inline void aggregate_cluster(
     int i = 0 ;
      while(!values[i].write ) 
     {
-            const cell this_cell = cells[values[i].cluster_link + start].c;
+            const cell this_cell = cells[values[i].cluster_cell + start].c;
             const float weight = traccc::detail::signal_cell_modelling(
                         this_cell.activation, this_module);
             if (weight > this_module.threshold) {
