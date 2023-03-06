@@ -237,7 +237,7 @@ __global__ void ccl_kernel(
     extern __shared__ idx_cluster cluster_id[];
     grp_cluster* cluster_group = &cluster_vector[0];
     idx_cluster* index = &cluster_id[0];
-    __shared__ index_t cluster_count;
+    __shared__ unsigned int cluster_count;
 
 #pragma unroll
    

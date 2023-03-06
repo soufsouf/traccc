@@ -32,7 +32,7 @@ inline void aggregate_cluster(
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
     const cell_module this_module = modules.at(mod_link);
-    i = 0 ;
+    int i = 0 ;
      while(!values[i].write ) 
     {
             const cell this_cell = cells[values[i].cluster_link + start].c;

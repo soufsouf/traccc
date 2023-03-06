@@ -34,7 +34,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-     grp_cluster* cluster_group,index_t cluster_count,
+     grp_cluster* cluster_group,unsigned int cluster_count,
      idx_cluster* index);
 
 }  // namespace traccc::device
