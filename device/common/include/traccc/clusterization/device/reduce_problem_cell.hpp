@@ -30,7 +30,7 @@ namespace traccc::device {
 /// @param[out] ajv     Indices of adjacent cells
 ///
 using index_t = unsigned short;
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,

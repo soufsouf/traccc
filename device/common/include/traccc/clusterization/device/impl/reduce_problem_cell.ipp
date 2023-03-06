@@ -16,7 +16,7 @@ namespace traccc::device {
  * cluster.
  */
 using index_t = unsigned short;
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
                  channel_id bc1) {
     unsigned int p0 = (ac0 - bc0);
