@@ -247,7 +247,7 @@ printf(" after declaration of shared variables \n");
          * Look for adjacent cells to the current one.
          */   
         device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,index);
-        printf("cluster group : %u \n",cluster_group[tst]);
+        printf("cluster group : %u \n",cluster_group[tst].cluster_cell);
     }
    __syncthreads();
     /*
@@ -378,7 +378,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
-
+printf("hello from clusterization \n");
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
