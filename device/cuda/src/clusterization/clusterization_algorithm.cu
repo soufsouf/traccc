@@ -489,7 +489,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
             *num_measurements_device);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
-
+     printf("CC kernel is finish ****************************");
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
@@ -507,7 +507,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_blocks =
         (*num_measurements_host + spacepointsLocalSize - 1) /
         spacepointsLocalSize;
-    printf("CC kernel is finish ");
+    
     kernels::form_spacepoints<<<num_blocks, spacepointsLocalSize, 0, stream>>>(
         measurements_buffer, modules, *num_measurements_host,
         spacepoints_buffer);
