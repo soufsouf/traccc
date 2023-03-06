@@ -11,7 +11,7 @@
 #include "traccc/definitions/qualifiers.hpp"
 #include "traccc/edm/alt_cell.hpp"
 #include "traccc/edm/alt_measurement.hpp"
-#include <unordered_map>
+#include <cuda/std/unordered_map>
 #include <list>
 // System include(s).
 #include <cstddef>

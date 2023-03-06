@@ -20,7 +20,7 @@
 
 // System include(s).
 #include <algorithm>
-#include <unordered_map>
+#include <cuda/std/unordered_map>
 #include <list>
 #include <iostream>
 
@@ -234,7 +234,7 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 
-    extern __shared__ std::unordered_map<index_t, std::list<index_t>>* cluster_map;
+    extern __shared__ cuda::std::unordered_map<index_t, std::list<index_t>>* cluster_map;
     extern __shared__ idx_cluster cluster_id[];
     idx_cluster* index = &cluster_id[max_cells_per_partition];
 

@@ -13,7 +13,7 @@
 #include "traccc/edm/cell.hpp"
 // System include(s).
 #include <cstddef>
-#include <unordered_map>
+#include <cuda/std/unordered_map>
 #include <list>
 
 namespace traccc::device {
@@ -34,7 +34,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-     std::unordered_map<index_t, std::list<index_t>>* cluster_map, 
+     cuda::std::unordered_map<index_t, std::list<index_t>>* cluster_map, 
      idx_cluster* index);
 
 }  // namespace traccc::device
