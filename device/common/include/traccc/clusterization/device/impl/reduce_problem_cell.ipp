@@ -59,11 +59,13 @@ inline void reduce_problem_cell(
           }
          __threadfence();
 
-          unsigned int idx_cells = index[i - start].id_cluster + 1;
+          unsigned int idx_cluster = index[i - start].id_cluster ;
           index[pos - start].module_link= mod_id;
-          atomicExch(&index[pos - start].id_cluster, idx_cells );
+          atomicExch(&index[pos - start].id_cluster, idx_cluster );
           __threadfence();
-          cluster_group[idx_cells].cluster_link = pos;
+          unsigned int empl = index[i - start].emplacement + 1 ;
+          index[pos - start].emplacement= empl;
+          cluster_group[idx_cluster*8 + empl].cluster_cell = pos;
           cluster_group[idx_cells].write = 1 ;
           atomicExch(&index[pos - start].write, 1); 
           find = true;
@@ -77,7 +79,8 @@ inline void reduce_problem_cell(
     {   index[pos - start].module_link = mod_id;
         atomicAdd(&cluster_count, 1);
        atomicExch(&index[pos - start].id_cluster,cluster_count );
-       cluster_group[cluster_count*8].cluster_link= pos;
+       index[pos - start].emplacement = cluster_count*8 ;
+       cluster_group[cluster_count*8].cluster_cell= pos;
        cluster_group[cluster_count*8].write = 1 ;
        __threadfence();
        atomicExch(&index[pos - start].write, 1); 

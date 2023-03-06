@@ -36,10 +36,12 @@ struct idx_cluster {
     unsigned int id_cluster = 0 ;
     unsigned int write = 0 ;
     unsigned int module_link ;
+    unsigned int emplacement ;
 };
 struct grp_cluster {
     unsigned int write = 0 ;
-    index_t cluster_link ;
+    index_t cluster_cell ;
+    
 };
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE
