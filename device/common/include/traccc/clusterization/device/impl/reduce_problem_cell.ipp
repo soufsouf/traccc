@@ -66,7 +66,7 @@ inline void reduce_problem_cell(
           unsigned int empl = index[i - start].emplacement + 1 ;
           index[pos - start].emplacement= empl;
           cluster_group[idx_cluster*8 + empl].cluster_cell = pos;
-          cluster_group[idx_cells].write = 1 ;
+          cluster_group[idx_cluster].write = 1 ;
           atomicExch(&index[pos - start].write, 1); 
           find = true;
          break;
