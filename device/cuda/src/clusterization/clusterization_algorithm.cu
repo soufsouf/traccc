@@ -63,15 +63,6 @@ __device__ int warpReduceMin(int val)
     return val;
 }
 
-__device__ int warpReduceMax(int val)
-{
-    for (int offset = warpSize / 2; offset > 0; offset /= 2) {
-        val = max(val, __shfl_down_sync(0xffffffff, val, offset));
-        __syncwarp();   /// maybe we do not need it 
-    }
-    return val;
-}
-
 __device__ void fast_sv_1(index_t* f, index_t* gf,
                           unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][8], index_t tid,
@@ -230,7 +221,7 @@ __global__ void ccl_kernel(
     locating the start and the end of the partition
     */
    __shared__ short flag[2];  
-   unsigned int short cell = 0; 
+   unsigned int short cell = 99; 
 
    __syncthreads();
     #pragma unroll   
@@ -246,10 +237,10 @@ __global__ void ccl_kernel(
         if (start == 0 ) break;
         // find minimum value in the warp  
         __syncthreads();        
-        int warp_max = warpReduceMax(cell);
+        int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result 
-        if (tid % WARP_SIZE == 0 && warp_max != 0) {
-            start = start + warp_max;
+        if (tid % WARP_SIZE == 0 && warp_min != 0) {
+            start = start + warp_min;
             flag[0] = 1 ; 
         }
                    
@@ -257,7 +248,7 @@ __global__ void ccl_kernel(
         if (flag[0] == 1) break;   
     }
 
-    cell = 0;
+    cell = 99;
     __syncthreads();
     #pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
@@ -272,10 +263,10 @@ __global__ void ccl_kernel(
                     }  /// if : end >= num_cells , the value of "end" will not change 
         __syncthreads();            
         // find minimum value in the warp          
-        int warp_max = warpReduceMax(cell);
+        int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result to global memory
-        if (tid % WARP_SIZE == 0 && warp_max != 0 ) {
-            end = end + warp_max;
+        if (tid % WARP_SIZE == 0 && warp_min != 0 ) {
+            end = end + warp_min;
             flag[1] = 1 ; 
         }
                    
