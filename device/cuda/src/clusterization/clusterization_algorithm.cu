@@ -468,13 +468,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;
+        TARGET_CELLS_PER_THREAD;   /// 385
     const unsigned int threads_per_partition =
         (m_target_cells_per_partition + TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;
+        TARGET_CELLS_PER_THREAD;  /// 32
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
-        m_target_cells_per_partition;
+        m_target_cells_per_partition;   /// 1256
 
     // Launch ccl kernel. Each thread will handle a single cell.
    
@@ -484,7 +484,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     kernels::
         ccl_kernel<<<1256, 32,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
-            cells, modules, max_cells_per_partition,
+            cells, modules, 385,
             256, measurements_buffer,
             *num_measurements_device);
 
