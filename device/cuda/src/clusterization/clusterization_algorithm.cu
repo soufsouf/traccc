@@ -246,7 +246,7 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,cluster_id);
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,index);
     }
    __syncthreads();
     /*
@@ -317,7 +317,7 @@ __global__ void ccl_kernel(
             grp_cluster* values = &cluster_group[tid * 8];
             
              device::aggregate_cluster(cells_device, modules_device,
-                                      start, values, cluster_id[tid].module_link,
+                                      start, values, index[tid].module_link,
                                       measurements_device[groupPos + tid]);
 
   
