@@ -48,7 +48,7 @@ inline void reduce_problem_cell(
      unsigned int i = pos - 1; 
      bool find = false;
      
-
+     printf(" hello reduce cell 1 \n");   
      unsigned int empl;
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
        {
@@ -74,7 +74,7 @@ inline void reduce_problem_cell(
             i -- ;
         }
         
-    
+    printf(" hello reduce cell 2 \n");
     if ( find ==false)
     {   index[cid].module_link = mod_id;
         atomicAdd(&cluster_count, 1);
@@ -86,7 +86,7 @@ inline void reduce_problem_cell(
        atomicExch(&index[cid].write, 1); 
        
     }
-
+printf(" hello reduce cell 3 \n");
     
 
     

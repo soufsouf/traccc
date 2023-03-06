@@ -232,13 +232,13 @@ __global__ void ccl_kernel(
      * is set.
      */
     // Number of adjacent cells
-
+printf(" hello before declaration of shared variables \n");
     extern __shared__ grp_cluster cluster_vector[];
     extern __shared__ idx_cluster cluster_id[];
     grp_cluster* cluster_group = &cluster_vector[0];
     idx_cluster* index = &cluster_id[0];
     __shared__ unsigned int cluster_count;
-
+printf(" after declaration of shared variables \n");
 #pragma unroll
    
     
