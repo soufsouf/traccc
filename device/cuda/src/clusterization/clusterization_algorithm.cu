@@ -231,7 +231,7 @@ __global__ void ccl_kernel(
          
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
         if ( start == 0 ) break;
-        if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
+        if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ||
                 cells_device[start + cell_id].c.channel1 >
                 cells_device[start + cell_id - 1].c.channel1 + 1 ) {
