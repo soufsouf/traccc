@@ -250,7 +250,7 @@ __global__ void ccl_kernel(
         __syncthreads();
         if (flag[0] == 1) break;   
     }
-
+    if ( blockIdx.x < 2 ) printf(" i'm here \n " );
     cell = 999;
     __syncthreads();
     #pragma unroll  
@@ -286,7 +286,7 @@ __global__ void ccl_kernel(
         
     } */
 
-    if ( blockIdx.x < 2 ) printf(" i'm here \n " );
+    
 
     const index_t size = end - start;
    //if ( blockIdx.x < 2 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, start );
