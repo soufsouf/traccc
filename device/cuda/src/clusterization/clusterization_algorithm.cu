@@ -274,7 +274,8 @@ __global__ void ccl_kernel(
                    
         __syncthreads();   // obligatoire 
         if (flag[1] == 1) break;   
-    }      
+    }    
+    printf("after last for \n");  
               /*end = end + cell_id;
                     flag[1] = 1 ; 
                    }
@@ -286,7 +287,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    printf(" blockIdx.x %u with size %u \n", blockIdx.x, size );
+    //printf(" blockIdx.x %u with size %u \n", blockIdx.x, size );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
