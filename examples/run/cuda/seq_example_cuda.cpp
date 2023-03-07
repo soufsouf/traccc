@@ -126,7 +126,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     common_opts.input_data_format, &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
-
+             printf("hello from seq 2\n");
             {
                 traccc::performance::timer t("Alt File reading  (cpu)",
                                              elapsedTimes);
