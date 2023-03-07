@@ -76,9 +76,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
     vecmem::cuda::copy copy;
     vecmem::cuda::async_copy async_copy{stream.cudaStream()};
-    printf("hello from seq \n");
+    
     traccc::cuda::clusterization_algorithm ca_cuda(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
+        printf("hello from seq \n");
     traccc::cuda::seeding_algorithm sa_cuda(mr);
     traccc::cuda::track_params_estimation tp_cuda(mr);
 
