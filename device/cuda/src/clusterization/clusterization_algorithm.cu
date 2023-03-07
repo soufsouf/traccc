@@ -233,11 +233,11 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 printf(" hello before declaration of shared variables \n");
-    __shared__ grp_cluster cluster_vector[];
-    __shared__ idx_cluster cluster_id[];
+    extern __shared__ grp_cluster cluster_vector[];
+    extern __shared__ idx_cluster cluster_id[];
     grp_cluster* cluster_group = &cluster_vector[0];
     idx_cluster* index = &cluster_id[0];
-    __shared__ unsigned int cluster_count;
+    __shared__ unsigned int cluster_count = 0;
 printf(" after declaration of shared variables \n");
 #pragma unroll
    
@@ -384,7 +384,8 @@ printf("hello from clusterization \n");
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                    2* max_cells_per_partition * sizeof(index_t + unsigned int)
+                     +  max_cells_per_partition * sizeof(4*unsigned int)+4, stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
