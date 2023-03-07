@@ -380,13 +380,14 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
 printf("hello from clusterization \n");
+size_t shared_mem_size = 2*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
+
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                    (2* max_cells_per_partition * sizeof(6)
-                     +  max_cells_per_partition * sizeof(12)), stream>>>(
+                    shared_mem_size, stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
