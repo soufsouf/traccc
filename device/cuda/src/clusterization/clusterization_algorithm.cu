@@ -187,7 +187,7 @@ __global__ void ccl_kernel(
         outi = 0;
     }
     __syncthreads();
-    if ( blockIdx.x < 2 ) printf(" i'm here \n " );
+    
 
         /*
          * Next, shift the starting point to a position further in the array;
@@ -286,7 +286,7 @@ __global__ void ccl_kernel(
         
     } */
 
-    
+    if ( blockIdx.x < 2 ) printf(" i'm here \n " );
 
     const index_t size = end - start;
    //if ( blockIdx.x < 2 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, start );
