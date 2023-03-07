@@ -285,7 +285,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    if (blockIdx.x < 3) printf(" blockIdx.x %u with start %u \n", blockIdx.x, start );
+    if (blockIdx.x < 2) printf(" blockIdx.x %u with start %u \n", blockIdx.x, start );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
