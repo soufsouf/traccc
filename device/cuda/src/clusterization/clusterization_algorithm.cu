@@ -234,7 +234,7 @@ __global__ void ccl_kernel(
                 cells_device[start + cell_id - 1].c.channel1 + 1 ) {
                       cell = cell_id;
                     }
-        if (start == 0 ) break;
+        //if (start == 0 ) break;
         // find minimum value in the warp  
         __syncthreads();        
         int warp_min = warpReduceMin(cell);
@@ -287,7 +287,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-   if ( blockIdx.x == 0 )printf(" blockIdx.x %u with start %u \n", blockIdx.x, start );
+   //if ( blockIdx.x == 0 )printf(" blockIdx.x %u with start %u \n", blockIdx.x, start );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
