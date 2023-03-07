@@ -186,8 +186,7 @@ __global__ void ccl_kernel(
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
     }
-    //__syncthreads();
-    __syncwarp();
+    __syncthreads();
     
 
         /*
@@ -240,8 +239,7 @@ __global__ void ccl_kernel(
                     }
 
         // find minimum value in the warp  
-       // __syncthreads();  
-       __syncwarp();      
+        __syncthreads();        
         int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result 
         if (tid % WARP_SIZE == 0 && warp_min != 999) {
@@ -249,8 +247,7 @@ __global__ void ccl_kernel(
             flag[0] = 1 ; 
         }
                    
-       // __syncthreads();  // obligatoire 
-       __syncwarp();
+        __syncthreads();
         if (flag[0] == 1) break;   
     }
 
@@ -267,8 +264,7 @@ __global__ void ccl_kernel(
                    cells_device[end + cell_id - 1].c.channel1 + 1 ) {
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
-       // __syncthreads();  
-       __syncwarp();          
+        __syncthreads();            
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result to global memory
@@ -277,8 +273,7 @@ __global__ void ccl_kernel(
             flag[1] = 1 ; 
         }
                    
-       // __syncthreads();   // obligatoire 
-       __syncwarp();
+        __syncthreads();   // obligatoire 
         if (flag[1] == 1) break;   
     }    
     
