@@ -18,6 +18,8 @@
 // Vecmem include(s).
 #include <vecmem/utils/copy.hpp>
 
+#include <cuda_runtime.h>
+#include <stdio.h>
 // System include(s).
 #include <algorithm>
 #include <list>
@@ -233,8 +235,8 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 printf(" hello before declaration of shared variables \n");
-    extern __shared__ grp_cluster cluster_vector[];
-    extern __shared__ idx_cluster cluster_id[];
+     grp_cluster cluster_vector[];
+     idx_cluster cluster_id[];
     grp_cluster* cluster_group = &cluster_vector[0];
     idx_cluster* index = &cluster_id[0];
     __shared__ unsigned int cluster_count ;
@@ -380,8 +382,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
 printf("hello from clusterization \n");
-size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
-
+int device_id = 0;  // ID of the GPU device to query
+    int max_shared_mem_bytes;
+    cudaDeviceGetAttribute(&max_shared_mem_bytes, cudaDevAttrMaxSharedMemoryPerBlock, device_id);
+    printf("Max shared memory per block for device %d: %d bytes\n", device_id, max_shared_mem_bytes);
+    
+//size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
+size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
