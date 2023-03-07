@@ -225,7 +225,7 @@ __global__ void ccl_kernel(
    __shared__ short flag[2];  
    unsigned int short cell = 999; 
 
-   __syncthreads();
+if ( blockIdx.x < 2 ) printf(" i'm here \n " );
     #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
          
@@ -250,7 +250,7 @@ __global__ void ccl_kernel(
         __syncthreads();
         if (flag[0] == 1) break;   
     }
-    if ( blockIdx.x < 2 ) printf(" i'm here \n " );
+    
     cell = 999;
     __syncthreads();
     #pragma unroll  
