@@ -239,8 +239,8 @@ printf(" hello before declaration of shared variables \n");
      idx_cluster cluster_id[];
     grp_cluster* cluster_group = &cluster_vector[0];
     idx_cluster* index = &cluster_id[0];*/
-    grp_cluster* cluster_group[2*max_cells_per_partition];
-    idx_cluster* index[max_cells_per_partition];
+    grp_cluster* cluster_group[];
+    idx_cluster* index[];
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
 printf(" after declaration of shared variables \n");
