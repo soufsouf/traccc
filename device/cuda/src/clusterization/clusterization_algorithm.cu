@@ -253,7 +253,6 @@ __global__ void ccl_kernel(
 
 
     cell = 999;
-   // __syncthreads();
     #pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
@@ -277,15 +276,7 @@ __global__ void ccl_kernel(
         __syncthreads();   // obligatoire 
         if (flag[1] == 1) break;   
     }    
-     
-              /*end = end + cell_id;
-                    flag[1] = 1 ; 
-                   }
-        __syncthreads();
-        if (flag[1] == 1) break;
-        
-    } */
-
+    
     
 
     const index_t size = end - start;
