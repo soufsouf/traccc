@@ -287,7 +287,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-   // if ( blockIdx.x > 1000 && blockIdx.x < 1002 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, size );
+   if ( blockIdx.x = 553 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, size );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
