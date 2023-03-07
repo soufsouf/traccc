@@ -265,7 +265,7 @@ __global__ void ccl_kernel(
         __syncthreads();            
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
-        printf(" warp_min %u \n", warp_min );
+        //printf(" warp_min %u \n", warp_min );
         // thread with lane id 0 writes the result to global memory
         if (tid % WARP_SIZE == 0 && warp_min != 999 ) {
             end = end + warp_min;
@@ -286,7 +286,7 @@ __global__ void ccl_kernel(
     
 
     const index_t size = end - start;
-    //printf(" blockIdx.x %u with start %u \n", blockIdx.x, start );
+    printf(" blockIdx.x %u with size %u \n", blockIdx.x, size );
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
