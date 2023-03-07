@@ -230,7 +230,7 @@ __global__ void ccl_kernel(
     for (index_t iter = 0; iter < 8; ++iter) {
          
         const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
-        if ( blockIdx.x < 2 ) printf(" cell_id %hu \n " , cell_id );
+        if ( blockIdx.x < 2 ) printf( "start %hu \n " , start );
         if ( start != 0 && cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ||
                 cells_device[start + cell_id].c.channel1 >
