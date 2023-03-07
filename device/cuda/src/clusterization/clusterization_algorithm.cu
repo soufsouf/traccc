@@ -225,7 +225,7 @@ __global__ void ccl_kernel(
    __shared__ short flag[2];  
    unsigned int short cell = 999; 
 
-if ( blockIdx.x < 2 ) printf(" i'm here \n " );
+
     #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
          
@@ -236,6 +236,7 @@ if ( blockIdx.x < 2 ) printf(" i'm here \n " );
                 cells_device[start + cell_id - 1].c.channel1 + 1 ) {
                       cell = cell_id;
                     }
+        if ( blockIdx.x < 2 ) printf(" i'm here \n " );
         if (start == 0 ) break;
         // find minimum value in the warp  
         __syncthreads();        
