@@ -58,7 +58,7 @@ __device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = min(val, __shfl_down_sync(0xffffffff, val, offset));
-        __syncwarp();
+       // __syncwarp();
     }
     return val;
 }
@@ -229,8 +229,8 @@ __global__ void ccl_kernel(
     #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
          
-        const index_t cell_id = iter * blckDim + tid;   /// cell_id : id de cell dans la partition 
-        if ( start == 0 ) break;
+        const index_t cell_id = iter * blckDim + tid;  
+        if ( start == 0 ) break;  /// no diverges because all threads of blocs 0 will break 
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ||
                 cells_device[start + cell_id].c.channel1 >
@@ -241,7 +241,6 @@ __global__ void ccl_kernel(
         // find minimum value in the warp  
         __syncthreads();        
         int warp_min = warpReduceMin(cell);
-        //printf(" warp_min %u \n", warp_min );
         // thread with lane id 0 writes the result 
         if (tid % WARP_SIZE == 0 && warp_min != 999) {
             start = start + warp_min;
@@ -254,7 +253,7 @@ __global__ void ccl_kernel(
 
 
     cell = 999;
-    __syncthreads();
+   // __syncthreads();
     #pragma unroll  
     for (index_t iter = 0; iter < 8; ++iter) {
         
@@ -269,7 +268,6 @@ __global__ void ccl_kernel(
         __syncthreads();            
         // find minimum value in the warp          
         int warp_min = warpReduceMin(cell);
-        //printf(" warp_min %u \n", warp_min );
         // thread with lane id 0 writes the result to global memory
         if (tid % WARP_SIZE == 0 && warp_min != 999 ) {
             end = end + warp_min;
