@@ -380,7 +380,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
 printf("hello from clusterization \n");
-size_t shared_mem_size = 2*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
+size_t shared_mem_size = 5*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
 
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
