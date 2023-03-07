@@ -386,7 +386,7 @@ printf("hello from clusterization \n");
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                     (2* max_cells_per_partition * sizeof(6)
-                     +  max_cells_per_partition * sizeof(12) + 4), stream>>>(
+                     +  max_cells_per_partition * sizeof(12)), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
