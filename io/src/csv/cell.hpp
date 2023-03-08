@@ -27,7 +27,7 @@ struct cell {
     
     // geometry_id,hit_id,channel0,channel1,timestamp,value
     DFE_NAMEDTUPLE(cell, geometry_id, hit_id, channel0, channel1, timestamp,
-                   value, cluster_indice);
+                   value);
 };
 
 }  // namespace traccc::io::csv
