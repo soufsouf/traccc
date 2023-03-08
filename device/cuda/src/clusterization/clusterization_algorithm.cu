@@ -249,14 +249,14 @@ printf(" after declaration of shared variables \n");
          * Look for adjacent cells to the current one.
          */   
         device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count);
-        printf("cluster group : %u \n",cluster_group[tst]);
+        //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
     }
    __syncthreads();
 //sort the array of clusters by id_cluster
-    comp_id compare;
+   /* comp_id compare;
     thrust::device_ptr<index_t> devPtr(cluster_group);
     //= thrust::device_pointer_cast(shared_data)
-    thrust::stable_sort(thrust::cuda::par, devPtr, devPtr + max_cells_per_partition,compare );
+    thrust::stable_sort(thrust::cuda::par, devPtr, devPtr + max_cells_per_partition,compare );*/
 
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);

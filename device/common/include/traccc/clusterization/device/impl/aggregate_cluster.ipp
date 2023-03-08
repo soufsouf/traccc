@@ -11,8 +11,7 @@
 #include <vecmem/memory/device_atomic_ref.hpp>
 #include "traccc/edm/cell.hpp"
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
-#include <thrust/device_ptr.h>
-#include <thrust/sort.h>
+
 namespace traccc::device {
 
 TRACCC_HOST_DEVICE
