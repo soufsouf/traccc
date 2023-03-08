@@ -238,9 +238,9 @@ __global__ void ccl_kernel(
 printf(" hello before declaration of shared variables \n");
     extern __shared__ char sharedMem[];
     thrust::device_vector<grp_cluster>* cluster_group = 
-            new (sharedMem max_cells_per_partition * sizeof(idx_cluster)) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
+             (sharedMem max_cells_per_partition * sizeof(idx_cluster)) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
     thrust::device_vector<idx_cluster>* index = 
-            new (sharedMem) thrust::device_vector<idx_cluster>(max_cells_per_partition);
+             (sharedMem) thrust::device_vector<idx_cluster>(max_cells_per_partition);
 
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
