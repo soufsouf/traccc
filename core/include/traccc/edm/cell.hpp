@@ -41,15 +41,7 @@ struct idx_cluster {
 struct grp_cluster {
     unsigned int write = 0 ;
     index_t cluster_cell ;
-    unsigned int nbr_cell = 0;
     
-};
-struct writeEqual {
-  unsigned int write;
-  __device__ writeEqual(unsigned int a) : write(a) {}
-  __device__ bool operator()(const grp_cluster& p) const {
-    return p.write == write;
-  }
 };
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE

@@ -5,10 +5,7 @@
  * Mozilla Public License Version 2.0
  */
 
-#include "traccc/edm/cell.hpp"
-#include <thrust/device_vector.h>
-#include <thrust/find.h>
-#include <thrust/remove.h>
+#include <list>
 
 #pragma once
 
@@ -31,11 +28,8 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
 TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
-    const unsigned short cid, const unsigned int start, 
-    const unsigned int end, 
-    grp_cluster* cluster_group,
-    unsigned int cluster_count,
-    idx_cluster* index) {
+    const unsigned short cid, const unsigned int start, const unsigned int end, 
+    grp_cluster* cluster_group,unsigned int cluster_count, idx_cluster* index) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
@@ -59,21 +53,21 @@ inline void reduce_problem_cell(
      while (cells[i].c.channel1 + 1 >= c1 && cells[i].module_link == mod_id  && i > (start - 1))
        {
          if (is_adjacent(c0, c1, cells[i].c.channel0, cells[i].c.channel1)) {
-          while (index[i - start].write == 0) 
+          while (!index[i - start].write) 
           {
           empl = 0;
           }
-         __threadfence();//ensuring that all memory transactions made by the calling thread are globally visible
-          index[cid].module_link= mod_id;
+         __threadfence();
+
           unsigned int idx_cluster = index[i - start].id_cluster ;
-          atomicExch(&index[cid].id_cluster, idx_cluster );
+          index[cid].module_link= mod_id;
+          atomicAdd(&index[cid].id_cluster, idx_cluster );
           __threadfence();
-          empl = index[i - start].emplacement + 1 ; //****
-          index[cid].emplacement= empl;//****
+          empl = index[i - start].emplacement + 1 ;
+          index[cid].emplacement= empl;
           cluster_group[idx_cluster*8 + empl].cluster_cell = pos;
-          atomicAdd(&cluster_group[idx_cluster*8].nbr_cell , 1);
           cluster_group[idx_cluster*8 + empl].write = 1 ;
-          atomicExch(&index[cid].write, 1); 
+          atomicAdd(&index[cid].write, 1); 
           find = true;
          break;
             }
@@ -84,13 +78,13 @@ inline void reduce_problem_cell(
     if ( find ==false)
     {   index[cid].module_link = mod_id;
         atomicAdd(&cluster_count, 1);
-       index[cid].id_cluster=cluster_count ;
+      index[cid].id_cluster=cluster_count ;
        index[cid].emplacement = cluster_count*8 ;
        cluster_group[cluster_count*8].cluster_cell= pos;
        cluster_group[cluster_count*8].write = 1 ;
-       atomicAdd(&cluster_group[cluster_count*8].nbr_cell , 1);
        __threadfence();
-       atomicExch(&index[cid].write, 1); 
+       index[cid].write = 1; 
+       
     }
 printf(" hello reduce cell 3 \n");
     
