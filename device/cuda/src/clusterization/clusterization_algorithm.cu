@@ -323,7 +323,7 @@ printf(" after declaration of shared variables \n");
             grp_cluster* values = &cluster_group[tid * 8];
             unsigned int mod_link = index[values[0].cluster_cell - start].module_link;
              device::aggregate_cluster(cells_device, modules_device,
-                                      start, values, index[tid].mod_link,
+                                      start, values, mod_link,
                                       measurements_device[groupPos + tid]);
 
   
