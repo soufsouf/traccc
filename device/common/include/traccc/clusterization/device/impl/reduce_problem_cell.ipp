@@ -5,7 +5,7 @@
  * Mozilla Public License Version 2.0
  */
 
-
+#include "traccc/edm/cell.hpp"
 
 #pragma once
 
