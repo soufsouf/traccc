@@ -54,10 +54,13 @@ void* stream::cudaStream() const {
 
 void stream::synchronize() const {
 
+    CUDA_ERROR_CHECK(cudaStreamSynchronize(m_stream->m_stream));
+
+    /*
     cudaError_t err = cudaStreamSynchronize(m_stream->m_stream);
     if (err != cudaSuccess) {
     printf("Error: %s\n", cudaGetErrorString(err));
-}
+    */
 }
 
 }  // namespace traccc::cuda
