@@ -12,6 +12,9 @@
         "xhash": "cpp",
         "xstring": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "chrono": "cpp",
+        "forward_list": "cpp",
+        "xiosbase": "cpp"
     }
 }
