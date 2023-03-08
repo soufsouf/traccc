@@ -390,7 +390,7 @@ int device_id = 0;  // ID of the GPU device to query
     printf("Max shared memory per block for device %d: %d bytes\n", device_id, max_shared_mem_bytes);
     
 //size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
-size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
+size_t shared_mem_size = 8*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster) ;
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
