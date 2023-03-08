@@ -234,13 +234,13 @@ __global__ void ccl_kernel(
      * is set.
      */
     // Number of adjacent cells
-printf(" hello before declaration of shared variables \n");
+//printf(" hello before declaration of shared variables \n");
      extern __shared__ grp_cluster cluster_vector[];
      
     grp_cluster* cluster_group = &cluster_vector[0];
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
-printf(" after declaration of shared variables \n");
+//printf(" after declaration of shared variables \n");
 #pragma unroll
    
     
@@ -337,11 +337,11 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
-printf("hello from clusterization \n");
+
 int device_id = 0;  // ID of the GPU device to query
     int max_shared_mem_bytes;
     cudaDeviceGetAttribute(&max_shared_mem_bytes, cudaDevAttrMaxSharedMemoryPerBlock, device_id);
-    printf("Max shared memory per block for device %d: %d bytes\n", device_id, max_shared_mem_bytes);
+    
     
 //size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
 size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);

@@ -120,19 +120,19 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("File reading  (cpu)",
                                              elapsedTimes);
                 // Read the cells from the relevant event file into host memory.
-                printf("hello from seq \n");
+                
                 cells_per_event = traccc::io::read_cells(
                     event, common_opts.input_directory,
                     common_opts.input_data_format, &surface_transforms,
                     &digi_cfg, &cuda_host_mr);
-                    printf("hello from seq 2\n");
+                    
             }  // stop measuring file reading timer
              
             {
                 traccc::performance::timer t("Alt File reading  (cpu)",
                                              elapsedTimes);
                 // Read the cells from the relevant event file into host memory.
-                printf("hello from seq  alt \n");
+                
                 alt_read_out_per_event = traccc::io::read_cells_alt(
                     event, common_opts.input_directory,
                     common_opts.input_data_format, &surface_transforms,
@@ -159,7 +159,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                printf("hello from seq cuda\n");
+                
                 spacepoints_cuda_buffer = ca_cuda(cells_buffer, modules_buffer);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
