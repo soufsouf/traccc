@@ -6,6 +6,9 @@
  */
 
 #include "traccc/edm/cell.hpp"
+#include <thrust/device_vector.h>
+#include <thrust/find.h>
+#include <thrust/remove.h>
 
 #pragma once
 
@@ -30,9 +33,9 @@ inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, 
     const unsigned int end, 
-    grp_cluster* cluster_group,
+    thrust::device_vector<grp_cluster>* cluster_group,
     unsigned int cluster_count,
-    idx_cluster* index) {
+     thrust::device_vector<idx_cluster>* index) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
