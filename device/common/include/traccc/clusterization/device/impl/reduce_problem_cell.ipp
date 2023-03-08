@@ -32,7 +32,7 @@ inline void reduce_problem_cell(
     const unsigned int end, 
     thrust::device_vector<grp_cluster>* cluster_group,
     unsigned int cluster_count,
-     thrust::device_vector<idx_cluster>* index) {
+    idx_cluster* index) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
@@ -81,14 +81,13 @@ inline void reduce_problem_cell(
     if ( find ==false)
     {   index[cid].module_link = mod_id;
         atomicAdd(&cluster_count, 1);
-       atomicExch(&index[cid].id_cluster,cluster_count );
+       index[cid].id_cluster=cluster_count ;
        index[cid].emplacement = cluster_count*8 ;
        cluster_group[cluster_count*8].cluster_cell= pos;
        cluster_group[cluster_count*8].write = 1 ;
        atomicAdd(&cluster_group[cluster_count*8].nbr_cell , 1);
        __threadfence();
        atomicExch(&index[cid].write, 1); 
-       
     }
 printf(" hello reduce cell 3 \n");
     
