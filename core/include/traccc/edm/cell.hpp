@@ -46,7 +46,7 @@ struct grp_cluster {
 };
 struct writeEqual {
   unsigned int write;
-  __device__ WriteEqual(unsigned int a) : write(a) {}
+  __device__ writeEqual(unsigned int a) : write(a) {}
   __device__ bool operator()(const grp_cluster& p) const {
     return p.write == write;
   }
