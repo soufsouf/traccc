@@ -256,7 +256,7 @@ printf(" after declaration of shared variables \n");
     comp_id compare;
     thrust::device_ptr<index_t> devPtr(cluster_group);
     //= thrust::device_pointer_cast(shared_data)
-    thrust::radix_sort(devPtr, devPtr + max_cells_per_partition,compare );
+    thrust::stable_sort(thrust::cuda::par, devPtr, devPtr + max_cells_per_partition,compare );
 
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
