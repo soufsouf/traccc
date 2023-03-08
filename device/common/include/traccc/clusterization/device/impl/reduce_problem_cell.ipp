@@ -45,7 +45,7 @@ inline void reduce_problem_cell(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
-     unsigned int i = pos - 1; 
+     unsigned int i = ( pos == 0 ? 0 :pos - 1); 
      bool find = false;
      
      printf(" hello reduce cell 1 \n");   
