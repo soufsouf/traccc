@@ -39,7 +39,7 @@ inline void reduce_problem_cell(
      const unsigned int end,
      thrust::device_vector<grp_cluster>* cluster_group,
      unsigned int cluster_count,
-     thrust::device_vector<idx_cluster>*);
+     thrust::device_vector<idx_cluster>* index);
 
 }  // namespace traccc::device
 
