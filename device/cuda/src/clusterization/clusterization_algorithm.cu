@@ -250,6 +250,7 @@ __global__ void ccl_kernel(
          */   
         device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count);
         //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
+        printf(" hello after reduce 1 \n");
     }
    __syncthreads();
    printf(" hello after reduce \n");
