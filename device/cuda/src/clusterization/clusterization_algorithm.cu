@@ -240,7 +240,7 @@ printf(" hello before declaration of shared variables \n");
     thrust::device_vector<grp_cluster>* cluster_group = 
             new (sharedMem) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
     thrust::device_vector<idx_cluster>* index = 
-            new (sharedMem + 8*max_cells_per_partition * sizeof(grp_cluster)) thrust::device_vector<float>(max_cells_per_partition);
+            new (sharedMem + 8*max_cells_per_partition * sizeof(grp_cluster)) thrust::device_vector<idx_cluster>(max_cells_per_partition);
 
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
