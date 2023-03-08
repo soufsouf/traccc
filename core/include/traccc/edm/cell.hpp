@@ -32,16 +32,18 @@ struct cell {
   
 };
 using index_t = unsigned short;
-struct idx_cluster {
-    unsigned int id_cluster = 0 ;
-    unsigned int write = 0 ;
-    unsigned int module_link ;
-    unsigned int emplacement ;
-};
+
 struct grp_cluster {
-    unsigned int write = 0 ;
-    index_t cluster_cell ;
+    unsigned int pos ;
+    index_t id_cluster ;
     
+};
+struct comp_id
+{
+    __host__ __device__ bool operator()(const grp_cluster& a, const grp_cluster& b)
+    {
+        return a.id_cluster < b.id_cluster;
+    }
 };
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE

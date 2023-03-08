@@ -236,11 +236,8 @@ __global__ void ccl_kernel(
     // Number of adjacent cells
 printf(" hello before declaration of shared variables \n");
      extern __shared__ grp_cluster cluster_vector[];
-     extern __shared__ idx_cluster cluster_id[];
-    idx_cluster* index = &cluster_id[0];
-    grp_cluster* cluster_group = &cluster_vector[max_cells_per_partition * sizeof(idx_cluster)];
-    /*grp_cluster* cluster_group[];
-    idx_cluster* index[];*/
+     
+    grp_cluster* cluster_group = &cluster_vector[0];
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
 printf(" after declaration of shared variables \n");
@@ -251,54 +248,16 @@ printf(" after declaration of shared variables \n");
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,index);
-        printf("cluster group : %u \n",cluster_group[tst].cluster_cell);
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count);
+        printf("cluster group : %u \n",cluster_group[tst]);
     }
    __syncthreads();
-    /*
-     * These arrays are the meat of the pudding of this algorithm, and we
-     * will constantly be writing and reading from them which is why we
-     * declare them to be in the fast shared memory. Note that this places a
-     * limit on the maximum contiguous activations per module, as the amount of
-     * shared memory is limited. These could always be moved to global memory,
-     * but the algorithm would be decidedly slower in that case.
-     */
-    /*extern __shared__ index_t shared_v[];
-    index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];*/
-    /*
-     * Now that the data has initialized, we synchronize again before we
-     * move onto the actual processing part.
-     */
-  
+//sort the array of clusters by id_cluster
+    comp_id compare;
+    thrust::device_ptr<index_t> devPtr(cluster_group);
+    //= thrust::device_pointer_cast(shared_data)
+    thrust::radix_sort(devPtr, devPtr + max_cells_per_partition,compare );
 
-    /*
-     * Run FastSV algorithm, which will update the father index to that of the
-     * cell belonging to the same cluster with the lowest index.
-     */
-   
-
-    /*
-     * Count the number of clusters by checking how many cells have
-     * themself assigned as a parent.
-     */
-   /* for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
-            atomicAdd(&outi, 1);
-        }
-    }
-
-    __syncthreads();*/
-
-    /*
-     * Add the number of clusters of each thread block to the total
-     * number of clusters. At the same time, a cluster id is retrieved
-     * for the next data processing step.
-     * Note that this might be not the same cluster as has been treated
-     * previously. However, since each thread block spawns a the maximum
-     * amount of threads per block, this has no sever implications.
-     */
-   
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
     }
@@ -313,22 +272,17 @@ printf(" after declaration of shared variables \n");
     const unsigned int groupPos = outi;
 
     __syncthreads();
-
-
-
-   
-     if (tid <=cluster_count )
+#pragma unroll
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        const index_t cid = tst * blckDim + tid;
+        if(cluster_group[cid].pos == (cluster_group[cid].id_cluster + start))
         {
-            //auto& cluster_map_ref = *cluster_map;
-            grp_cluster* values = &cluster_group[tid * 8];
-            unsigned int mod_link = index[values[0].cluster_cell - start].module_link;
-             device::aggregate_cluster(cells_device, modules_device,
-                                      start, values, mod_link,
+            device::aggregate_cluster(cells_device, modules_device,
+                                      start, cluster_group, cid,
                                       measurements_device[groupPos + tid]);
-
-  
-  
         }
+
+    }
     }
 
 __global__ void form_spacepoints(
@@ -390,7 +344,7 @@ int device_id = 0;  // ID of the GPU device to query
     printf("Max shared memory per block for device %d: %d bytes\n", device_id, max_shared_mem_bytes);
     
 //size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
-size_t shared_mem_size = 8*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster) ;
+size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);

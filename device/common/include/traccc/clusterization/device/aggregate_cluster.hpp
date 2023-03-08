@@ -34,8 +34,8 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const unsigned int start, grp_cluster* values,
-    unsigned int mod_link,
+    const unsigned int start, grp_cluster* cluster_group,
+    const unsigned short cid,
     alt_measurement& out);
 
 }  // namespace traccc::device
