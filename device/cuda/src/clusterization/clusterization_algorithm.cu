@@ -323,7 +323,7 @@ printf(" after declaration of shared variables \n");
      if (tid <=cluster_count )
         {
             //auto& cluster_map_ref = *cluster_map;
-            grp_cluster* values = thrust::find(thrust::device, cluster_group, input_shared + max_cells_per_partition, tid);
+            grp_cluster* values = thrust::find(thrust::device, cluster_group, cluster_group + max_cells_per_partition, tid);
             
             unsigned int mod_link = index[values[0].cluster_cell - start].module_link;
              device::aggregate_cluster(cells_device, modules_device,
