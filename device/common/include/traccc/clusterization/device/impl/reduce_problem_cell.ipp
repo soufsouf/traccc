@@ -30,7 +30,7 @@ inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, 
     const unsigned int end, 
-    thrust::device_vector<grp_cluster>* cluster_group,
+    grp_cluster* cluster_group,
     unsigned int cluster_count,
     idx_cluster* index) {
 
