@@ -11,14 +11,17 @@
 #include <vecmem/memory/device_atomic_ref.hpp>
 #include "traccc/edm/cell.hpp"
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
-
+#include <thrust/device_vector.h>
+#include <thrust/find.h>
+#include <thrust/remove.h>
 namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const unsigned int start, grp_cluster* values, unsigned int mod_link,
+    const unsigned int start, grp_cluster* values, 
+    unsigned int mod_link,
     alt_measurement& out) {
 
     
@@ -31,9 +34,10 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
+    
     const cell_module this_module = modules.at(mod_link);
     int i = 0 ;
-     while(!values[i].write ) 
+     while(i < values[0].nbr_cell ) 
     {
             const cell this_cell = cells[values[i].cluster_cell + start].c;
             const float weight = traccc::detail::signal_cell_modelling(

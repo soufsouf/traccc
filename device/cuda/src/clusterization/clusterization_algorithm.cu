@@ -18,12 +18,13 @@
 // Vecmem include(s).
 #include <vecmem/utils/copy.hpp>
 
-#include <cuda_runtime.h>
-#include <stdio.h>
 // System include(s).
 #include <algorithm>
-#include <list>
+
 #include <iostream>
+#include <thrust/device_vector.h>
+#include <thrust/find.h>
+#include <thrust/remove.h>
 
 namespace traccc::cuda {
 
@@ -235,12 +236,12 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 printf(" hello before declaration of shared variables \n");
-    /** grp_cluster cluster_vector[];
-     idx_cluster cluster_id[];
-    grp_cluster* cluster_group = &cluster_vector[0];
-    idx_cluster* index = &cluster_id[0];*/
-    grp_cluster* cluster_group[];
-    idx_cluster* index[];
+    extern __shared__ char sharedMem[];
+    thrust::device_vector<grp_cluster>* cluster_group = 
+            new (sharedMem) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
+    thrust::device_vector<idx_cluster>* index = 
+            new (sharedMem + 8*max_cells_per_partition * sizeof(grp_cluster)) thrust::device_vector<float>(max_cells_per_partition);
+
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
 printf(" after declaration of shared variables \n");
@@ -255,6 +256,8 @@ printf(" after declaration of shared variables \n");
         printf("cluster group : %u \n",cluster_group[tst].cluster_cell);
     }
    __syncthreads();
+   thrust::remove_if(cluster_group.begin(), cluster_group.end(), thrust::placeholders::_1 == writeEqual(0));
+    __syncthreads();
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
@@ -320,10 +323,11 @@ printf(" after declaration of shared variables \n");
      if (tid <=cluster_count )
         {
             //auto& cluster_map_ref = *cluster_map;
-            grp_cluster* values = &cluster_group[tid * 8];
+            grp_cluster* values = thrust::find(thrust::device, cluster_group, input_shared + max_cells_per_partition, tid);
             
+            unsigned int mod_link = index[values[0].cluster_cell - start].module_link;
              device::aggregate_cluster(cells_device, modules_device,
-                                      start, values, index[tid].module_link,
+                                      start, values, mod_link,
                                       measurements_device[groupPos + tid]);
 
   
@@ -384,13 +388,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
 printf("hello from clusterization \n");
-int device_id = 0;  // ID of the GPU device to query
-    int max_shared_mem_bytes;
-    cudaDeviceGetAttribute(&max_shared_mem_bytes, cudaDevAttrMaxSharedMemoryPerBlock, device_id);
-    printf("Max shared memory per block for device %d: %d bytes\n", device_id, max_shared_mem_bytes);
-    
-//size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
-size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
+size_t shared_mem_size = 8*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
+
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);

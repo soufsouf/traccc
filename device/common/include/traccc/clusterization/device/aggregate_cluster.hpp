@@ -11,9 +11,10 @@
 #include "traccc/definitions/qualifiers.hpp"
 #include "traccc/edm/alt_cell.hpp"
 #include "traccc/edm/alt_measurement.hpp"
+#include <thrust/device_vector.h>
+#include <thrust/find.h>
+#include <thrust/remove.h>
 
-#include <list>
-// System include(s).
 #include <cstddef>
 #include "traccc/edm/cell.hpp"
 namespace traccc::device {
