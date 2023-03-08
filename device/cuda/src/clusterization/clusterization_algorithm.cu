@@ -238,7 +238,7 @@ __global__ void ccl_kernel(
                       cell = cell_id;
                     }
 
-        // find minimum value in the warp  
+        // find minimum value in the 2 warp  
         __syncthreads();        
         // thread with lane id 0 writes the result 
         int warpId = tid / warpSize;  
@@ -271,13 +271,13 @@ __global__ void ccl_kernel(
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
         __syncthreads();            
-        // find minimum value in the warp  
+        // find minimum value in the 2 warp  
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
         if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
         if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
-        //__syncthreads(); /// we need it in 64 thread per block 
+        __syncthreads(); /// we need it in 64 thread per block 
         //printf("warp_min1 %u warp_min2 %u " , warp_min1 , warp_min2  );
         // thread with lane id 0 writes the result to global memory
         if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )  ) {
