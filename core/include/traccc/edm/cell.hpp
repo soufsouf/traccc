@@ -38,13 +38,7 @@ struct grp_cluster {
     index_t id_cluster ;
     
 };
-struct comp_id
-{
-    __host__ __device__ bool operator()(const grp_cluster& a, const grp_cluster& b)
-    {
-        return a.id_cluster < b.id_cluster;
-    }
-};
+
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE
 inline bool operator<(const cell& lhs, const cell& rhs) {

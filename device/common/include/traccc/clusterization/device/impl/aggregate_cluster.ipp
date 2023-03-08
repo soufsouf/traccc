@@ -19,7 +19,8 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const unsigned int start,grp_cluster* cluster_group, const unsigned short cid,
+    const unsigned int start,const unsigned int end,
+    grp_cluster* cluster_group, const unsigned short cid,
     alt_measurement& out) {
 
     
@@ -35,27 +36,36 @@ inline void aggregate_cluster(
      
     const auto module_link = cells[cluster_group[cid].pos].module_link;
     const cell_module this_module = modules.at(module_link);
-    index_t id =cluster_group[cid].id_cluster;
-    int i = 0 ;
-     while(cluster_group[cid + i].id_cluster == id ) 
-    {
-            const cell this_cell = cells[cluster_group[cid + i].pos].c;
-            const float weight = traccc::detail::signal_cell_modelling(
-                        this_cell.activation, this_module);
-            if (weight > this_module.threshold) {
-                        totalWeight += this_cell.activation;
-                        const point2 cell_position =
+    unsigned short id =cluster_group[cid].id_cluster;
+    unsigned short j = cid;
+    const unsigned short partition_size = end - start;
+     while( j < partition_size) 
+    {  
+        if (cells[cluster_group[j].pos].module_link != module_link) {
+            break;
+        }
+        if (cluster_group[j].id_cluster == id)
+        {
+                const cell this_cell = cells[cluster_group[j].pos].c;
+                const float weight = traccc::detail::signal_cell_modelling(
+                this_cell.activation, this_module);
+                if (weight > this_module.threshold) 
+               {
+                    totalWeight += this_cell.activation;
+                    const point2 cell_position =
                             traccc::detail::position_from_cell(this_cell, this_module);
-                        const point2 prev = mean;
-                        const point2 diff = cell_position - prev;
+                    const point2 prev = mean;
+                    const point2 diff = cell_position - prev;
 
-                        mean = prev + (weight / totalWeight) * diff;
-                        for (char i = 0; i < 2; ++i) {
+                    mean = prev + (weight / totalWeight) * diff;
+                    for (char i = 0; i < 2; ++i)
+                    {
                             var[i] = var[i] +
                                     weight * (diff[i]) * (cell_position[i] - mean[i]);
-                        }
                     }
-        i++;
+               }
+        }
+        j ++;
     }
 
     if (totalWeight > 0.) {
