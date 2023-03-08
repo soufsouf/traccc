@@ -278,7 +278,7 @@ printf(" after declaration of shared variables \n");
         if(cluster_group[cid].pos == (cluster_group[cid].id_cluster + start))
         {
             device::aggregate_cluster(cells_device, modules_device,
-                                      start, cluster_group, cid,
+                                      start, end,cluster_group, cid,
                                       measurements_device[groupPos + tid]);
         }
 
