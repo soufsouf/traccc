@@ -76,9 +76,10 @@ inline void reduce_problem_cell(
           cluster_group[cid].id_cluster = cluster_id ;
           cluster_group[cid].pos = i;
      } 
+     printf(" hello reduce cell 6 \n"); 
      if(counter == 1)
      atomicAdd(&cluster_count,1);
-     
+     printf(" hello reduce cell 7 \n"); 
 }
 
 }  // namespace traccc::device
