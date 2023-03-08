@@ -256,7 +256,7 @@ __global__ void ccl_kernel(
         __syncthreads();
         if (flag[0] == 1) break;   
     }
-    printf("hello in between ");
+    
 
     cell = 999;
     #pragma unroll  
@@ -289,7 +289,7 @@ __global__ void ccl_kernel(
         if (flag[1] == 1) break;   
     }    
     
-    
+    printf("hello in between ");
 
     const index_t size = end - start;
    //if ( blockIdx.x < 2 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, start );
