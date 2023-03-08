@@ -508,7 +508,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         (*num_measurements_host + spacepointsLocalSize - 1) /
         spacepointsLocalSize;
     
-    kernels::form_spacepoints<<<628, 64 , 0, stream>>>(
+    kernels::form_spacepoints<<<num_blocks, spacepointsLocalSize, 0, stream>>>(
         measurements_buffer, modules, *num_measurements_host,
         spacepoints_buffer);
 
