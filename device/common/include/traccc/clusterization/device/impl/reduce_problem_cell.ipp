@@ -47,28 +47,32 @@ inline void reduce_problem_cell(
      */
      
      int cluster_id = 0;
-     printf(" hello reduce cell 1 \n"); 
      int j = (cid == 0? start: pos - 1);
      int counter = 0 , i;
      if(cid == 0)
      {
+      printf(" hello reduce cell 1 \n"); 
         cluster_group[cid].id_cluster= 0;
         cluster_group[cid].pos = j;
         counter ++;
 
      }
      else
-     {
+     { 
+      printf(" hello reduce cell 2 \n"); 
         while( j > start && (cells[j].c.channel1 + 1 )>= c1 && (cells[j].module_link == mod_id))
         {
+          printf(" hello reduce cell 3 \n"); 
           if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) 
           {
+            printf(" hello reduce cell 4 \n"); 
             cluster_id = j - start;
             i=j;
             counter ++;
           }
           j --;
         }
+        printf(" hello reduce cell 5 \n"); 
           cluster_group[cid].id_cluster = cluster_id ;
           cluster_group[cid].pos = i;
      } 
