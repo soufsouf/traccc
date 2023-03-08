@@ -238,9 +238,9 @@ __global__ void ccl_kernel(
 printf(" hello before declaration of shared variables \n");
     extern __shared__ char sharedMem[];
     thrust::device_vector<grp_cluster>* cluster_group = 
-            new (sharedMem) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
+            new (sharedMem max_cells_per_partition * sizeof(idx_cluster)) thrust::device_vector<grp_cluster>(8*max_cells_per_partition);
     thrust::device_vector<idx_cluster>* index = 
-            new (sharedMem + 8*max_cells_per_partition * sizeof(grp_cluster)) thrust::device_vector<idx_cluster>(max_cells_per_partition);
+            new (sharedMem) thrust::device_vector<idx_cluster>(max_cells_per_partition);
 
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
@@ -252,7 +252,7 @@ printf(" after declaration of shared variables \n");
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count,index);
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group.data() ,cluster_count,index.data());
         printf("cluster group : %u \n",cluster_group[tst].cluster_cell);
     }
    __syncthreads();
