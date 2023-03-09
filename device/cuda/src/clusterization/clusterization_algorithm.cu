@@ -362,10 +362,7 @@ size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
             *num_measurements_device);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
-cudaDeviceSynchronize();
-cudaError_t error = cudaGetLastError();
-if (error != cudaSuccess) {
-  printf("CUDA error: %s\n", cudaGetErrorString(error));}
+
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
