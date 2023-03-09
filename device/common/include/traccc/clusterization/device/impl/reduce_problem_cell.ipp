@@ -47,12 +47,7 @@ inline void reduce_problem_cell(
      * along the way.
      */
      for (unsigned int j = pos - 1; j < pos; --j) {
-        /*
-         * Since the data is sorted, we can assume that if we see a cell
-         * sufficiently far away in both directions, it becomes
-         * impossible for that cell to ever be adjacent to this one.
-         * This is a small optimisation.
-         */
+        assert(j >= start);
         if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
             break;
         }
