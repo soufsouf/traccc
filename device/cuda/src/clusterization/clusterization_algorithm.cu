@@ -304,10 +304,10 @@ __global__ void ccl_kernel(
     }
 
     __syncthreads();
-for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
+/*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
      {
         printf(" block idx : %u | f[%hu]: %hu  | outi : %u| cluster_group[%hu] : %hu | count cluster : %u  \n",blockIdx.x, cid , f[cid] ,outi, cid,cluster_group[cid],cluster_count);
-     }
+     }*/
     /*
      * Add the number of clusters of each thread block to the total
      * number of clusters. At the same time, a cluster id is retrieved
