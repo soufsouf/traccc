@@ -454,23 +454,22 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(
         cudaMemset(num_measurements_device.get(), 0, sizeof(unsigned int)));
 
-    const unsigned short max_cells_per_partition =
+    int target  = 3072;
+    /*const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;
+        TARGET_CELLS_PER_THREAD; */
     const unsigned int threads_per_partition =
         (m_target_cells_per_partition + TARGET_CELLS_PER_THREAD - 1) /
         TARGET_CELLS_PER_THREAD;
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
-    
-    printf(" num_cells %hu num_partitions %hu threads_per_partition %hu  " , num_cells , num_partitions , threads_per_partition);
 
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     3072 * sizeof(index_t), stream>>>(
+                     target * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device);
