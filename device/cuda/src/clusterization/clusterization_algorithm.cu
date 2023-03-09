@@ -455,9 +455,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         cudaMemset(num_measurements_device.get(), 0, sizeof(unsigned int)));
 
     // Create CUDA events
-    cudaEvent_t start, stop;
+   /* cudaEvent_t start, stop;
     cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+    cudaEventCreate(&stop); */
 
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
@@ -471,7 +471,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
-      cudaEventRecord(start);
+      //cudaEventRecord(start);
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
@@ -481,14 +481,14 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     CUDA_ERROR_CHECK(cudaGetLastError());
 
-      cudaEventRecord(stop);
-      cudaEventSynchronize(stop);
+      //cudaEventRecord(stop);
+     // cudaEventSynchronize(stop);
 
     // Calculate the elapsed time
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
+   /// float milliseconds = 0;
+   /// cudaEventElapsedTime(&milliseconds, start, stop);
 
-    printf("Elapsed time: %f ms\n", milliseconds);
+    ///printf("Elapsed time: %f ms\n", milliseconds);
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
