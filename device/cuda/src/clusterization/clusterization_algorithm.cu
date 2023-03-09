@@ -276,6 +276,10 @@ __global__ void ccl_kernel(
     fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
     __syncthreads();
+    for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
+     {
+        printf(" block idx : %u | f[%hu]: %hu \n",blockIdx.x, cid , f[cid]);
+     }
 
     /*
      * Count the number of clusters by checking how many cells have
