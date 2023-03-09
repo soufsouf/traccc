@@ -282,9 +282,10 @@ __global__ void ccl_kernel(
        
         if(cluster_group[cid] == cid)
         {
+            const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(cells_device, modules_device,
                                       start, end,cluster_group, cid,
-                                      measurements_device[groupPos + tid]);
+                                      measurements_device[groupPos + id]);
                                       
         }
    
