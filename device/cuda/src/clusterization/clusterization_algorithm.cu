@@ -264,6 +264,7 @@ __global__ void ccl_kernel(
 
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
+        cluster_count = 0;
     }
    //printf("cluster count : %u \n",cluster_count);
 
@@ -275,14 +276,14 @@ __global__ void ccl_kernel(
     
     const unsigned int groupPos = outi;
 
- __shared__ unsigned int idx = 0 ;
+
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
        
         if(cluster_group[cid] == cid)
         {
-            const unsigned int id = atomicAdd(&idx, 1);
+            const unsigned int id = atomicAdd(&cluster_count, 1);
             device::aggregate_cluster(cells_device, modules_device,
                                       start, end,cluster_group, cid,
                                       measurements_device[groupPos + id]);
