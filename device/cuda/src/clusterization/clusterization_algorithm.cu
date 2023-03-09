@@ -464,6 +464,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
+    
+    printf(" num_cells %hu num_partitions %hu threads_per_partition %hu  " , num_cells , num_partitions , threads_per_partition);
 
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
