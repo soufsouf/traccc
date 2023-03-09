@@ -226,7 +226,7 @@ __global__ void ccl_kernel(
     alt_measurement_collection_types::device measurements_device(
         measurements_view);
 
-#pragma unroll
+//#pragma unroll
    
     
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
