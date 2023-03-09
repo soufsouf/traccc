@@ -265,7 +265,7 @@ __global__ void ccl_kernel(
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
     }
-   printf("cluster count : %u \n",cluster_count);
+   //printf("cluster count : %u \n",cluster_count);
 
     __syncthreads();
 
