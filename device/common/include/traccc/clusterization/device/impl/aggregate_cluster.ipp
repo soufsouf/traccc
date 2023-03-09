@@ -38,7 +38,7 @@ inline void aggregate_cluster(
     const cell_module this_module = modules.at(module_link);
     //unsigned short id =cluster_group[cid];
     const unsigned short partition_size = end - start;
-    channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
+    //channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
 
     for (unsigned short j = cid; j < partition_size; j++) 
     {  
@@ -49,9 +49,9 @@ inline void aggregate_cluster(
         const cell this_cell = cells[j + start].c;
         if (cluster_group[j] == cid)
         {
-                 if (this_cell.channel1 > maxChannel1) {
+                /* if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
-            }
+            }*/
                 const float weight = traccc::detail::signal_cell_modelling(
                 this_cell.activation, this_module);
                 if (weight > this_module.threshold) 
@@ -70,9 +70,9 @@ inline void aggregate_cluster(
                     }
                }
         }
-       if (this_cell.channel1 > maxChannel1 + 1) {
+       /*if (this_cell.channel1 > maxChannel1 + 1) {
             break;
-        }
+        }*/
     }
 
     if (totalWeight > 0.) {
@@ -89,7 +89,7 @@ inline void aggregate_cluster(
     out.local = mean;
     out.variance = var;
     out.module_link = module_link;
-    printf("module link: %lu | mean[0]: %f mean[1]: %f | var[0]: %f var[1]: %f | \n", module_link,mean[0],mean[1],var[0],var[1]);
+    //printf("module link: %lu | mean[0]: %f mean[1]: %f | var[0]: %f var[1]: %f | \n", module_link,mean[0],mean[1],var[0],var[1]);
 }
 
 }  // namespace traccc::device
