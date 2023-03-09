@@ -160,7 +160,11 @@ __global__ void ccl_kernel(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
-
+ __shared__ unsigned int cluster_count ;
+   
+    extern __shared__ index_t cluster_vector[];
+     
+    index_t* cluster_group = &cluster_vector[0];
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -172,6 +176,7 @@ __global__ void ccl_kernel(
         /*
          * Initialize shared variables.
          */
+         cluster_count =0;
         start = blockIdx.x * target_cells_per_partition;
         //print 4
         //printf("bloc blockIdx.x %u \n", blockIdx.x);
@@ -235,11 +240,8 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 //printf(" hello before declaration of shared variables \n");
-     extern __shared__ index_t cluster_vector[];
      
-    index_t* cluster_group = &cluster_vector[0];
-    __shared__ unsigned int cluster_count ;
-    cluster_count =0;
+   
 //printf(" after declaration of shared variables \n");
 #pragma unroll
    
