@@ -42,7 +42,7 @@ inline void aggregate_cluster(
 
     for (unsigned short j = cid; j < partition_size; j++) 
     {  
-        assert(j < f.size());
+        assert(j < cluster_group.size());
         if (cells[j + start].module_link != module_link) {
             break;
         }
