@@ -39,46 +39,34 @@ inline void reduce_problem_cell(
      const channel_id c0 = cells[pos].c.channel0;
      const channel_id c1 = cells[pos].c.channel1;
      const unsigned int mod_id = cells[pos].module_link;
-
+     unsigned short cluster_id = cid ;
+     unsigned short count = 0;
      /*
      * First, we traverse the cells backwards, starting from the current
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
-     
-     int cluster_id = 0;
-     int j = (cid == 0? start: pos - 1);
-     int counter = 0 ;
-     if(cid == 0)
-     {
-      //printf(" hello reduce cell 1 \n"); 
-        cluster_group[cid]= cid;
-        
-
-     }
-     else
-     { 
-      //printf(" hello reduce cell 2 \n"); 
-        while( j > start && (cells[j].c.channel1 + 1 )<= c1 && (cells[j].module_link == mod_id))
-        {
-          //printf(" hello reduce cell 3 \n"); 
-          if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) 
-          {
-           // printf(" hello reduce cell 4 \n"); 
-            cluster_id = j - start;
-            
-            counter ++;
-          }
-          j --;
+     for (unsigned int j = pos - 1; j < pos; --j) {
+        /*
+         * Since the data is sorted, we can assume that if we see a cell
+         * sufficiently far away in both directions, it becomes
+         * impossible for that cell to ever be adjacent to this one.
+         * This is a small optimisation.
+         */
+        if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
+            break;
         }
-        //printf(" hello reduce cell 5 \n"); 
+        if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
+            cluster_id = j - start;
+            count ++ ;
+            printf(" if adjacent: %u \n", count);
+        }
+    }
           cluster_group[cid] = cluster_id ;
-          
-      }
-     //printf(" hello reduce cell 6 \n"); 
-     if(counter == 0)
-     atomicAdd(cluster_count,1);
-     //printf(" hello reduce cell 7 \n"); 
+
+          if(count == 0)
+          atomicAdd(cluster_count,1);
+     
 }
 
 }  // namespace traccc::device
