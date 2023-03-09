@@ -275,7 +275,7 @@ __global__ void ccl_kernel(
     
     const unsigned int groupPos = outi;
 
- unsigned int idx = 0 ;
+ __shared__ unsigned int idx = 0 ;
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
