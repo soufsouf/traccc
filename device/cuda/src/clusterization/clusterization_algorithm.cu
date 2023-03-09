@@ -453,7 +453,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(
         cudaMemset(num_measurements_device.get(), 0, sizeof(unsigned int)));
- 
+
+   
 
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
@@ -477,7 +478,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     CUDA_ERROR_CHECK(cudaGetLastError());
 
-      
+    
     // Copy number of measurements to host
     vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
@@ -486,8 +487,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
     m_stream.synchronize();
 
+    spacepoint_collection_types::buffer spacepoints_buffer(
+        *num_measurements_host, m_mr.main);
 
-    
     // For the following kernel, we can now use whatever the desired number of
     // threads per block.
     auto spacepointsLocalSize = 1024;
