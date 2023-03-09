@@ -29,7 +29,7 @@ TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end, 
-    index_t* cluster_group,unsigned int cluster_count) {
+    index_t* cluster_group,unsigned int *cluster_count) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
@@ -51,34 +51,34 @@ inline void reduce_problem_cell(
      int counter = 0 , i;
      if(cid == 0)
      {
-      printf(" hello reduce cell 1 \n"); 
+      //printf(" hello reduce cell 1 \n"); 
         cluster_group[cid]= cid;
         
 
      }
      else
      { 
-      printf(" hello reduce cell 2 \n"); 
+      //printf(" hello reduce cell 2 \n"); 
         while( j > start && (cells[j].c.channel1 + 1 )<= c1 && (cells[j].module_link == mod_id))
         {
-          printf(" hello reduce cell 3 \n"); 
+          //printf(" hello reduce cell 3 \n"); 
           if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) 
           {
-            printf(" hello reduce cell 4 \n"); 
+           // printf(" hello reduce cell 4 \n"); 
             cluster_id = j - start;
             
             counter ++;
           }
           j --;
         }
-        printf(" hello reduce cell 5 \n"); 
+        //printf(" hello reduce cell 5 \n"); 
           cluster_group[cid] = cluster_id ;
           
       }
-     printf(" hello reduce cell 6 \n"); 
+     //printf(" hello reduce cell 6 \n"); 
      if(counter == 0)
-     atomicAdd(&cluster_count,1);
-     printf(" hello reduce cell 7 \n"); 
+     atomicAdd(cluster_count,1);
+     //printf(" hello reduce cell 7 \n"); 
 }
 
 }  // namespace traccc::device
