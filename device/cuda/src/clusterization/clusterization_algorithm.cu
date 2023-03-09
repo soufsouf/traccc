@@ -157,7 +157,11 @@ __global__ void ccl_kernel(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
-
+    __shared__ unsigned int cluster_count ;
+   
+    extern __shared__ index_t cluster_vector[];
+     
+    index_t* cluster_group = &cluster_vector[0];
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -169,6 +173,7 @@ __global__ void ccl_kernel(
         /*
          * Initialize shared variables.
          */
+        cluster_count = 0;
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
@@ -276,9 +281,19 @@ __global__ void ccl_kernel(
     fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
     __syncthreads();
+     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+        /*
+         * Look for adjacent cells to the current one.
+         */   
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,&cluster_count);
+        //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
+        
+    }
+        __syncthreads();
+
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
      {
-        printf(" block idx : %u | f[%hu]: %hu \n",blockIdx.x, cid , f[cid]);
+        printf(" block idx : %u | f[%hu]: %hu  | cluster_group[%hu] : %hu \n",blockIdx.x, cid , f[cid] , cid,cluster_group[cid]);
      }
 
     /*

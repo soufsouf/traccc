@@ -32,7 +32,11 @@ inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
     unsigned char& adjc, unsigned short adjv[8]);
-
+TRACCC_DEVICE
+inline void reduce_problem_cell2(
+    const alt_cell_collection_types::const_device& cells,
+    const unsigned short cid, const unsigned int start, const unsigned int end,
+     unsigned short* cluster_group,unsigned int *cluster_count);
 }  // namespace traccc::device
 
 // Include the implementation.
