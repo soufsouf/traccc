@@ -53,7 +53,7 @@ inline void reduce_problem_cell(
      {
       printf(" hello reduce cell 1 \n"); 
         cluster_group[cid]= cid;
-        counter ++;
+        
 
      }
      else
@@ -76,7 +76,7 @@ inline void reduce_problem_cell(
           
       }
      printf(" hello reduce cell 6 \n"); 
-     if(counter == 1)
+     if(counter == 0)
      atomicAdd(&cluster_count,1);
      printf(" hello reduce cell 7 \n"); 
 }
