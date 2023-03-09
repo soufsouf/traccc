@@ -1,3 +1,4 @@
+
 /** TRACCC library, part of the ACTS project (R&D line)
  *
  * (c) 2022 CERN for the benefit of the ACTS project
@@ -54,7 +55,7 @@ namespace kernels {
 /// @param[in] tid      The thread index
 ///
 
-__forceinline__ __device__ int warpReduceMin(int val)
+__device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = min(val, __shfl_down_sync(0xffffffff, val, offset));
@@ -238,17 +239,11 @@ __global__ void ccl_kernel(
                       cell = cell_id;
                     }
 
-        // find minimum value in the 2 warp  
+        // find minimum value in the warp  
         __syncthreads();        
+        int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result 
-        int warpId = tid / warpSize;  
-        int warp_min1;
-        int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
-        __syncthreads(); /// we need it in 64 thread per block 
-        if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )) {
-            int warp_min = min(warp_min1 , warp_min2 );
+        if (tid % WARP_SIZE == 0 && warp_min != 999) {
             start = start + warp_min;
             flag[0] = 1 ; 
         }
@@ -256,7 +251,7 @@ __global__ void ccl_kernel(
         __syncthreads();
         if (flag[0] == 1) break;   
     }
-    
+
 
     cell = 999;
     #pragma unroll  
@@ -271,17 +266,10 @@ __global__ void ccl_kernel(
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
         __syncthreads();            
-        // find minimum value in the 2 warp  
-        int warpId = tid / warpSize;  
-        int warp_min1;
-        int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
-        __syncthreads(); /// we need it in 64 thread per block 
-        //printf("warp_min1 %u warp_min2 %u " , warp_min1 , warp_min2  );
+        // find minimum value in the warp          
+        int warp_min = warpReduceMin(cell);
         // thread with lane id 0 writes the result to global memory
-        if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )  ) {
-            int warp_min = min(warp_min1 , warp_min2 );
+        if (tid % WARP_SIZE == 0 && warp_min != 999 ) {
             end = end + warp_min;
             flag[1] = 1 ; 
         }
@@ -469,25 +457,21 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;   /// 385
+        TARGET_CELLS_PER_THREAD;
     const unsigned int threads_per_partition =
         (m_target_cells_per_partition + TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;  /// 32
+        TARGET_CELLS_PER_THREAD;
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
-        m_target_cells_per_partition;   /// 1256
+        m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
-   
-   
-
-    
-    kernels::    //// warp level programming
-        ccl_kernel<<<628, 64,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
-            cells, modules, 769,
-            512, measurements_buffer,
-            *num_measurements_device);    /// with this params , it work in acts new clust
+    kernels::
+        ccl_kernel<<<num_partitions, threads_per_partition,
+                     3 * max_cells_per_partition * sizeof(index_t), stream>>>(
+            cells, modules, max_cells_per_partition,
+            m_target_cells_per_partition, measurements_buffer,
+            *num_measurements_device);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
     // Copy number of measurements to host
