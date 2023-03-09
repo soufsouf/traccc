@@ -19,7 +19,7 @@ traccc::common_options::common_options(po::options_description& desc) {
     desc.add_options()("skip", po::value<int>()->default_value(0),
                        "number of events to skip");
     desc.add_options()("target_cells_per_partition",
-                       po::value<unsigned short>()->default_value(256),
+                       po::value<unsigned short>()->default_value(1024),
                        "Number of cells to merge in a partition. Equal to the "
                        "number of threads multiplied by CELLS_PER_THREAD "
                        "defined in clusterization.");
