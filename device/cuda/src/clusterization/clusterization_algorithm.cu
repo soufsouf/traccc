@@ -285,7 +285,7 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,&cluster_count);
+        device::reduce_problem_cell2(cells_device, cid, start, end,cluster_group ,&cluster_count);
         //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
         
     }
