@@ -29,7 +29,7 @@ namespace traccc::device {
 /// @param[out] ajc     Number of adjacent cells
 /// @param[out] ajv     Indices of adjacent cells
 ///
-using index_t = unsigned short;
+
 TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
