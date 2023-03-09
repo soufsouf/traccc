@@ -256,7 +256,7 @@ __global__ void ccl_kernel(
         }
    
     }
-    printf("id : %u \n", id);
+    printf("id : %u \n", cluster_count);
     }
 
 __global__ void form_spacepoints(
