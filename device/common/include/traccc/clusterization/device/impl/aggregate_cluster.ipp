@@ -37,11 +37,12 @@ inline void aggregate_cluster(
     const auto module_link = cells[cid + start].module_link;
     const cell_module this_module = modules.at(module_link);
     //unsigned short id =cluster_group[cid];
-    const unsigned short partition_size = end - cid - start;
+    const unsigned short partition_size = end - start;
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
 
     for (unsigned short j = cid; j < partition_size; j++) 
     {  
+        assert(j < f.size());
         if (cells[j + start].module_link != module_link) {
             break;
         }
