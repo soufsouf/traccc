@@ -255,10 +255,7 @@ __global__ void ccl_kernel(
         
     }
    __syncthreads();
-     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
-     {
-        printf(" block idx : %u | cluster_grp [%hu]: %hu \n",blockIdx.x, cid , cluster_group[cid]);
-     }
+     
 //sort the array of clusters by id_cluster
    /* comp_id compare;
     thrust::device_ptr<index_t> devPtr(cluster_group);
@@ -268,7 +265,7 @@ __global__ void ccl_kernel(
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
     }
-
+   printf("cluster count : %u \n",cluster_count);
 
     __syncthreads();
 
