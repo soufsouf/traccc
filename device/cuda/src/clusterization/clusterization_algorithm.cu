@@ -211,11 +211,7 @@ __global__ void ccl_kernel(
         }
     }
     __syncthreads();
-    //print 1
-    //if (blockIdx.x ==70) printf(" bloc: %u | thread: %u | target cells per partition %u | start : %u | end : %u \n", blockIdx.x, tid , target_cells_per_partition,start,end);
-    // print 5
-    /*for (int i = 71698 ; i < 71707 ; i ++) 
-          printf(" cells_device [%u] = %u \n", i , cells_device [i].c.channel1 );*/
+
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
 
@@ -230,52 +226,21 @@ __global__ void ccl_kernel(
     alt_measurement_collection_types::device measurements_device(
         measurements_view);
 
-    // Vector of indices of the adjacent cells
-    //index_t adjv[MAX_CELLS_PER_THREAD][8];
-    /*
-     * The number of adjacent cells for each cell must start at zero, to
-     * avoid uninitialized memory. adjv does not need to be zeroed, as
-     * we will only access those values if adjc indicates that the value
-     * is set.
-     */
-    // Number of adjacent cells
-//printf(" hello before declaration of shared variables \n");
-     
-   
-//printf(" after declaration of shared variables \n");
 #pragma unroll
    
     
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        /*
-         * Look for adjacent cells to the current one.
-         */   
-        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,&cluster_count);
-        //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
-        
+      
+        device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,&cluster_count);  
     }
    __syncthreads();
-     
-//sort the array of clusters by id_cluster
-   /* comp_id compare;
-    thrust::device_ptr<index_t> devPtr(cluster_group);
-    //= thrust::device_pointer_cast(shared_data)
-    thrust::stable_sort(thrust::cuda::par, devPtr, devPtr + max_cells_per_partition,compare );*/
 
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
         cluster_count = 0;
     }
-   //printf("cluster count : %u \n",cluster_count);
-
     __syncthreads();
-
-    /*
-     * Get the position to fill the measurements found in this thread group.
-     */
-    
     const unsigned int groupPos = outi;
-
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -291,6 +256,7 @@ __global__ void ccl_kernel(
         }
    
     }
+    printf("id : %u \n", id);
     }
 
 __global__ void form_spacepoints(
