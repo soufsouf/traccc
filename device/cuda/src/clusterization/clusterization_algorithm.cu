@@ -252,10 +252,13 @@ __global__ void ccl_kernel(
          */   
         device::reduce_problem_cell(cells_device, cid, start, end,cluster_group ,cluster_count);
         //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
-        printf(" hello after reduce 1 \n");
+        
     }
    __syncthreads();
-   printf(" hello after reduce \n");
+     for (int c = 0 ; c < max_cells_per_partition ; c ++)
+     {
+        printf(" block idx : %u | cluster_grp [%u]: %u \n",blockIdx.x, c , cluster_group[c]);
+     }
 //sort the array of clusters by id_cluster
    /* comp_id compare;
     thrust::device_ptr<index_t> devPtr(cluster_group);
@@ -265,7 +268,7 @@ __global__ void ccl_kernel(
      if (tid == 0) {
         outi = atomicAdd(&measurement_count, cluster_count);
     }
-printf(" hello after atomic Add \n");
+
 
     __syncthreads();
 
@@ -279,13 +282,13 @@ printf(" hello after atomic Add \n");
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
-        printf(" hello before aggregate \n");
+       
         if(cluster_group[cid] == cid)
         {
             device::aggregate_cluster(cells_device, modules_device,
                                       start, end,cluster_group, cid,
                                       measurements_device[groupPos + tid]);
-                                      printf(" hello after aggregate \n");
+                                      
         }
    
     }

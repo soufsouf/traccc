@@ -37,7 +37,7 @@ inline void aggregate_cluster(
     const cell_module this_module = modules.at(module_link);
     unsigned short id =cluster_group[cid];
     unsigned short j = cid;
-    const unsigned short partition_size = end - cid;
+    const unsigned short partition_size = end - cid - start;
      while( j < partition_size) 
     {  
         if (cells[j + start].module_link != module_link) {
