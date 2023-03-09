@@ -11,7 +11,7 @@
 #include <vecmem/memory/device_atomic_ref.hpp>
 #include "traccc/edm/cell.hpp"
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
-
+#include <vecmem/memory/device_atomic_ref.hpp>
 namespace traccc::device {
 
 TRACCC_HOST_DEVICE
@@ -30,15 +30,17 @@ inline void aggregate_cluster(
      * because no cell is ever a child of a cluster owned by a cell
      * with a higher ID.
      */
+    
+    channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
      
     const auto module_link = cells[cid + start].module_link;
     const cell_module this_module = modules.at(module_link);
     unsigned short id =cluster_group[cid];
-    unsigned short j = cid;
     const unsigned short partition_size = end - cid - start;
-     while( j < partition_size) 
+
+    for (unsigned short j = cid; j < partition_size; j++) 
     {  
         if (cells[j + start].module_link != module_link) {
             break;
