@@ -48,7 +48,7 @@ inline void reduce_problem_cell(
      
      int cluster_id = 0;
      int j = (cid == 0? start: pos - 1);
-     int counter = 0 , i;
+     int counter = 0 ;
      if(cid == 0)
      {
       //printf(" hello reduce cell 1 \n"); 
