@@ -31,23 +31,26 @@ inline void aggregate_cluster(
      * with a higher ID.
      */
     
-    channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
      
     const auto module_link = cells[cid + start].module_link;
     const cell_module this_module = modules.at(module_link);
-    unsigned short id =cluster_group[cid];
+    //unsigned short id =cluster_group[cid];
     const unsigned short partition_size = end - cid - start;
+    channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
 
     for (unsigned short j = cid; j < partition_size; j++) 
     {  
         if (cells[j + start].module_link != module_link) {
             break;
         }
-        if (cluster_group[j] == id)
+        const cell this_cell = cells[j + start].c;
+        if (cluster_group[j] == cid)
         {
-                const cell this_cell = cells[j + start].c;
+                 if (this_cell.channel1 > maxChannel1) {
+                maxChannel1 = this_cell.channel1;
+            }
                 const float weight = traccc::detail::signal_cell_modelling(
                 this_cell.activation, this_module);
                 if (weight > this_module.threshold) 
@@ -66,7 +69,9 @@ inline void aggregate_cluster(
                     }
                }
         }
-        j ++;
+       if (this_cell.channel1 > maxChannel1 + 1) {
+            break;
+        }
     }
 
     if (totalWeight > 0.) {
