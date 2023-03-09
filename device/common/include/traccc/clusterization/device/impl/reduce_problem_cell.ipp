@@ -59,7 +59,7 @@ inline void reduce_problem_cell(
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             cluster_id = j - start;
             count ++ ;
-            printf(" if adjacent: %u \n", count);
+            //printf(" if adjacent: %u \n", count);
         }
     }
           cluster_group[cid] = cluster_id ;
