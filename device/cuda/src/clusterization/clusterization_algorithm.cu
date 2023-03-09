@@ -235,9 +235,9 @@ __global__ void ccl_kernel(
      */
     // Number of adjacent cells
 //printf(" hello before declaration of shared variables \n");
-     extern __shared__ grp_cluster cluster_vector[];
+     extern __shared__ index_t cluster_vector[];
      
-    grp_cluster* cluster_group = &cluster_vector[0];
+    index_t* cluster_group = &cluster_vector[0];
     __shared__ unsigned int cluster_count ;
     cluster_count =0;
 //printf(" after declaration of shared variables \n");
@@ -278,7 +278,7 @@ printf(" hello after atomic Add \n");
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         printf(" hello before aggregate \n");
-        if(cluster_group[cid].pos == (cluster_group[cid].id_cluster + start))
+        if(cluster_group[cid] == cid)
         {
             device::aggregate_cluster(cells_device, modules_device,
                                       start, end,cluster_group, cid,
@@ -348,7 +348,7 @@ int device_id = 0;  // ID of the GPU device to query
     
     
 //size_t shared_mem_size = 4*max_cells_per_partition * sizeof(grp_cluster) + max_cells_per_partition * sizeof(idx_cluster);
-size_t shared_mem_size = max_cells_per_partition * sizeof(grp_cluster);
+size_t shared_mem_size = max_cells_per_partition * sizeof(index_t);
     // Launch ccl kernel. Each thread will handle a single cell.
     //print 2
     //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);

@@ -31,13 +31,7 @@ struct cell {
     scalar time = 0.;
   
 };
-using index_t = unsigned short;
 
-struct grp_cluster {
-    unsigned int pos ;
-    index_t id_cluster ;
-    
-};
 
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE

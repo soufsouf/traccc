@@ -19,10 +19,10 @@ inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
     const unsigned int start,const unsigned int end,
-    grp_cluster* cluster_group, const unsigned short cid,
+    index_t* cluster_group, const unsigned short cid,
     alt_measurement& out) {
 
-    
+ 
 
     /*
      * Now, we iterate over all other cells to check if they belong
@@ -33,19 +33,19 @@ inline void aggregate_cluster(
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
      
-    const auto module_link = cells[cluster_group[cid].pos].module_link;
+    const auto module_link = cells[cid + start].module_link;
     const cell_module this_module = modules.at(module_link);
-    unsigned short id =cluster_group[cid].id_cluster;
+    unsigned short id =cluster_group[cid];
     unsigned short j = cid;
     const unsigned short partition_size = end - start;
      while( j < partition_size) 
     {  
-        if (cells[cluster_group[j].pos].module_link != module_link) {
+        if (cells[j + start].module_link != module_link) {
             break;
         }
-        if (cluster_group[j].id_cluster == id)
+        if (cluster_group[j] == id)
         {
-                const cell this_cell = cells[cluster_group[j].pos].c;
+                const cell this_cell = cells[j + start].c;
                 const float weight = traccc::detail::signal_cell_modelling(
                 this_cell.activation, this_module);
                 if (weight > this_module.threshold) 

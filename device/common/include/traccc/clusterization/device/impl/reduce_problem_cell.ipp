@@ -29,7 +29,7 @@ TRACCC_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end, 
-    grp_cluster* cluster_group,unsigned int cluster_count) {
+    index_t* cluster_group,unsigned int cluster_count) {
 
      const unsigned int pos = cid + start;
      //pos - 1= (tst * blckDim + tid )
@@ -52,8 +52,7 @@ inline void reduce_problem_cell(
      if(cid == 0)
      {
       printf(" hello reduce cell 1 \n"); 
-        cluster_group[cid].id_cluster= 0;
-        cluster_group[cid].pos = j;
+        cluster_group[cid]= cid;
         counter ++;
 
      }
@@ -67,15 +66,15 @@ inline void reduce_problem_cell(
           {
             printf(" hello reduce cell 4 \n"); 
             cluster_id = j - start;
-            i=j;
+            
             counter ++;
           }
           j --;
         }
         printf(" hello reduce cell 5 \n"); 
-          cluster_group[cid].id_cluster = cluster_id ;
-          cluster_group[cid].pos = i;
-     } 
+          cluster_group[cid] = cluster_id ;
+          
+      }
      printf(" hello reduce cell 6 \n"); 
      if(counter == 1)
      atomicAdd(&cluster_count,1);
