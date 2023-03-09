@@ -255,9 +255,9 @@ __global__ void ccl_kernel(
         
     }
    __syncthreads();
-     for (int c = 0 ; c < max_cells_per_partition ; c ++)
+     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
      {
-        printf(" block idx : %u | cluster_grp [%u]: %u \n",blockIdx.x, c , cluster_group[c]);
+        printf(" block idx : %u | cluster_grp [%u]: %u \n",blockIdx.x, cid , cluster_group[c]);
      }
 //sort the array of clusters by id_cluster
    /* comp_id compare;
