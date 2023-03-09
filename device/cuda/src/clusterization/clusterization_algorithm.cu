@@ -55,7 +55,7 @@ namespace kernels {
 /// @param[in] tid      The thread index
 ///
 
-__device__ int warpReduceMin(int val)
+ __forceinline__ __device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = min(val, __shfl_down_sync(0xffffffff, val, offset));
