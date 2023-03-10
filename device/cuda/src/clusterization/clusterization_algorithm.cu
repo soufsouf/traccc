@@ -176,7 +176,7 @@ __global__ void ccl_kernel(
      * shift both the start and the end of the block forward (to a later point
      * in the array); start and end may be moved different amounts.
      */
-    
+    if ( blockIdx.x < 2) printf("hello \n");
     if (tid == 0) {
         /*
          * Initialize shared variables.
@@ -188,7 +188,7 @@ __global__ void ccl_kernel(
     }
     __syncthreads();
 
-    if ( blockIdx.x < 2) printf("hello \n");
+    
     
 
         /*
