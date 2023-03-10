@@ -58,7 +58,7 @@ __forceinline__ __device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = min(val, __shfl_down_sync(0xffffffff, val, offset));
-       // __syncwarp();
+        __syncwarp();
     }
     return val;
 }
