@@ -247,13 +247,13 @@ __global__ void ccl_kernel(
 
         if ( warpId == 0 ) {
             for (int offset = warpSize / 2; offset > 0; offset /= 2) {
-        warp_min1 = min(val, __shfl_down_sync(0xffffffff, val, offset));
+        warp_min1 = min(cell, __shfl_down_sync(0xffffffff, val, offset));
        // __syncwarp();
     }
         }
         if ( warpId == 1 ) {
             for (int offset = warpSize / 2; offset > 0; offset /= 2) {
-        warp_min2 = min(val, __shfl_down_sync(0xffffffff, val, offset));
+        warp_min2 = min(cell, __shfl_down_sync(0xffffffff, val, offset));
        // __syncwarp();
        }  
         }
@@ -287,8 +287,18 @@ __global__ void ccl_kernel(
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
+        if ( warpId == 0 ) {
+            for (int offset = warpSize / 2; offset > 0; offset /= 2) {
+        warp_min1 = min(cell, __shfl_down_sync(0xffffffff, val, offset));
+       // __syncwarp();
+    }
+        }
+        if ( warpId == 1 ) {
+            for (int offset = warpSize / 2; offset > 0; offset /= 2) {
+        warp_min2 = min(cell, __shfl_down_sync(0xffffffff, val, offset));
+       // __syncwarp();
+       }  
+        }
         __syncthreads(); /// we need it in 64 thread per block 
         //printf(" block id %u warp_min1 %u warp_min2 %u \n " , blockIdx.x ,warp_min1 , warp_min2  );
         // thread with lane id 0 writes the result to global memory
