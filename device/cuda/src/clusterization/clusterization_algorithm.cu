@@ -187,6 +187,8 @@ __global__ void ccl_kernel(
         outi = 0;
     }
     __syncthreads();
+
+    if ( blockIdx.x < 2) printf("hello \n");
     
 
         /*
@@ -220,7 +222,7 @@ __global__ void ccl_kernel(
     /*
     locating the start and the end of the partition
     */
-   if ( blockIdx.x < 2) printf("hello \n");
+   
    __shared__ short flag[2];  
    unsigned int short cell = 999; 
 
