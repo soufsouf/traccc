@@ -290,13 +290,13 @@ __global__ void ccl_kernel(
         if ( warpId == 0 ) {
             for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         warp_min1 = min(cell, __shfl_down_sync(0xffffffff, cell, offset));
-       // __syncwarp();
+       __syncwarp();
     }
         }
         if ( warpId == 1 ) {
             for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         warp_min2 = min(cell, __shfl_down_sync(0xffffffff, cell, offset));
-       // __syncwarp();
+        __syncwarp();
        }  
         }
         __syncthreads(); /// we need it in 64 thread per block 
