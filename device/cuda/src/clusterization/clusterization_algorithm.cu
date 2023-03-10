@@ -58,7 +58,7 @@ __forceinline__ __device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
         val = min(val, __shfl_down_sync(0xffffffff, val, offset));
-        __syncwarp();
+       // __syncwarp();
     }
     return val;
 }
@@ -224,8 +224,7 @@ __global__ void ccl_kernel(
     */
    
    __shared__ short flag[2];  
-   unsigned int short cell = 999; 
-
+   unsigned int short cell = 999;   
 
     #pragma unroll   
     for (index_t iter = 0; iter < 8; ++iter) {
@@ -243,6 +242,7 @@ __global__ void ccl_kernel(
         __syncthreads();        
         // thread with lane id 0 writes the result 
         int warpId = tid / warpSize;  
+        printf(" warpId %u \n", warpId);
         int warp_min1;
         int warp_min2;      
         if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
@@ -279,7 +279,7 @@ __global__ void ccl_kernel(
         if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
         if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
         __syncthreads(); /// we need it in 64 thread per block 
-        printf(" block id %u warp_min1 %u warp_min2 %u \n " , blockIdx.x ,warp_min1 , warp_min2  );
+        //printf(" block id %u warp_min1 %u warp_min2 %u \n " , blockIdx.x ,warp_min1 , warp_min2  );
         // thread with lane id 0 writes the result to global memory
         if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )  ) {
             int warp_min = min(warp_min1 , warp_min2 );
