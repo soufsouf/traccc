@@ -157,7 +157,7 @@ __global__ void ccl_kernel(
     alt_measurement_collection_types::view measurements_view,
     unsigned int& measurement_count) {
 
-    if ( blockIdx.x < 2) printf("hello ");
+    if ( blockIdx.x < 10 ) printf("hello ");
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
    
