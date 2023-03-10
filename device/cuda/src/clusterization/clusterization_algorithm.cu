@@ -54,10 +54,10 @@ namespace kernels {
 /// @param[in] tid      The thread index
 ///
 
-__forceinline__ __device__ int warpReduceMin(int val  , int v)
+__forceinline__ __device__ int warpReduceMin(int val)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
-        val = min(val, __shfl_down_sync(v, val, offset));
+        val = min(val, __shfl_down_sync(0xffffffff, val, offset));
        // __syncwarp();
     }
     return val;
@@ -245,8 +245,8 @@ __global__ void ccl_kernel(
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell , 0xffffffff);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell , 0xfffffffe);
+        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
+        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
         __syncthreads(); /// we need it in 64 thread per block 
         if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )) {
             int warp_min = min(warp_min1 , warp_min2 );
@@ -276,8 +276,8 @@ __global__ void ccl_kernel(
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell , 0xffffffff);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell , 0xfffffffe);
+        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
+        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
         __syncthreads(); /// we need it in 64 thread per block 
         //printf(" block id %u warp_min1 %u warp_min2 %u \n " , blockIdx.x ,warp_min1 , warp_min2  );
         // thread with lane id 0 writes the result to global memory
@@ -287,7 +287,7 @@ __global__ void ccl_kernel(
             flag[1] = 1 ; 
         }
                    
-        __syncthreads();   // obligatoire 
+        __syncthreads();  // obligatoire 
         if (flag[1] == 1) break;   
     }    
     
