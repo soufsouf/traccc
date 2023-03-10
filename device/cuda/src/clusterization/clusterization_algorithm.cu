@@ -54,10 +54,10 @@ namespace kernels {
 /// @param[in] tid      The thread index
 ///
 
-__forceinline__ __device__ int warpReduceMin(int val)
+__forceinline__ __device__ int warpReduceMin(int val  , int v)
 {
     for (int offset = warpSize / 2; offset > 0; offset /= 2) {
-        val = min(val, __shfl_down_sync(0xffffffff, val, offset));
+        val = min(val, __shfl_down_sync(v, val, offset));
        // __syncwarp();
     }
     return val;
@@ -245,8 +245,8 @@ __global__ void ccl_kernel(
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
+        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell , 0xffffffff);
+        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell , 0xfffffffe);
         __syncthreads(); /// we need it in 64 thread per block 
         if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )) {
             int warp_min = min(warp_min1 , warp_min2 );
