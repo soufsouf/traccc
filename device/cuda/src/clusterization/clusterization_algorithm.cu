@@ -271,7 +271,7 @@ __global__ void ccl_kernel(
                    cells_device[end + cell_id - 1].c.channel1 + 1 ) {
                     cell = cell_id;
                     }  /// if : end >= num_cells , the value of "end" will not change 
-        __syncthreads();            
+        __syncthreads();          
         // find minimum value in the 2 warp  
         int warpId = tid / warpSize;  
         int warp_min1;
@@ -283,7 +283,6 @@ __global__ void ccl_kernel(
         // thread with lane id 0 writes the result to global memory
         if (tid == 0 && ( warp_min1 != 999 || warp_min2 != 999 )  ) {
             int warp_min = min(warp_min1 , warp_min2 );
-            printf("  warp_min %u", warp_min );
             end = end + warp_min;
             flag[1] = 1 ; 
         }
