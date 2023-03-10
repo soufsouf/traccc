@@ -220,6 +220,7 @@ __global__ void ccl_kernel(
     /*
     locating the start and the end of the partition
     */
+   if ( blockIdx.x < 2) printf("hello \n");
    __shared__ short flag[2];  
    unsigned int short cell = 999; 
 
@@ -228,7 +229,7 @@ __global__ void ccl_kernel(
     for (index_t iter = 0; iter < 8; ++iter) {
          
         const index_t cell_id = iter * blckDim + tid;  
-        //if ( start == 0 ) break;  /// no diverges because all threads of blocs 0 will break 
+        if ( start == 0 ) break;  /// no diverges because all threads of blocs 0 will break 
         if ( cells_device[start + cell_id - 1].module_link !=
                 cells_device[start + cell_id].module_link ||
                 cells_device[start + cell_id].c.channel1 >
@@ -288,7 +289,7 @@ __global__ void ccl_kernel(
         if (flag[1] == 1) break;   
     }    
     
-    if ( blockIdx.x < 2) printf("hello \n");
+   
 
     const index_t size = end - start;
    //if ( blockIdx.x < 2 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, start );
