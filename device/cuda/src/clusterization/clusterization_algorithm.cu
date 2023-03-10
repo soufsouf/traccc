@@ -276,8 +276,8 @@ __global__ void ccl_kernel(
         int warpId = tid / warpSize;  
         int warp_min1;
         int warp_min2;      
-        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell);
-        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell);
+        if ( warpId == 0 ) warp_min1 = warpReduceMin(cell , 0xffffffff);
+        if ( warpId == 1 ) warp_min2 = warpReduceMin(cell , 0xfffffffe);
         __syncthreads(); /// we need it in 64 thread per block 
         //printf(" block id %u warp_min1 %u warp_min2 %u \n " , blockIdx.x ,warp_min1 , warp_min2  );
         // thread with lane id 0 writes the result to global memory
