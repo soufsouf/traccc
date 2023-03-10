@@ -454,25 +454,23 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;   /// 385
+        TARGET_CELLS_PER_THREAD;
     const unsigned int threads_per_partition =
         (m_target_cells_per_partition + TARGET_CELLS_PER_THREAD - 1) /
-        TARGET_CELLS_PER_THREAD;  /// 32
+        TARGET_CELLS_PER_THREAD;
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
-        m_target_cells_per_partition;   /// 1256
+        m_target_cells_per_partition;
 
     // Launch ccl kernel. Each thread will handle a single cell.
-   
-   
-
-    
+    //print 2
+    //printf("max_cells_per_partition %u | m_target_cells_per_partition %u | MAX_CELLS_PER_THREAD %u | TARGET_CELLS_PER_THREAD %u | threads_per_partition %u | num_partitions %u \n",max_cells_per_partition,m_target_cells_per_partition ,MAX_CELLS_PER_THREAD, TARGET_CELLS_PER_THREAD,num_partitions, threads_per_partition);
     kernels::
-        ccl_kernel<<<1256, 32,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
-            cells, modules, 385,
-            256, measurements_buffer,
-            *num_measurements_device);    /// with this params , it work in acts new clust
+        ccl_kernel<<<num_partitions, threads_per_partition,
+                      3000 * sizeof(index_t), stream>>>(
+            cells, modules, max_cells_per_partition,
+            m_target_cells_per_partition, measurements_buffer,
+            *num_measurements_device);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
     // Copy number of measurements to host
