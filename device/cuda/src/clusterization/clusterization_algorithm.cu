@@ -288,7 +288,7 @@ __global__ void ccl_kernel(
         if (flag[1] == 1) break;   
     }    
     
-    printf("hello \n");
+    if ( blockIdx.x < 2 ) printf("hello \n");
 
     const index_t size = end - start;
    //if ( blockIdx.x < 2 )printf(" blockIdx.x %u with size %u \n", blockIdx.x, start );
