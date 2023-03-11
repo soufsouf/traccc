@@ -259,6 +259,8 @@ __global__ void ccl_kernel(
          * Look for adjacent cells to the current one.
          */
         adjv[tst][8] = cid ;
+        printf (" adjv[tst][8] %u  cid %u \n" , adjv[tst][8] , cid); 
+    }
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
        
@@ -304,12 +306,12 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+    /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         
         
         printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
-    }
+    }*/
 
 
     /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
