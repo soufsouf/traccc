@@ -281,7 +281,7 @@ for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         
         
-        printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
+        printf (" block id %u cid %u \n" ,  blockIdx.x, cid); 
     }
 
 
