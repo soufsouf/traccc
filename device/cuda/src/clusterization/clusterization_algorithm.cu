@@ -277,6 +277,14 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
+for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        const index_t cid = tst * blckDim + tid;
+        
+        
+        printf (" f[cid] %u cid %u \n" , f[cid ] , cid); 
+    }
+
+
     /*
      * Count the number of clusters by checking how many cells have
      * themself assigned as a parent.
