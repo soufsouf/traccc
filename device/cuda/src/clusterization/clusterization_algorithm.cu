@@ -251,6 +251,7 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
+        adjv[tst][8] = cid ;
         
     }
 
@@ -258,7 +259,7 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */
-        adjv[tst][8] = cid ;
+        
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
