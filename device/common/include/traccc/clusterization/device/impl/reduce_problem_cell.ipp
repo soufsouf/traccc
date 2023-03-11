@@ -35,7 +35,7 @@ inline void reduce_problem_cell(
     const channel_id c0 = cells[pos].c.channel0;
     const channel_id c1 = cells[pos].c.channel1;
     const unsigned int mod_id = cells[pos].module_link;
-    adjv[8] = cid ;
+    //adjv[8] = cid ;
 
     /*
      * First, we traverse the cells backwards, starting from the current
