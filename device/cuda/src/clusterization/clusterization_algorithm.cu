@@ -54,7 +54,8 @@ namespace kernels {
 ///
 __device__ void fast_sv_1(index_t* f, index_t* gf,
                            index_t tid,
-                          const index_t blckDim) {
+                          const index_t blckDim ,
+                          const index_t size) {
     /*
      * The algorithm finishes if an iteration leaves the arrays unchanged.
      * This varible will be set if a change is made, and dictates if another
@@ -142,8 +143,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
         
         gf_changed = false;
 
-        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+        for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst){
             
             if( gf[cid] == 1 ) {
                 
@@ -260,8 +260,8 @@ __global__ void ccl_kernel(
          */
         adjv[tst][8] = cid ;
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst]);
-        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
+                                    adjv[tst] );
+        //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
        
     }
 
@@ -301,7 +301,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, tid, blckDim);
+    fast_sv_1(f, f_next, tid, blckDim , size);
 
     __syncthreads();
 
