@@ -283,7 +283,7 @@ __global__ void ccl_kernel(
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
-        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
+        //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
@@ -303,6 +303,14 @@ __global__ void ccl_kernel(
     fast_sv_1(f, f_next, tid, blckDim);
 
     __syncthreads();
+
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        const index_t cid = tst * blckDim + tid;
+        
+        
+        printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
+    }
+
 
     /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
