@@ -279,7 +279,7 @@ __global__ void ccl_kernel(
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
-        //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
+        printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
     /*
@@ -409,7 +409,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Launch ccl kernel. Each thread will handle a single cell.
 
-    printf("hello \n");
+   
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
