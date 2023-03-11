@@ -263,7 +263,7 @@ __global__ void ccl_kernel(
         
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
-        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
+        //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
        
     }
 
