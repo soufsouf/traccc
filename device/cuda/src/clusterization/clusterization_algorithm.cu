@@ -288,7 +288,7 @@ __global__ void ccl_kernel(
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[cid] = adjv[tst][8];
-        if (adjv[tst][8] == cid) { f_next[cid] = 0; printf (" cid %u block id %u \n" , cid , blockIdx.x ); }
+        if (adjv[tst][8] == cid) { f_next[cid] = 0; printf (" block id %u cid %u \n" ,  blockIdx.x ,cid  ); }
         else { f_next[cid] = 1; }
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
