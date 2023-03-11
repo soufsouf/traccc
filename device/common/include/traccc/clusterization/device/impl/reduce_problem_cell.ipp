@@ -26,7 +26,7 @@ TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8]) {
+    unsigned char& adjc, unsigned short adjv[9]) {
 
     const unsigned int pos = cid + start;
 
@@ -35,6 +35,7 @@ inline void reduce_problem_cell(
     const channel_id c0 = cells[pos].c.channel0;
     const channel_id c1 = cells[pos].c.channel1;
     const unsigned int mod_id = cells[pos].module_link;
+    adjv[8] = cid ;
 
     /*
      * First, we traverse the cells backwards, starting from the current
@@ -58,6 +59,8 @@ inline void reduce_problem_cell(
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc++] = j - start;
+            if ( adjv[8] > j - start )  adjv[8] = j - start ;
+
         }
     }
 
@@ -76,6 +79,7 @@ inline void reduce_problem_cell(
 
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc++] = j - start;
+            if ( adjv[8] > j - start )  adjv[8] = j - start ;
         }
     }
 }
