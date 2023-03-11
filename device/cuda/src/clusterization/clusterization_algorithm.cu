@@ -305,7 +305,7 @@ __global__ void ccl_kernel(
         const index_t cid = tst * blckDim + tid;
         
         
-        printf (" f[cid] %u cid %u \n" , f[cid ] , cid); 
+        printf (" f[cid] %u cid %u \n" , f[cid] , cid); 
     }
 
 
