@@ -301,6 +301,13 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
+    for (index_t tst = 0; tst < max_cells_per_partition; ++tst) {
+        
+        
+        printf (" f[cid] %u \n" , f[tst]); 
+    }
+
+
     
     /*
      * Count the number of clusters by checking how many cells have
