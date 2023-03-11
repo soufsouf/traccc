@@ -91,7 +91,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
                     f[cid] = q;
                 }
             }
-         if (c == 0 ) printf (" f[cid] %u cid %u \n" , f[cid] , cid);
+         if (c == 0 ) printf (" f[cid] %u  blockIdx.x %u cid %u \n" , f[cid] , blockIdx.x,  cid);
         }
         
          
