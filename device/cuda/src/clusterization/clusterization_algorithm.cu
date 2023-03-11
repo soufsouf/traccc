@@ -62,6 +62,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
      * loop is necessary.
      */
     bool gf_changed;
+    int c = 0 ;
 
     do {
         /*
@@ -69,6 +70,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
          * make a change to the gf array.
          */
         gf_changed = false;
+        
 
         /*
          * The algorithm executes in a loop of three distinct parallel
@@ -89,8 +91,11 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
                     f[cid] = q;
                 }
             }
+         if (c == 0 ) printf (" f[cid] %u cid %u \n" , f[cid] , cid);
         }
-
+        
+         
+         int c = 1 ; 
         /*
          * Each stage in this algorithm must be preceded by a
          * synchronization barrier!
@@ -281,7 +286,7 @@ for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         
         
-        printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
+        //printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
     }
 
 
