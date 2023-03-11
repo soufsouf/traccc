@@ -67,7 +67,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
          * Reset the end-parameter to false, so we can set it to true if we
          * make a change to the gf array.
          */
-        gf_changed = false;
+        //gf_changed = false;
 
         /*
          * The algorithm executes in a loop of three distinct parallel
@@ -139,11 +139,14 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
    
     //// new CC 
     do {
+        
+        gf_changed = false;
+
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
             if( gf[cid] == 1) {
-                printf("hello \n");
+                
                 f[cid] = f[f[cid]];
                 if ( gf[f[cid]] == 0 )  gf[cid] = 0; 
                 gf_changed = true;
