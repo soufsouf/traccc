@@ -280,7 +280,7 @@ __global__ void ccl_kernel(
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
-        printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
+        //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
     /*
@@ -297,6 +297,16 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        
+        /*
+         * At the start, the values of f and f_next should be equal to the
+         * ID of the cell.
+         */
+        
+        printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
+    }
+
     /*
      * Count the number of clusters by checking how many cells have
      * themself assigned as a parent.
@@ -304,6 +314,7 @@ __global__ void ccl_kernel(
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (f[cid] == cid) {
             atomicAdd(&outi, 1);
+
         }
     }
 
