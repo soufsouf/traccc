@@ -259,9 +259,9 @@ __global__ void ccl_kernel(
          * Look for adjacent cells to the current one.
          */
         adjv[tst][8] = cid ;
-        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
+        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
        
     }
 
