@@ -276,8 +276,8 @@ __global__ void ccl_kernel(
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
-        f[cid] = adjv[8];
-        if (adjv[8] == cid) { f_next[cid] = 0; }
+        f[cid] = adjv[tst][8];
+        if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
     }
 
