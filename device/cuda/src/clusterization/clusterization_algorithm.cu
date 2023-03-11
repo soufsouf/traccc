@@ -152,7 +152,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
                 gf_changed = true;
 
              }
-
+             __syncthreads();
             }
             __syncthreads();
 
