@@ -250,6 +250,7 @@ __global__ void ccl_kernel(
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        const index_t cid = tst * blckDim + tid;
         adjc[tst] = 0;
         adjv[tst][8] = cid ;
         
