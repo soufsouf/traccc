@@ -290,7 +290,7 @@ __global__ void ccl_kernel(
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
-        //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
+        printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
     /*
