@@ -290,7 +290,7 @@ __global__ void ccl_kernel(
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0; }
         else { f_next[cid] = 1; }
-        printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
+        //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
     /*
@@ -307,12 +307,12 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
-    /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         
         
         printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
-    }*/
+    }
 
 
     /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
