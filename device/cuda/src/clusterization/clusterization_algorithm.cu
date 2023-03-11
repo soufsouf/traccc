@@ -145,7 +145,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
-            if( gf[cid] == 1) {
+            if( gf[cid] == 1 ) {
                 
                 f[cid] = f[f[cid]];
                 if ( gf[f[cid]] == 0 )  gf[cid] = 0; 
@@ -261,7 +261,7 @@ __global__ void ccl_kernel(
         adjv[tst][8] = cid ;
         device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
-        //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
+        printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
        
     }
 
