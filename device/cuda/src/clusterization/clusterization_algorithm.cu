@@ -159,6 +159,8 @@ __global__ void ccl_kernel(
     __shared__ unsigned int outi;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
+    index_t* f = &fathers[max_cells_per_partition];
+    index_t* f_next = &fathers[2*max_cells_per_partition];
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -239,6 +241,7 @@ __global__ void ccl_kernel(
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
+        printf(" hello after reduce \n");
     }
     
 __syncthreads();
@@ -252,8 +255,7 @@ __syncthreads();
      * but the algorithm would be decidedly slower in that case.
      */
     
-    index_t* f = &fathers[max_cells_per_partition];
-    index_t* f_next = &fathers[2*max_cells_per_partition];
+    
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
