@@ -36,7 +36,8 @@ inline void reduce_problem_cell2(
     const channel_id c1 = cells[pos].c.channel1;
     const unsigned int mod_id = cells[pos].module_link;
     unsigned short min_id = cid;
-    unsigned short old_id,new_id, count =0 ;
+    unsigned short old_id,new_id;
+    bool count = false;
     /*
      * First, we traverse the cells backwards, starting from the current
      * cell and working back to the first, collecting adjacent cells
@@ -91,14 +92,13 @@ inline void reduce_problem_cell2(
       {
        
         if(id_fathers[adjv[i]] < old_id)
-               {new_id = id_fathers[adjv[i]];}
-
+               {new_id = id_fathers[adjv[i]];
+               count =true; }
+               
       }
       id_fathers[adjv[cid]] = new_id;
-      if(new_id == old_id) count ++;
-      printf("hello 2 \n");
-     __syncthreads();
-    }while(count<2);
+     printf("hello 2\n"); 
+    }while(__syncthreads_or(count));
 printf("hello \n");
 
 }
