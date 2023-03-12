@@ -241,11 +241,11 @@ __global__ void ccl_kernel(
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
-        printf(" hello after reduce \n");
+        
     }
     
 __syncthreads();
-
+printf(" hello after reduce \n");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
