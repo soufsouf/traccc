@@ -148,17 +148,14 @@ __device__ void fast_sv_1(index_t* f, char* gf,
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
-              /// the the father is the cell that has no small neighbors
+              ///the father is the cell that has no small neighbors
 
-            if( gf[f[cid]] == 1) {   // if my father is not a real father then i have to communicate with neighbor the find the real fahter
+            if( gf[f[cid]] == 1) {   // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
 
-                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbor communication
+                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                 if (f[cid] > f[adjv[tst][i]]) f[cid] = f[adjv[tst][i]];
                 }
-                gf_changed = true; 
-                ///f[cid] = f[f[cid]];
-                //gf_changed = true;
-                //if ( gf[f[cid]] == 0 ) { gf[cid] = 0; }  
+                gf_changed = true;  
              }
               
             }
@@ -285,9 +282,10 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ index_t shared_v[];
-    index_t* f = &shared_v[0];
-    char* f_next = (char*)&shared_v[max_cells_per_partition];
+    extern __shared__ char shared_v[];
+    index_t* f = (index_t*)&shared_v[0];
+    char* f_next = &shared_v[2*max_cells_per_partition];
+    char* grandF = &shared_v[3*max_cells_per_partition];
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -300,6 +298,7 @@ __global__ void ccl_kernel(
         f[cid] = adjv[tst][8];
         if (adjv[tst][8] == cid) { f_next[cid] = 0;  }
         else { f_next[cid] = 1; }
+        grandF[cid] = 0;
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
@@ -313,7 +312,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
+    fast_sv_1(f, f_next, adjc, adjv ,tid, blckDim);
 
     __syncthreads();
 
@@ -451,7 +450,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                      max_cells_per_partition * sizeof(index_t) + max_cells_per_partition * sizeof(char), stream>>>(
+                      max_cells_per_partition * sizeof(index_t) + 2 * max_cells_per_partition * sizeof(char), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
