@@ -89,18 +89,19 @@ inline void reduce_problem_cell2(
     
    
     __syncthreads();
-    
-    while(iter >0)
+    int n = 0;
+    while(n <2)
     {
         
         old_id = id_fathers[cid];
-      
+      #pragma unroll
       for(unsigned char i = 0; i< adjc; i ++){
             if(id_fathers[adjv[i]] < old_id){
                 new_id = id_fathers[adjv[i]];
                 iter ++ ;
             }else if(id_fathers[adjv[i]] ==old_id){
                iter --;
+               n ++;
             }
         }
       id_fathers[cid] = new_id;
