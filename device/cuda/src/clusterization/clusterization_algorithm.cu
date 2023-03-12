@@ -244,12 +244,12 @@ __global__ void ccl_kernel(
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
-                                    printf("hello \n");
+                                    //printf("hello \n");
         
     }
     
 __syncthreads();
-printf(" hello after reduce \n");
+//printf(" hello after reduce \n");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
@@ -260,31 +260,31 @@ printf(" hello after reduce \n");
      */
     
     
-
+/*
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
-         */
+         *//**
         f[cid] = cid;
         f_next[cid] = cid;
     }
-
+*/
     /*
      * Now that the data has initialized, we synchronize again before we
      * move onto the actual processing part.
      */
-    __syncthreads();
+   // __syncthreads();
 
     /*
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
+   // fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
-    __syncthreads();
+    //__syncthreads();
     
 
     /*
@@ -293,7 +293,7 @@ printf(" hello after reduce \n");
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         printf("f : %hu | id_fathers : %hu", f[cid],id_fathers[cid]);
-        if (f[cid] == cid) {
+        if (id_fathers[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
@@ -327,7 +327,7 @@ printf(" hello after reduce \n");
 
     __syncthreads();
 
-    vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
+    vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, id_fathers);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (f[cid] == cid) {

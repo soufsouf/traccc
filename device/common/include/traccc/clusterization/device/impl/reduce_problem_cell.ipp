@@ -95,7 +95,7 @@ inline void reduce_problem_cell2(
          printf("hello 2\n");
         old_id = id_fathers[cid];
         iter = false;
-      #pragma unroll
+      //#pragma unroll
       for(unsigned char i = 0; i< adjc; i ++){
             if(id_fathers[adjv[i]] < old_id){
                 new_id = id_fathers[adjv[i]];
