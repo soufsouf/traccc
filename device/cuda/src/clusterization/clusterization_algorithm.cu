@@ -142,22 +142,30 @@ __device__ void fast_sv_1(index_t* f, char* gf,
         
         gf_changed = false;
 
+
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
-            if( gf[cid] == 1) {
-                
-                f[cid] = f[f[cid]];
-                gf_changed = true;
-                if ( gf[f[cid]] == 0 ) { gf[cid] = 0; }
-                
+              /// the the father is the cell that has no small neighbors
 
+            if( gf[f[cid]] == 1) {   // if my father is not a real father then i have to communicate with neighbor the find the real fahter
+
+                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbor communication
+                if (f[cid] > f[adjv[tst][i]]) f[cid] = f[adjv[tst][i]];
+                }
+                gf_changed = true; 
+                ///f[cid] = f[f[cid]];
+                //gf_changed = true;
+                //if ( gf[f[cid]] == 0 ) { gf[cid] = 0; }  
              }
-             
+              
             }
             
 
-       } while (__syncthreads_and(gf_changed));
+       } while (__syncthreads_or(gf_changed));
+
+       for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+
 }
 
 __global__ void ccl_kernel(
