@@ -313,7 +313,7 @@ printf(" hello after reduce \n");
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        //printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
+        printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
         if (f[cid] == cid) {
             atomicAdd(&outi, 1);
         }
