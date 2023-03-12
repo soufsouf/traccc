@@ -62,7 +62,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
      * loop is necessary.
      */
     bool gf_changed;
-
+int h = 1;
     do {
         /*
          * Reset the end-parameter to false, so we can set it to true if we
@@ -89,8 +89,14 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
                     f[cid] = q;
                 }
             }
+            
+             
         }
-
+        
+        if(blockIdx.x == 0 && h = 1){
+            printf(" cid: %u |  f[cid]= %hu \n",cid, f[cid]);
+            h ++;
+    }
         /*
          * Each stage in this algorithm must be preceded by a
          * synchronization barrier!
