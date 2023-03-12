@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "xhash": "cpp",
+        "xmemory": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp"
     }
 }
