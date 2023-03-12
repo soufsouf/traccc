@@ -292,7 +292,7 @@ __syncthreads();
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        printf("f : %hu | id_fathers : %hu", f[cid],id_fathers[cid]);
+        printf(" id_fathers : %hu \n", id_fathers[cid]);
         if (id_fathers[cid] == cid) {
             atomicAdd(&outi, 1);
         }
