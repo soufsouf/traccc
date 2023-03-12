@@ -36,7 +36,7 @@ inline void reduce_problem_cell2(
     const channel_id c1 = cells[pos].c.channel1;
     const unsigned int mod_id = cells[pos].module_link;
     unsigned short min_id = cid;
-    unsigned short old_id,new_id, count;
+    unsigned short old_id,new_id, count =0 ;
     /*
      * First, we traverse the cells backwards, starting from the current
      * cell and working back to the first, collecting adjacent cells
@@ -49,6 +49,7 @@ inline void reduce_problem_cell2(
          * impossible for that cell to ever be adjacent to this one.
          * This is a small optimisation.
          */
+        assert(j > start);
         if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
             break;
         }
