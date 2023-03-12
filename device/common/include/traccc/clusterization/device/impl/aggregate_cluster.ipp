@@ -79,7 +79,7 @@ inline void aggregate_cluster(
                 mean = prev + (weight / totalWeight) * diff;
                 for (char i = 0; i < 2; ++i) {
                     var[i] = var[i] +
-                             weight * (difid_fathers[i]) * (cell_position[i] - mean[i]);
+                             weight * (diff[i]) * (cell_position[i] - mean[i]);
                 }
             }
 
