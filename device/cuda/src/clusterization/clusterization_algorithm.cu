@@ -264,13 +264,13 @@ __global__ void ccl_kernel(
                 }    
             }
             id_fathers[cid] = new_id;
-            printf("hello 2\n");
+            //printf("hello 2\n");
         }
     } while(__syncthreads_or(count));
-    printf("hello \n");
+    //printf("hello \n");
     
 __syncthreads();
-printf(" hello after reduce \n");
+//printf(" hello after reduce \n");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we
