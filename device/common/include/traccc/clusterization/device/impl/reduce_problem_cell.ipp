@@ -86,6 +86,7 @@ inline void reduce_problem_cell2(
     id_fathers[cid]= min_id;
     __syncthreads();
     do{
+        count = false; 
         old_id = id_fathers[adjv[cid]];
         #pragma unroll
       for(unsigned char i = 0; i< adjc; i ++)
@@ -97,7 +98,7 @@ inline void reduce_problem_cell2(
                
       }
       id_fathers[adjv[cid]] = new_id;
-     printf("hello 2\n"); 
+     
     }while(__syncthreads_or(count));
 printf("hello \n");
 
