@@ -86,8 +86,6 @@ inline void reduce_problem_cell2(
         }
     }
     id_fathers[cid]= min_id;
-    
-   
     __syncthreads();
   
     do
@@ -104,7 +102,7 @@ inline void reduce_problem_cell2(
         }
       id_fathers[cid] = new_id;
        
-     // __syncthreads();
+      __syncthreads();
     
     } while(__syncthreads_or(iter));
 
