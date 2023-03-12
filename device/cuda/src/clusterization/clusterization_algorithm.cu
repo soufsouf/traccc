@@ -249,7 +249,7 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ index_t fathers[];
+    
     index_t* f = &fathers[max_cells_per_partition];
     index_t* f_next = &fathers[2*max_cells_per_partition];
 
@@ -284,6 +284,7 @@ __global__ void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+        printf("f : %hu | id_fathers : %hu", f[cid],id_fathers[cid]);
         if (f[cid] == cid) {
             atomicAdd(&outi, 1);
         }
