@@ -148,13 +148,14 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
             if( gf[cid] == 1) {
                 
                 f[cid] = f[f[cid]];
-                if ( gf[f[cid]] == 0 )  gf[cid] = 0; 
                 gf_changed = true;
+                if ( gf[f[cid]] == 0 ) { gf[cid] = 0; }
+                
 
              }
-             __syncthreads();
+             
             }
-            __syncthreads();
+            
 
        } while (__syncthreads_or(gf_changed));
 }
@@ -277,7 +278,7 @@ __global__ void ccl_kernel(
      */
     extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];
+    char* f_next = &shared_v[max_cells_per_partition];
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -288,7 +289,7 @@ __global__ void ccl_kernel(
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[cid] = adjv[tst][8];
-        if (adjv[tst][8] == cid) { f_next[cid] = 0; }
+        if (adjv[tst][8] == cid) { f_next[cid] = 0;  }
         else { f_next[cid] = 1; }
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
