@@ -60,8 +60,7 @@ inline void reduce_problem_cell2(
          * in the current cell's adjacency set.
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
-            adjv[adjc] = j - start; 
-            adjc ++;
+            adjv[adjc++] = j - start; 
             if((j-start)< min_id) min_id = j-start;
         }
     }
@@ -80,8 +79,7 @@ inline void reduce_problem_cell2(
         }
 
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
-            adjv[adjc] = j - start; 
-            adjc ++;
+            adjv[adjc++] = j - start; 
             if((j-start)< min_id) min_id = j-start;
         }
     }
@@ -91,8 +89,8 @@ inline void reduce_problem_cell2(
     do
     {
          //printf("hello 2\n");
+          iter = false;
         old_id = id_fathers[cid];
-        iter = false;
       //#pragma unroll
       for(unsigned char i = 0; i< adjc; i ++){
             if(id_fathers[adjv[i]] < old_id){
