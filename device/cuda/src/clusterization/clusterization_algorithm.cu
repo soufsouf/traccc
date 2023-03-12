@@ -253,7 +253,7 @@ __global__ void ccl_kernel(
     __syncthreads();
 
         for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-            for(int k = 0 ; k< 20;k++){
+            for(int k = 0 ; k< 50;k++){
             old_id = id_fathers[cid];
             count = 0;
             for(unsigned char i = 0; i< adjc[tst]; i ++) {
@@ -264,7 +264,7 @@ __global__ void ccl_kernel(
             }
             id_fathers[cid] = new_id;
 
-            if(count > 2) break;
+            if(count > 5) break;
             //printf("hello 2\n");
             }
         }
