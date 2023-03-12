@@ -86,6 +86,7 @@ inline void reduce_problem_cell2(
     __syncthreads();
     do{
         old_id = id_fathers[adjv[cid]];
+        #pragma unroll
       for(unsigned char i = 0; i< adjc; i ++)
       {
        
