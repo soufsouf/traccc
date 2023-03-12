@@ -92,7 +92,7 @@ inline void reduce_problem_cell2(
     int n = 0;
     while(n <2)
     {
-        
+         printf("hello 2\n");
         old_id = id_fathers[cid];
       #pragma unroll
       for(unsigned char i = 0; i< adjc; i ++){
@@ -105,8 +105,9 @@ inline void reduce_problem_cell2(
             }
         }
       id_fathers[cid] = new_id;
+       printf("hello 3\n");
       __syncthreads();
-     printf("hello 2\n");
+    
     }
 printf("hello \n");
 
