@@ -330,7 +330,7 @@ __syncthreads();
     vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, id_fathers);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
+        if (id_fathers[cid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
