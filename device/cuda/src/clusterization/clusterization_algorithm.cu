@@ -241,7 +241,7 @@ __global__ void ccl_kernel(
                                     adjv[tst],id_fathers);
     }
 __syncthreads();
-printf("hello \n");
+
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
      * will constantly be writing and reading from them which is why we

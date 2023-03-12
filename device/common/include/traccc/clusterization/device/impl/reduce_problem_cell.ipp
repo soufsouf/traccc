@@ -95,9 +95,10 @@ inline void reduce_problem_cell2(
       }
       id_fathers[adjv[cid]] = new_id;
       if(new_id == old_id) count ++;
+      printf("hello 2 \n");
      __syncthreads();
     }while(count<2);
-//printf("hello");
+printf("hello \n");
 
 }
 
