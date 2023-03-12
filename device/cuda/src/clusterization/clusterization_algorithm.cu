@@ -157,7 +157,7 @@ __device__ void fast_sv_1(index_t* f, char* gf,
             }
             
 
-       } while (__syncthreads_or(gf_changed));
+       } while (__syncthreads_and(gf_changed));
 }
 
 __global__ void ccl_kernel(
