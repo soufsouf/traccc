@@ -52,7 +52,7 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
-__device__ void fast_sv_1(index_t* f, index_t* gf,
+__device__ void fast_sv_1(index_t* f, char* gf,
                            index_t tid,
                           const index_t blckDim) {
     /*
