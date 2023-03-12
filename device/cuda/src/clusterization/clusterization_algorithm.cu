@@ -264,7 +264,7 @@ __global__ void ccl_kernel(
             }
             id_fathers[cid] = new_id;
 
-            if(count > 2) break;
+            if(count > 1) break;
             //printf("hello 2\n");
             }
         }
