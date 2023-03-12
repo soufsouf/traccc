@@ -92,7 +92,7 @@ inline void reduce_problem_cell2(
   
     do
     {
-         printf("hello 2\n");
+         //printf("hello 2\n");
         old_id = id_fathers[cid];
         iter = false;
       //#pragma unroll
