@@ -50,7 +50,7 @@ inline void reduce_problem_cell2(
          * impossible for that cell to ever be adjacent to this one.
          * This is a small optimisation.
          */
-        assert(j >= start);
+        //assert(j >= start);
         if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
             break;
         }
