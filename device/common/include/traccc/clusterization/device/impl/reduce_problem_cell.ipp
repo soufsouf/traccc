@@ -103,7 +103,7 @@ inline void reduce_problem_cell2(
       __syncthreads();
     
     } while(__syncthreads_or(iter));
-
+printf(" id_fathers : %hu \n", id_fathers[cid]);
 
 }
 
