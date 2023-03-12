@@ -50,7 +50,7 @@ inline void reduce_problem_cell2(
          * impossible for that cell to ever be adjacent to this one.
          * This is a small optimisation.
          */
-        assert(j > start);
+        assert(j >= start);
         if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
             break;
         }
@@ -60,7 +60,8 @@ inline void reduce_problem_cell2(
          * in the current cell's adjacency set.
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
-            adjv[adjc++] = j - start;
+            adjv[adjc] = j - start; 
+            adjc ++;
             if((j-start)< min_id) min_id = j-start;
         }
     }
@@ -79,7 +80,8 @@ inline void reduce_problem_cell2(
         }
 
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
-            adjv[adjc++] = j - start;
+            adjv[adjc] = j - start; 
+            adjc ++;
             if((j-start)< min_id) min_id = j-start;
         }
     }
