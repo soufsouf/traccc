@@ -166,8 +166,7 @@ __device__ void fast_sv_1(index_t* f, char* gf,
 
        } while (__syncthreads_or(gf_changed));
 
-       for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-
+       
 }
 
 __global__ void ccl_kernel(
