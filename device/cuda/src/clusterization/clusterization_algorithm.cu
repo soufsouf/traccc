@@ -240,7 +240,7 @@ __global__ void ccl_kernel(
     __syncthreads();
 
     unsigned short old_id,new_id;
-    bool count = false;
+    int count = 0;
 
 #pragma unroll
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
@@ -253,18 +253,21 @@ __global__ void ccl_kernel(
     __syncthreads();
 
         for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-         do {   
+            for(int k = 0 ; k< 10;k++){
             old_id = id_fathers[cid];
-            count = false;
+            count = 0;
             for(unsigned char i = 0; i< adjc[tst]; i ++) {
                 if(id_fathers[adjv[tst][i]] < old_id) {
                     new_id = id_fathers[adjv[tst][i]];
-                    count = true;
-                }    
+                } 
+                else if(new_id == old_id)  count ++; 
             }
             id_fathers[cid] = new_id;
+
+            if(count > 2) break;
             //printf("hello 2\n");
-        }while(__syncthreads_or(count));
+            }
+        }
     } 
     //printf("hello \n");
     
