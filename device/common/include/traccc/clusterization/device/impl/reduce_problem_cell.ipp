@@ -37,7 +37,7 @@ inline void reduce_problem_cell2(
     const unsigned int mod_id = cells[pos].module_link;
     unsigned short min_id = cid;
     unsigned short old_id,new_id;
-    int iter;
+    int iter = 1; 
     /*
      * First, we traverse the cells backwards, starting from the current
      * cell and working back to the first, collecting adjacent cells
@@ -89,8 +89,8 @@ inline void reduce_problem_cell2(
     
    
     __syncthreads();
-    iter = 0; 
-    while(iter < 2)
+    
+    while(iter >0)
     {
         
         old_id = id_fathers[cid];
@@ -98,14 +98,16 @@ inline void reduce_problem_cell2(
       for(unsigned char i = 0; i< adjc; i ++){
             if(id_fathers[adjv[i]] < old_id){
                 new_id = id_fathers[adjv[i]];
+                iter ++ ;
+            }else if(id_fathers[adjv[i]] ==old_id){
+               iter --;
             }
         }
       id_fathers[cid] = new_id;
-      if(old_id == new_id) iter ++;
       __syncthreads();
      printf("hello 2\n");
     }
-//printf("hello \n");
+printf("hello \n");
 
 }
 
