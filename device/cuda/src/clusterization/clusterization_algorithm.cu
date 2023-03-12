@@ -157,11 +157,8 @@ __global__ void ccl_kernel(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
-    /*__shared__ unsigned int cluster_count ;
-   
-    extern __shared__ index_t cluster_vector[];
-     
-    index_t* cluster_group = &cluster_vector[0];*/
+    extern __shared__ index_t fathers[];
+    index_t* id_fathers = &fathers[0];
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -173,7 +170,6 @@ __global__ void ccl_kernel(
         /*
          * Initialize shared variables.
          */
-       // cluster_count = 0;
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
@@ -241,8 +237,8 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst]);
+        device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
+                                    adjv[tst],id_fathers);
     }
 
     /*
@@ -280,17 +276,7 @@ __global__ void ccl_kernel(
      */
     fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
-  /*  __syncthreads();
-     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        /*
-         * Look for adjacent cells to the current one.
-         */   
-       /* device::reduce_problem_cell2(cells_device, cid, start, end,cluster_group ,&cluster_count);
-        //printf("cluster group : %u \n",cluster_group[tst].id_cluster);
-        
-    }*/
-        __syncthreads();
-
+    __syncthreads();
     
 
     /*
@@ -304,10 +290,7 @@ __global__ void ccl_kernel(
     }
 
     __syncthreads();
-/*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst)
-     {
-        printf(" block idx : %u | f[%hu]: %hu  | outi : %u| cluster_group[%hu] : %hu | count cluster : %u  \n",blockIdx.x, cid , f[cid] ,outi, cid,cluster_group[cid],cluster_count);
-     }*/
+
     /*
      * Add the number of clusters of each thread block to the total
      * number of clusters. At the same time, a cluster id is retrieved
@@ -410,7 +393,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                     3 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
