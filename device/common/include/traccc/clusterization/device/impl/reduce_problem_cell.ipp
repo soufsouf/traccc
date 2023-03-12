@@ -105,8 +105,8 @@ inline void reduce_problem_cell2(
             }
         }
       id_fathers[cid] = new_id;
-       printf("hello 3\n");
-      __syncthreads();
+       
+     // __syncthreads();
     
     }
 printf("hello \n");

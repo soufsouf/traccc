@@ -247,7 +247,7 @@ __global__ void ccl_kernel(
         
     }
     
-//__syncthreads();
+__syncthreads();
 printf(" hello after reduce \n");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
