@@ -252,11 +252,10 @@ __global__ void ccl_kernel(
     }
     __syncthreads();
 
-    do {
         for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-            count = false; 
+         do {   
             old_id = id_fathers[cid];
-
+            count = false;
             for(unsigned char i = 0; i< adjc[tst]; i ++) {
                 if(id_fathers[adjv[tst][i]] < old_id) {
                     new_id = id_fathers[adjv[tst][i]];
@@ -265,8 +264,8 @@ __global__ void ccl_kernel(
             }
             id_fathers[cid] = new_id;
             //printf("hello 2\n");
-        }
-    } while(__syncthreads_or(count));
+        }while(__syncthreads_or(count));
+    } 
     //printf("hello \n");
     
 __syncthreads();
