@@ -53,6 +53,8 @@ namespace kernels {
 /// @param[in] tid      The thread index
 ///
 __device__ void fast_sv_1(index_t* f, char* gf,
+                           unsigned char adjc[MAX_CELLS_PER_THREAD],
+                          index_t adjv[MAX_CELLS_PER_THREAD][9],
                            index_t tid,
                           const index_t blckDim) {
     /*
@@ -312,7 +314,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, tid, blckDim);
+    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
     __syncthreads();
 
