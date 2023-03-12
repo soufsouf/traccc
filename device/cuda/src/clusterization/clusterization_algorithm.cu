@@ -278,7 +278,7 @@ __global__ void ccl_kernel(
      */
     extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    char* f_next = &(char*)shared_v[max_cells_per_partition];
+    char* f_next = (char*)&shared_v[max_cells_per_partition];
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
