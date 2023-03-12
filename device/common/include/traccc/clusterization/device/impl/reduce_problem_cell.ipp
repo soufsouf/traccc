@@ -86,6 +86,7 @@ inline void reduce_problem_cell2(
         }
     }
     id_fathers[cid]= min_id;
+    printf(" id_fathers[cid]= %hu \n", id_fathers[cid]);
     __syncthreads();
     do{
         count = false; 
@@ -102,7 +103,7 @@ inline void reduce_problem_cell2(
       id_fathers[adjv[cid]] = new_id;
      printf("hello 2\n");
     }while(__syncthreads_or(count));
-printf("hello \n");
+//printf("hello \n");
 
 }
 
