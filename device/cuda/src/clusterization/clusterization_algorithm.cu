@@ -268,7 +268,7 @@ __global__ void ccl_kernel(
             //printf("hello 2\n");
             }
         }
-    } 
+    
     //printf("hello \n");
     
 __syncthreads();
