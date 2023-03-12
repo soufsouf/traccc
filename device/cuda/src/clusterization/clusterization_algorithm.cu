@@ -62,7 +62,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
      * loop is necessary.
      */
     bool gf_changed;
-    int h = 1;
+   
     do {
         /*
          * Reset the end-parameter to false, so we can set it to true if we

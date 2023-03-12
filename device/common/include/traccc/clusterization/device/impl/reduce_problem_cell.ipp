@@ -86,7 +86,8 @@ inline void reduce_problem_cell2(
         }
     }
     id_fathers[cid]= min_id;
-    if(blockIdx.x == 0)
+    
+    if(blockIdx.x == 1)
     printf(" cid: %u |  id_fathers[cid]= %hu \n",cid, id_fathers[cid]);
     __syncthreads();
     do{
