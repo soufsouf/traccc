@@ -97,7 +97,7 @@ inline void reduce_problem_cell2(
       if(new_id == old_id) count ++;
      __syncthreads();
     }while(count<2);
-printf("hello");
+//printf("hello");
 
 }
 
