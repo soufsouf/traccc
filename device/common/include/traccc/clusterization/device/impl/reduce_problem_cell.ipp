@@ -13,7 +13,7 @@ namespace traccc::device {
  * Check if two cells are considered close enough to be part of the same
  * cluster.
  */
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
                  channel_id bc1) {
     unsigned int p0 = (ac0 - bc0);
@@ -22,7 +22,7 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
     return p0 * p0 <= 1 && p1 * p1 <= 1;
 }
 
-TRACCC_HOST_DEVICE
+TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
