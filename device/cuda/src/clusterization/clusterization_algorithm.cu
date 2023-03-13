@@ -453,7 +453,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         num_measurements_host.get(), num_measurements_device.get(),
         sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
     m_stream.synchronize();
-    printf("num_measurements_host %u " , num_measurements_host);
+    printf("num_measurements_host %u " , *num_measurements_host);
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
 
