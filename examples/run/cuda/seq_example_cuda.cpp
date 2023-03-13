@@ -242,7 +242,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             // Show which event we are currently presenting the results for.
             std::cout << "===>>> Event " << event << " <<<===" << std::endl;
 
-            /// TODO:
+            ///TODO:
             // Compare the spacepoints made on the host and on the device.
              traccc::container_comparator<traccc::geometry_id,
                                          traccc::spacepoint>
@@ -275,7 +275,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             n_seeds += seeds.size();
         }
         /// TODO:
-        /* if (i_cfg.check_performance) {
+         if (i_cfg.check_performance) {
 
             traccc::event_map evt_map(
                 event, i_cfg.detector_file,
@@ -291,12 +291,12 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 spacepoints_per_event,
                                             evt_map);
             }
-        } */
+        } 
     }
 
-    /* if (i_cfg.check_performance) {
+    if (i_cfg.check_performance) {
         sd_performance_writer.finalize();
-    } */
+    } 
 
     std::cout << "==> Statistics ... " << std::endl;
     std::cout << "- read    " << n_spacepoints << " spacepoints from "
