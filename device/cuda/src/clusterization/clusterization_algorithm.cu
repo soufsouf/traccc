@@ -420,6 +420,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
                                      sizeof(unsigned int), stream));
 
+printf("num_cells %u \n " , num_cells);
+
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
