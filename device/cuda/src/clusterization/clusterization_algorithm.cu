@@ -355,8 +355,9 @@ __syncthreads();
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
+    const unsigned int groupPos;
     if (tid == 0) {
-        const unsigned int groupPos  = atomicAdd(&measurement_count, outi);
+         groupPos  = atomicAdd(&measurement_count, outi);
          outi = 0;
     }
 
