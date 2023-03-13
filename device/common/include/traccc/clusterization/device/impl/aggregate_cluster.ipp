@@ -20,13 +20,13 @@ inline void aggregate_cluster(
     const cell_module_collection_types::const_device& modules,
     unsigned short* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
-    spacepoint_collection_types::view spacepoints_view,
+    spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
 
     //const vecmem::device_vector<unsigned short> f(f_view);
     vecmem::device_vector<unsigned int> cell_links_device(cell_links);
- spacepoint_collection_types::device spacepoints_device(spacepoints_view);
+ //spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     /*
      * Now, we iterate over all other cells to check if they belong
      * to our cluster. Note that we can start at the current index
