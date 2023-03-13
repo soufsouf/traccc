@@ -52,7 +52,7 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
-__device__ void fast_sv_1(index_t* f, char* gf,
+__device__ void fast_sv_1(index_t* f, 
                            unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][9],
                            index_t tid,
@@ -286,9 +286,7 @@ __global__ void ccl_kernel(
      */
     extern __shared__ char shared_v[];
     index_t* f = (index_t*)&shared_v[0];
-    char* f_next = &shared_v[2*max_cells_per_partition];
-    char* grandF = &shared_v[3*max_cells_per_partition];
-
+    
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
@@ -298,9 +296,7 @@ __global__ void ccl_kernel(
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[cid] = adjv[tst][8];
-        if (adjv[tst][8] == cid) { f_next[cid] = 0;  }
-        else { f_next[cid] = 1; }
-        grandF[cid] = 0;
+        
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
 
@@ -314,7 +310,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, adjc, adjv ,tid, blckDim);
+    fast_sv_1(f, adjc, adjv ,tid, blckDim);
 
     __syncthreads();
 
