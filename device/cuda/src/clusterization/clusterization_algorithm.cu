@@ -355,7 +355,7 @@ __syncthreads();
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
-    const unsigned int groupPos;
+     unsigned int groupPos;
     if (tid == 0) {
          groupPos  = atomicAdd(&measurement_count, outi);
          outi = 0;
@@ -380,7 +380,7 @@ __syncthreads();
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
-            const unsigned int id = atomicAdd(&outi, 1);
+            unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                 cells_device, modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
