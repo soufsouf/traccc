@@ -19,15 +19,15 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
 }
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
-    const alt_cell_collection_types::const_device& cells,
+    const texture<alt_cell, 1, cudaReadModeElementType>* cells_device,
     const unsigned short cid, const unsigned int start, const unsigned int end,
     unsigned char& adjc, unsigned short adjv[8],unsigned short* id_fathers) {
     const unsigned int pos = cid + start;
     // Check if this code can benefit from changing to structs of arrays, as the
     // recurring accesses to cell data in global memory is slow right now.
-    const channel_id c0 = cells[pos].c.channel0;
-    const channel_id c1 = cells[pos].c.channel1;
-    const unsigned int mod_id = cells[pos].module_link;
+    const channel_id c0 = tex1Dfetch(cells_device, pos).c.channel0;
+    const channel_id c1 = tex1Dfetch(cells_device, pos).c.channel1;
+    const unsigned int mod_id =tex1Dfetch(cells_device, pos).module_link;
     unsigned short min_id = cid;
     /*
      * First, we traverse the cells backwards, starting from the current
@@ -42,14 +42,14 @@ inline void reduce_problem_cell2(
          * This is a small optimisation.
          */
         
-        if (cells[j].c.channel1 + 1 < c1 || cells[j].module_link != mod_id) {
+        if (tex1Dfetch(cells_device, j).c.channel1 + 1 < c1 || tex1Dfetch(cells_device, j).module_link != mod_id) {
             break;
         }
         /*
          * If the cell examined is adjacent to the current cell, save it
          * in the current cell's adjacency set.
          */
-        if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
+        if (is_adjacent(c0, c1, tex1Dfetch(cells_device, j).c.channel0, tex1Dfetch(cells_device, j).c.channel1)) {
             adjv[adjc] = j - start; 
             adjc ++;
             if((j-start)< min_id) min_id = j-start;
@@ -64,10 +64,10 @@ inline void reduce_problem_cell2(
          * Note that this check now looks in the opposite direction! An
          * important difference.
          */
-        if (cells[j].c.channel1 > c1 + 1 || cells[j].module_link != mod_id) {
+        if (tex1Dfetch(cells_device, j).c.channel1 > c1 + 1 || tex1Dfetch(cells_device, j).module_link != mod_id) {
             break;
         }
-        if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
+        if (is_adjacent(c0, c1, tex1Dfetch(cells_device, j).c.channel0, tex1Dfetch(cells_device, j).c.channel1)) {
             adjv[adjc] = j - start; 
             adjc ++;
             if((j-start)< min_id) min_id = j-start;

@@ -16,7 +16,7 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
-    const alt_cell_collection_types::const_device& cells,
+    const texture<alt_cell, 1, cudaReadModeElementType>* cells_device,
     const cell_module_collection_types::const_device& modules,
     unsigned short* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
@@ -35,7 +35,7 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = cells[cid + start].module_link;
+    const auto module_link = tex1Dfetch(cells_device, cid + start).module_link;
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
@@ -50,11 +50,11 @@ inline void aggregate_cluster(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (cells[pos].module_link != module_link) {
+        if (tex1Dfetch(cells_device, pos).module_link != module_link) {
             break;
         }
 
-        const cell this_cell = cells[pos].c;
+        const cell this_cell = tex1Dfetch(cells_device, pos).c;
 
         /*
          * If the value of this cell is equal to our, that means it
