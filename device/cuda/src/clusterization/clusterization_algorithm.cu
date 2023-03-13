@@ -141,7 +141,7 @@ __device__ void fast_sv_1(index_t* f,
    
     //// new CC 
     
-    for (unsigned int i = 0 ; i < 70 ; i++){
+    do {
         
        
         gf_changed = false;
@@ -164,9 +164,8 @@ __device__ void fast_sv_1(index_t* f,
                 }
             }
             
-            if ( gf_changed == false ) break;  
 
-       } 
+       } while (__syncthreads_or(gf_changed));
 
    
 
