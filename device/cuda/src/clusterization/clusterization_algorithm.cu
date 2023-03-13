@@ -268,7 +268,7 @@ __global__ void ccl_kernel(
             //printf("hello 2\n");
             }
         }*/
-        bool gf_changed;
+        bool gf_changed = true;
     while(gf_changed) {
         
         gf_changed = false;
