@@ -140,8 +140,10 @@ __device__ void fast_sv_1(index_t* f,
 
    
     //// new CC 
+    int count =0;
     do {
         
+        count++;
         gf_changed = false;
 
 
@@ -165,7 +167,8 @@ __device__ void fast_sv_1(index_t* f,
 
        } while (__syncthreads_or(gf_changed));
 
-       
+   printf("count %u \n", count ); 
+      
 }
 
 __global__ void ccl_kernel(
@@ -287,7 +290,7 @@ __global__ void ccl_kernel(
     extern __shared__ char shared_v[];
     index_t* f = (index_t*)&shared_v[0];
     
-    
+
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
