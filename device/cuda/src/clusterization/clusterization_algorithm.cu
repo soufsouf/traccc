@@ -250,7 +250,7 @@ bool gf_changed;
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
-       __syncthreads();
+     
         do {
         
         gf_changed = false;

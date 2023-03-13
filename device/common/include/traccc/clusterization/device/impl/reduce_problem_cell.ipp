@@ -74,7 +74,7 @@ inline void reduce_problem_cell2(
         }
     }
     id_fathers[cid]= min_id;
-    
+      __syncthreads();
     // if(blockIdx.x == 60 ||blockIdx.x == 100 || blockIdx.x == 10 )
     //printf(" blockIdx.x : %u | cid: %u |  id_fathers[cid]= %hu \n",blockIdx.x,cid, id_fathers[cid]);
 }
