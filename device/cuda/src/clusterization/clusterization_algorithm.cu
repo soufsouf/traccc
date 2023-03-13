@@ -243,7 +243,8 @@ __global__ void ccl_kernel(
     
 bool gf_changed;
 #pragma unroll
-    for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst * blckDim + tid;
         /*
          * Look for adjacent cells to the current one.
          */
