@@ -271,8 +271,7 @@ bool gf_changed;
             }
         }*/
         
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+   for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
       do {
         
         gf_changed = false;
