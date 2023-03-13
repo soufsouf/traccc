@@ -39,8 +39,7 @@ inline void aggregate_cluster(
     const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::view spacepoints_view,
      vecmem::data::vector_view<unsigned int> cell_links,
-    const unsigned int link,
-    const unsigned int id);
+    const unsigned int link);
 
 }  // namespace traccc::device
 
