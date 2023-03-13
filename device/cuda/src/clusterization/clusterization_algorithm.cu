@@ -268,15 +268,12 @@ __global__ void ccl_kernel(
             //printf("hello 2\n");
             }
         }*/
-        bool gf_changed = true;
-    while(gf_changed) {
+        bool gf_changed;
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst * blckDim + tid;
+      do {
         
         gf_changed = false;
-
-
-        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
-            
               ///the father is the cell that has no small neighbors
 
                // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
@@ -289,13 +286,13 @@ __global__ void ccl_kernel(
                 }
                 
                 }
-            }
-        __syncthreads();
 
-       } 
+       } while (__syncthreads_or(gf_changed));
+    }
+            
     //printf("hello \n");
     
-//__syncthreads();
+__syncthreads();
 //printf(" hello after reduce \n");
     /*
      * These arrays are the meat of the pudding of this algorithm, and we
