@@ -428,7 +428,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     // Counter for number of measurements
     spacepoint_collection_types::buffer spacepoints_buffer(
-        num_cells/2, m_mr.main);
+        num_cells/3, m_mr.main);
    vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
