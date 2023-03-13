@@ -13,7 +13,7 @@
 
 // System include(s).
 #include <cstddef>
-
+#include <cuda_runtime_api.h>
 namespace traccc::device {
 
 /// Function for looking for adjacent cells. The cell ids will range from 0 to

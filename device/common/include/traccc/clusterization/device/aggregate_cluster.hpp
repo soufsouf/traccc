@@ -17,7 +17,7 @@
 #include "traccc/edm/measurement.hpp"
 // System include(s).
 #include <cstddef>
-
+#include <cuda_runtime_api.h>
 namespace traccc::device {
 
 /// Function which looks for cells which share the same "parent" index and

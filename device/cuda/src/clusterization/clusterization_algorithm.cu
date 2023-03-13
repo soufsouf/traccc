@@ -20,7 +20,7 @@
 
 // System include(s).
 #include <algorithm>
-
+#include <cuda_runtime_api.h>
 namespace traccc::cuda {
 
 namespace {
