@@ -140,10 +140,10 @@ __device__ void fast_sv_1(index_t* f,
 
    
     //// new CC 
-    int count =0;
-    do {
+    
+    for (unsigned int i = 0 ; i < 70 ; i++){
         
-        count++;
+       
         gf_changed = false;
 
 
@@ -164,11 +164,12 @@ __device__ void fast_sv_1(index_t* f,
                 }
             }
             
+            if ( gf_changed == false ) break;  
 
-       } while (__syncthreads_or(gf_changed));
+       } 
 
-   printf("count %u \n", count ); 
-      
+   
+
 }
 
 __global__ void ccl_kernel(
