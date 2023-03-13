@@ -147,7 +147,6 @@ __global__ void ccl_kernel(
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     spacepoint_collection_types::view spacepoints_view,
-    unsigned int& measurement_count,
     vecmem::data::vector_view<unsigned int> cell_links) {
 
     const index_t tid = threadIdx.x;
@@ -161,6 +160,7 @@ __global__ void ccl_kernel(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
+    __shared__ unsigned int measurement_count;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
    // index_t* f = &fathers[max_cells_per_partition];
@@ -176,6 +176,7 @@ __global__ void ccl_kernel(
         /*
          * Initialize shared variables.
          */
+        measurement_count = 0;
         start = blockIdx.x * target_cells_per_partition;
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
@@ -429,9 +430,9 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Counter for number of measurements
     spacepoint_collection_types::buffer spacepoints_buffer(
         num_cells/2, m_mr.main);
-   /* vecmem::unique_alloc_ptr<unsigned int> num_spacepoint_device =
+  /* vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
-    CUDA_ERROR_CHECK(cudaMemsetAsync(num_spacepoint_device.get(), 0,
+    CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
                                      sizeof(unsigned int), stream));*/
     
     const unsigned short max_cells_per_partition =
@@ -454,7 +455,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
                       max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
-            *num_measurements_device, cell_links);
+             cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
 
