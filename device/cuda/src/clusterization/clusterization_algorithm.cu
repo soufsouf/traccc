@@ -356,7 +356,8 @@ __syncthreads();
      * amount of threads per block, this has no sever implications.
      */
     if (tid == 0) {
-        outi = atomicAdd(&measurement_count, outi);
+        const unsigned int groupPos  = atomicAdd(&measurement_count, outi);
+         outi = 0;
     }
 
     __syncthreads();
@@ -364,15 +365,11 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-    const unsigned int groupPos = outi;
+   
 
-    __syncthreads();
+    
 
-    if (tid == 0) {
-        outi = 0;
-    }
-
-    __syncthreads();
+   
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
