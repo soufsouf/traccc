@@ -318,20 +318,7 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
-    /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;
-        
-        
-        printf (" f[cid] %u block id %u cid %u \n" , f[cid ] , blockIdx.x, cid); 
-    }*/
-
-
-    /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;
-        
-        
-        printf (" f[cid] %u cid %u \n" , f[cid] , cid); 
-    } */
+    
 
 
     
@@ -466,7 +453,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         num_measurements_host.get(), num_measurements_device.get(),
         sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
     m_stream.synchronize();
-
+    printf("num_measurements_host %u " , num_measurements_host);
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
 
