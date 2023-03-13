@@ -269,7 +269,7 @@ __global__ void ccl_kernel(
             }
         }*/
         bool gf_changed;
-    do {
+    while(gf_changed) {
         
         gf_changed = false;
 
@@ -290,9 +290,9 @@ __global__ void ccl_kernel(
                 
                 }
             }
-            
+        __syncthreads();
 
-       } while (__syncthreads_or(gf_changed));
+       } 
     //printf("hello \n");
     
 __syncthreads();
