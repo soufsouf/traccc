@@ -22,7 +22,8 @@ inline void aggregate_cluster(
     const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::view spacepoints_view,
      vecmem::data::vector_view<unsigned int> cell_links,
-    const unsigned int link) {
+    const unsigned int link,
+    const unsigned int id) {
 
     //const vecmem::device_vector<unsigned short> f(f_view);
     vecmem::device_vector<unsigned int> cell_links_device(cell_links);
@@ -112,7 +113,7 @@ inline void aggregate_cluster(
     point3 global = this_module.placement.point_to_global(local_3d);
 
     // Fill the result object with this spacepoint
-    spacepoints_device[globalIndex] = {global, {mean, var, 0}};
+    spacepoints_device[id] = {global, {mean, var, 0}};
 }
 
 }  // namespace traccc::device
