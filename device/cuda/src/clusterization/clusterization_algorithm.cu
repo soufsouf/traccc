@@ -250,26 +250,10 @@ bool gf_changed;
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
-     
-        do {
-        
-        gf_changed = false;
-              ///the father is the cell that has no small neighbors
-
-               // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
-
-                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                if (id_fathers[cid] > id_fathers[adjv[tst][i]]) 
-                {
-                    id_fathers[cid] = id_fathers[adjv[tst][i]];
-                    gf_changed = true; 
-                }
-                
-                }
-
-       } while (__syncthreads_or(gf_changed));
-    }
     
+       
+    }
+       __syncthreads();
 
         /*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
             for(int k = 0 ; k< 10;k++){
@@ -286,7 +270,7 @@ bool gf_changed;
             if(count > 3) break;
             //printf("hello 2\n");
             }
-        }
+        }*/
         
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
@@ -307,7 +291,7 @@ bool gf_changed;
                 }
 
        } while (__syncthreads_or(gf_changed));
-    }*/
+    }
             
     //printf("hello \n");
     
