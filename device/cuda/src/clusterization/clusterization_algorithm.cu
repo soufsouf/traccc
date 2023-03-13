@@ -243,18 +243,17 @@ __global__ void ccl_kernel(
     
 bool gf_changed;
 #pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+    for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         /*
          * Look for adjacent cells to the current one.
          */
         device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
-    
+      
        
     }
-       __syncthreads();
-
+    
+ __syncthreads();
         /*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
             for(int k = 0 ; k< 10;k++){
             old_id = id_fathers[cid];
