@@ -355,10 +355,8 @@ __syncthreads();
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
-     unsigned int groupPos;
     if (tid == 0) {
-         groupPos  = atomicAdd(&measurement_count, outi);
-         outi = 0;
+        outi = atomicAdd(&measurement_count, outi);
     }
 
     __syncthreads();
@@ -366,11 +364,15 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-   
+    const unsigned int groupPos = outi;
 
-    
+    __syncthreads();
 
-   
+    if (tid == 0) {
+        outi = 0;
+    }
+
+    __syncthreads();
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
@@ -380,7 +382,7 @@ __syncthreads();
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
-            unsigned int id = atomicAdd(&outi, 1);
+            const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                 cells_device, modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
