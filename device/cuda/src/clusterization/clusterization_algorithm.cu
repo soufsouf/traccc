@@ -154,6 +154,7 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
+    spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
@@ -219,8 +220,8 @@ __global__ void ccl_kernel(
     const cell_module_collection_types::const_device modules_device(
         modules_view);
 
-    alt_measurement_collection_types::device measurements_device(
-        measurements_view);
+   /** alt_measurement_collection_types::device measurements_device(
+        measurements_view);*/
 
     // Vector of indices of the adjacent cells
     index_t adjv[MAX_CELLS_PER_THREAD][8];
@@ -384,7 +385,7 @@ __syncthreads();
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                 cells_device, modules_device, id_fathers, start, end, cid,
-                measurements_device[groupPos + id], cell_links, groupPos + id);
+                spacepoints_device[groupPos + id], cell_links, groupPos + id);
         }
     }
 }
