@@ -11,7 +11,10 @@
 #include "traccc/definitions/qualifiers.hpp"
 #include "traccc/edm/alt_cell.hpp"
 #include "traccc/edm/alt_measurement.hpp"
-
+#include "traccc/edm/spacepoint.hpp"
+#include "traccc/device/fill_prefix_sum.hpp"
+#include "traccc/edm/cell.hpp"
+#include "traccc/edm/measurement.hpp"
 // System include(s).
 #include <cstddef>
 
@@ -34,7 +37,8 @@ inline void aggregate_cluster(
     const cell_module_collection_types::const_device& modules,
      unsigned short* f,
     const unsigned int start, const unsigned int end, const unsigned short cid,
-    alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
+    spacepoint_collection_types::view spacepoints_view,
+     vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link);
 
 }  // namespace traccc::device
