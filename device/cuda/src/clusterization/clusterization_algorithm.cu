@@ -287,6 +287,7 @@ __global__ void ccl_kernel(
     extern __shared__ char shared_v[];
     index_t* f = (index_t*)&shared_v[0];
     
+    
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
