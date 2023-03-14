@@ -160,7 +160,7 @@ __global__ void ccl_kernel(
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi , count;
+    __shared__ unsigned int outi ;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
    // index_t* f = &fathers[max_cells_per_partition];
@@ -180,7 +180,7 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-        count =0;
+        
 
         /*
          * Next, shift the starting point to a position further in the array;
@@ -289,7 +289,7 @@ bool gf_changed;
                 }
                 
                 }
-          if(gf_changed == false && id_fathers[cid]==cid) { atomicAdd(&count, 1);}
+          
        } 
     }while (__syncthreads_or(gf_changed));
     
@@ -347,7 +347,7 @@ __syncthreads();
     }
 
     __syncthreads();
-    printf(" outi: %u | count : %u \n", outi,count);
+   
     /*
      * Add the number of clusters of each thread block to the total
      * number of clusters. At the same time, a cluster id is retrieved
