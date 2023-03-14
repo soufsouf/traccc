@@ -20,7 +20,7 @@
 
 // System include(s).
 #include <algorithm>
-#include <cuda_runtime_api.h>
+
 namespace traccc::cuda {
 
 namespace {
@@ -52,11 +52,97 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
+__device__ void fast_sv_1(index_t* f, index_t* gf,
+                          unsigned char adjc[MAX_CELLS_PER_THREAD],
+                          index_t adjv[MAX_CELLS_PER_THREAD][8], index_t tid,
+                          const index_t blckDim) {
+    /*
+     * The algorithm finishes if an iteration leaves the arrays unchanged.
+     * This varible will be set if a change is made, and dictates if another
+     * loop is necessary.
+     */
+    bool gf_changed;
+   
+    do {
+        /*
+         * Reset the end-parameter to false, so we can set it to true if we
+         * make a change to the gf array.
+         */
+        gf_changed = false;
 
+        /*
+         * The algorithm executes in a loop of three distinct parallel
+         * stages. In this first one, a mix of stochastic and aggressive
+         * hooking, we examine adjacent cells and copy their grand parents
+         * cluster ID if it is lower than ours, essentially merging the two
+         * together.
+         */
+        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst * blckDim + tid;
+
+            __builtin_assume(adjc[tst] <= 8);
+            for (unsigned char k = 0; k < adjc[tst]; ++k) {
+                index_t q = gf[adjv[tst][k]];
+
+                if (gf[cid] > q) {
+                    f[f[cid]] = q;
+                    f[cid] = q;
+                }
+            }
+           
+             
+        }
+        
+        
+        /*
+         * Each stage in this algorithm must be preceded by a
+         * synchronization barrier!
+         */
+        __syncthreads();
+
+#pragma unroll
+        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst * blckDim + tid;
+            /*
+             * The second stage is shortcutting, which is an optimisation that
+             * allows us to look at any shortcuts in the cluster IDs that we
+             * can merge without adjacency information.
+             */
+            if (f[cid] > gf[cid]) {
+                f[cid] = gf[cid];
+            }
+        }
+
+        /*
+         * Synchronize before the final stage.
+         */
+        __syncthreads();
+
+#pragma unroll
+        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst * blckDim + tid;
+            /*
+             * Update the array for the next generation, keeping track of any
+             * changes we make.
+             */
+            if (gf[cid] != f[f[cid]]) {
+                gf[cid] = f[f[cid]];
+                gf_changed = true;
+            }
+        }
+
+        /*
+         * To determine whether we need another iteration, we use block
+         * voting mechanics. Each thread checks if it has made any changes
+         * to the arrays, and votes. If any thread votes true, all threads
+         * will return a true value and go to the next iteration. Only if
+         * all threads return false will the loop exit.
+         */
+    } while (__syncthreads_or(gf_changed));
+}
 
 __global__ void ccl_kernel(
-    const traccc::alt_cell* cells_device,
-    const size_t num_cells;
+    const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
@@ -67,17 +153,25 @@ __global__ void ccl_kernel(
     const index_t tid = threadIdx.x;
     const index_t blckDim = blockDim.x;
 
-    //const alt_cell_collection_types::const_device cells_device(cells_view);
+    const alt_cell_collection_types::const_device cells_device(cells_view);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
-    //const unsigned int num_cells = cells_device.size();
+    const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi, count;
+    __shared__ unsigned int outi , count;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
-  
+   // index_t* f = &fathers[max_cells_per_partition];
+    //index_t* f_next = &fathers[2*max_cells_per_partition];
+    /*
+     * First, we determine the exact range of cells that is to be examined by
+     * this block of threads. We start from an initial range determined by the
+     * block index multiplied by the target number of cells per block. We then
+     * shift both the start and the end of the block forward (to a later point
+     * in the array); start and end may be moved different amounts.
+     */
     if (tid == 0) {
         /*
          * Initialize shared variables.
@@ -86,23 +180,31 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-        count = 0;
-    
-        
+        count =0;
+
+        /*
+         * Next, shift the starting point to a position further in the array;
+         * the purpose of this is to ensure that we are not operating on any
+         * cells that have been claimed by the previous block (if any).
+         */
         while (start != 0 &&
-               tex1Dfetch(cells_device, start - 1).c.module_link ==
-                   tex1Dfetch(cells_device, start).c.module_link &&
-               tex1Dfetch(cells_device, start).c.channel1 <=
-                   tex1Dfetch(cells_device, start-1).c.channel1 + 1) {
+               cells_device[start - 1].module_link ==
+                   cells_device[start].module_link &&
+               cells_device[start].c.channel1 <=
+                   cells_device[start - 1].c.channel1 + 1) {
             ++start;
         }
 
-        
+        /*
+         * Then, claim as many cells as we need past the naive end of the
+         * current block to ensure that we do not end our partition on a cell
+         * that is not a possible boundary!
+         */
         while (end < num_cells &&
-               tex1Dfetch(cells_device, end - 1).c.module_link ==
-                    tex1Dfetch(cells_device, end).c.module_link &&
-               tex1Dfetch(cells_device, end).c.channel1 <=
-                   tex1Dfetch(cells_device, end - 1).c.channel1 + 1) {
+               cells_device[end - 1].module_link ==
+                   cells_device[end].module_link &&
+               cells_device[end].c.channel1 <=
+                   cells_device[end - 1].c.channel1 + 1) {
             ++end;
         }
     }
@@ -187,8 +289,7 @@ bool gf_changed;
                 }
                 
                 }
-                if( gf_changed == false && id_fathers[cid] == cid){ atomicAdd(&count, 1);}
-        
+          if(gf_changed == false && id_fathers[cid]==cid) { atomicAdd(&count, 1);}
        } 
     }while (__syncthreads_or(gf_changed));
     
@@ -239,13 +340,14 @@ __syncthreads();
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+       // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
         if (id_fathers[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
 
     __syncthreads();
-    printf(" outi: %u | count: %u \n",outi, count );
+    printf(" outi: %u | count : %u \n", outi,count);
     /*
      * Add the number of clusters of each thread block to the total
      * number of clusters. At the same time, a cluster id is retrieved
@@ -254,8 +356,10 @@ __syncthreads();
      * previously. However, since each thread block spawns a the maximum
      * amount of threads per block, this has no sever implications.
      */
+     unsigned int groupPos;
     if (tid == 0) {
-        outi = atomicAdd(&measurement_count, outi);
+         groupPos  = atomicAdd(&measurement_count, outi);
+         outi = 0;
     }
 
     __syncthreads();
@@ -263,25 +367,21 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-    const unsigned int groupPos = outi;
+   
 
-    __syncthreads();
+    
 
-    if (tid == 0) {
-        outi = 0;
-    }
-
-    __syncthreads();
+   
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (id_fathers[cid] == cid){
+        if (id_fathers[cid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
-            const unsigned int id = atomicAdd(&outi, 1);
+            unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                 cells_device, modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
@@ -313,27 +413,14 @@ clusterization_algorithm::clusterization_algorithm(
 clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const alt_cell_collection_types::const_view& cells,
     const cell_module_collection_types::const_view& modules) const {
-    
-   
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
     // Number of cells
-    /*texture<traccc::alt_cell, 1, cudaReadModeElementType> tex;
-tex.normalized = false;
-tex.filterMode = cudaFilterModePoint;
-tex.addressMode[0] = cudaAddressModeClamp;
-const int num_elements = vec.size();*/
-
-
     const alt_cell_collection_types::view::size_type num_cells =
         m_copy.get_size(cells);
-    const texture<const traccc::alt_cell, 1, cudaReadModeElementType> Cells_texture;
-    const traccc::alt_cell* cuArray;
-    cudaMallocArray(&cuArray,num_cells * sizeof(traccc::alt_cell) );
-    cudaMemcpyToArray(cuArray, cells, num_cells * sizeof(traccc::alt_cell), cudaMemcpyHostToDevice);
-    cudaBindTexture(NULL,Cells_texture, cuArray,  num_cells * sizeof(traccc::alt_cell));
+
     // Create result object for the CCL kernel with size overestimation
    /** alt_measurement_collection_types::buffer measurements_buffer(num_cells,
                                                                  m_mr.main);*/
@@ -364,7 +451,7 @@ const int num_elements = vec.size();*/
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                       max_cells_per_partition * sizeof(index_t), stream>>>(
-            Cells_texture, num_cells, modules, max_cells_per_partition,
+            cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
             *num_measurements_device, cell_links);
 
