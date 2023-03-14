@@ -11,7 +11,8 @@
 #include <vecmem/memory/device_atomic_ref.hpp>
 
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
-#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
+#include <texture_fetch_functions.h>
 namespace traccc::device {
 
 TRACCC_HOST_DEVICE
