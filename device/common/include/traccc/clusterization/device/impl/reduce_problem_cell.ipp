@@ -34,6 +34,7 @@ inline void reduce_problem_cell2(
      * along the way.
      */
     adjc =0;
+    #pragma unroll
     for (unsigned short j = cid - 1; j < cid ; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
@@ -59,6 +60,7 @@ inline void reduce_problem_cell2(
      * Now we examine all the cells past the current one, using almost
      * the same logic as in the backwards pass.
      */
+    #pragma unroll
     for (unsigned int j = cid + 1; j + start < end; ++j) {
         /*
          * Note that this check now looks in the opposite direction! An
