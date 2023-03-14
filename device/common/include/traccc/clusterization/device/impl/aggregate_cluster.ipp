@@ -57,11 +57,6 @@ inline void aggregate_cluster(
         const channel_id c1 = id_fathers[j].channel1;
         const scalar activation = id_fathers[j].activation;
 
-        /*
-         * If the value of this cell is equal to our, that means it
-         * is part of our cluster. In that case, we take its values
-         * for position and add them to our accumulators.
-         */
         if (id_fathers[j].id_cluster == cid) {
 
             if (c1 > maxChannel1) {

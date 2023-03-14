@@ -221,23 +221,20 @@ __global__ void ccl_kernel(
         modules_view);
 
   
-    index_t adjv[MAX_CELLS_PER_THREAD][8];
+    index_t adjv[MAX_CELLS_PER_THREAD*8];
    
     unsigned char adjc[MAX_CELLS_PER_THREAD];
 
 #pragma unroll
      for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        adjc[tst] = 0;
+        //adjc[tst] = 0;
         id_fathers[cid].channel0 = cells_device[cid+start].c.channel0;
         id_fathers[cid].channel1 = cells_device[cid+start].c.channel1;
         id_fathers[cid].activation = cells_device[cid+start].c.activation;
          id_fathers[cid].module_link = cells_device[cid+start].module_link;
 
     }
-   /* #pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        adjc[tst] = 0;
-    }*/
+   
     __syncthreads();
 
     //unsigned short old_id,new_id;
@@ -249,7 +246,7 @@ bool gf_changed;
          * Look for adjacent cells to the current one.
          */
         device::reduce_problem_cell2(cid, start, end, adjc[tst],
-                                    adjv[tst],id_fathers);
+                                    adjv[tst * MAX_CELLS_PER_THREAD],id_fathers);
       
        
     }
