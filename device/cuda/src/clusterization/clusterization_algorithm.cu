@@ -74,7 +74,7 @@ __global__ void ccl_kernel(
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi;
+    __shared__ unsigned int outi, count;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
   
@@ -86,7 +86,7 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-
+        count = 0;
     
         
         while (start != 0 &&
@@ -187,7 +187,8 @@ bool gf_changed;
                 }
                 
                 }
-
+                if( gf_changed == false && id_fathers[cid] == cid){ atomicAdd(&count, 1);}
+        
        } 
     }while (__syncthreads_or(gf_changed));
     
@@ -238,14 +239,13 @@ __syncthreads();
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-       // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
         if (id_fathers[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
 
     __syncthreads();
-
+    printf(" outi: %u | count: %u \n",outi, count );
     /*
      * Add the number of clusters of each thread block to the total
      * number of clusters. At the same time, a cluster id is retrieved
@@ -276,7 +276,7 @@ __syncthreads();
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (id_fathers[cid] == cid) {
+        if (id_fathers[cid] == cid){
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.

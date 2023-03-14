@@ -17,8 +17,7 @@
 #include "traccc/edm/measurement.hpp"
 // System include(s).
 #include <cstddef>
-#include <cuda_runtime.h>
-#include <texture_fetch_functions.h>
+
 namespace traccc::device {
 
 /// Function which looks for cells which share the same "parent" index and
@@ -34,7 +33,7 @@ namespace traccc::device {
 /// @param[out] out     cluster to fill
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
-    const traccc::alt_cell* cells_device,
+    const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
      unsigned short* f,
     const unsigned int start, const unsigned int end, const unsigned short cid,
