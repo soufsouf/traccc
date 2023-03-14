@@ -150,7 +150,7 @@ __device__ void fast_sv_1(index_t* f,
             const index_t cid = tst * blckDim + tid;
             
             
-
+                #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                 if (f[cid] > f[adjv[tst][i]]) 
                 {
@@ -438,7 +438,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                      2 * max_cells_per_partition * sizeof(index_t) , stream>>>(
+                       max_cells_per_partition * sizeof(index_t) , stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
