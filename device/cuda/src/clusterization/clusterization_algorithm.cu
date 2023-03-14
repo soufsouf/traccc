@@ -258,11 +258,11 @@ bool gf_changed;
               ///the father is the cell that has no small neighbors
               for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; tst ++) {
                // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
-
+                  const unsigned short dep = tst * MAX_CELLS_PER_THREAD;
                 for (index_t i = 0; i < adjc[tst]; i ++){    // neighbors communication
-                if (id_fathers[cid].id_cluster > id_fathers[adjv[tst][i]].id_cluster) 
+                if (id_fathers[cid].id_cluster > id_fathers[adjv[dep + i]].id_cluster) 
                 {
-                    id_fathers[cid].id_cluster = id_fathers[adjv[tst][i]].id_cluster;
+                    id_fathers[cid].id_cluster = id_fathers[adjv[dep + i]].id_cluster;
                     gf_changed = true; 
                 }
                 
