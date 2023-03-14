@@ -33,7 +33,7 @@ inline void reduce_problem_cell2(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
-    for (unsigned int j = cid - 1; j < cid ; --j) {
+    for (unsigned short j = cid - 1; j < cid ; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
          * sufficiently far away in both directions, it becomes
