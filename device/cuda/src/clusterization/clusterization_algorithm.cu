@@ -329,8 +329,8 @@ const int num_elements = vec.size();
 
     const alt_cell_collection_types::view::size_type num_cells =
         m_copy.get_size(cells);
-    const texture<traccc::alt_cell, 1, cudaReadModeElementType> Cells_texture;
-    traccc::alt_cell* cuArray;
+    const texture<const traccc::alt_cell, 1, cudaReadModeElementType> Cells_texture;
+    const traccc::alt_cell* cuArray;
     cudaMallocArray(&cuArray, &Cells_texture.channelDesc, num_cells, 1);
     cudaMemcpyToArray(cuArray, 0, 0, cells, num_cells * sizeof(traccc::alt_cell), cudaMemcpyHostToDevice);
     cudaBindTextureToArray(Cells_texture, cuArray, Cells_texture.channelDesc);
