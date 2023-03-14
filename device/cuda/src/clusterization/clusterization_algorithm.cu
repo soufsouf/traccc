@@ -234,10 +234,10 @@ __global__ void ccl_kernel(
          id_fathers[cid].module_link = cells_device[cid+start].module_link;
 
     }
-    #pragma unroll
+   /* #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
-    }
+    }*/
     __syncthreads();
 
     //unsigned short old_id,new_id;
@@ -248,7 +248,7 @@ bool gf_changed;
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
+        device::reduce_problem_cell2(cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
       
        
@@ -311,7 +311,7 @@ __syncthreads();
         if (id_fathers[cid].id_cluster == cid) {
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, id_fathers, start, end, cid,
+                 modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
         }
     }
