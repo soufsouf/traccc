@@ -55,7 +55,7 @@ namespace kernels {
 
 
 __global__ void ccl_kernel(
-    const texture<traccc::alt_cell, 1, cudaAddressModeWrap>* cells_device,
+    const texture<traccc::alt_cell, 1, cudaReadModeElementType>* cells_device,
     const size_t num_cells;
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
@@ -329,7 +329,7 @@ const int num_elements = vec.size();*/
 
     const alt_cell_collection_types::view::size_type num_cells =
         m_copy.get_size(cells);
-    const texture<const traccc::alt_cell, 1, cudaAddressModeWrap> Cells_texture;
+    const texture<const traccc::alt_cell, 1, cudaReadModeElementType> Cells_texture;
     const traccc::alt_cell* cuArray;
     cudaMallocArray(&cuArray, &Cells_texture.channelDesc, num_cells, 1);
     cudaMemcpyToArray(cuArray, 0, 0, cells, num_cells * sizeof(traccc::alt_cell), cudaMemcpyHostToDevice);
