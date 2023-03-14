@@ -246,7 +246,7 @@ bool gf_changed;
          * Look for adjacent cells to the current one.
          */ 
         index_t* adjv_part = &adjv[tst * MAX_CELLS_PER_THREAD];
-        device::reduce_problem_cell2(cid, start, end, adjc[tst],adjv_part, dep,id_fathers);
+        device::reduce_problem_cell2(cid, start, end, adjc[tst],adjv_part,id_fathers);
       
        
     }
