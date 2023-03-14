@@ -49,7 +49,8 @@ inline void reduce_problem_cell2(
          * in the current cell's adjacency set.
          */
         if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
-            adjv_part[adjc ++] = j ; 
+            adjv_part[adjc] = j ; 
+            adjc ++;
             if((j-start)< min_id) min_id = j;
         }
     }
@@ -66,7 +67,8 @@ inline void reduce_problem_cell2(
             break;
         }
         if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
-            adjv_part[adjc ++] = j; 
+            adjv_part[adjc] = j; 
+            adjc ++;
             if((j)< min_id) min_id = j;
         }
     }
