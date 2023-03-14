@@ -16,7 +16,7 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
-    const texture<traccc::alt_cell, 1, cudaReadModeElementType>& cells_device,
+    const texture<traccc::alt_cell, 1, cudaReadModeElementType>* cells_device,
     const cell_module_collection_types::const_device& modules,
     unsigned short* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
@@ -36,7 +36,7 @@ inline void aggregate_cluster(
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
     //const traccc::alt_cell s =tex1Dfetch(cells_device, cid + start);
-    const auto module_link = tex1Dfetch(cells_device, cid + start).module_link;
+    const auto module_link = tex1Dfetch(&cells_device, cid + start).module_link;
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
