@@ -244,9 +244,8 @@ bool gf_changed;
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         /*
          * Look for adjacent cells to the current one.
-         */
-        device::reduce_problem_cell2(cid, start, end, adjc[tst],
-                                    adjv[tst * MAX_CELLS_PER_THREAD],id_fathers);
+         */ const unsigned short dep = tst * MAX_CELLS_PER_THREAD;
+        device::reduce_problem_cell2(cid, start, end, adjc[tst],adjv, dep,id_fathers);
       
        
     }
