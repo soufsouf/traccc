@@ -36,7 +36,7 @@ inline void aggregate_cluster(
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
     //const traccc::alt_cell s =tex1Dfetch(cells_device, cid + start);
-    const auto module_link = tex1Dfetch(&cells_device, cid + start).module_link;
+    const auto module_link = tex1Dfetch(cells_device, cid + start).module_link;
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
