@@ -32,7 +32,7 @@ TRACCC_DEVICE
 
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short& adjv[],unsigned short id_v,cluster* id_fathers);
+    unsigned char& adjc, unsigned short* adjv_part,cluster* id_fathers);
 
 }  // namespace traccc::device
 

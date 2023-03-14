@@ -20,7 +20,7 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short& adjv[], unsigned short id_v,cluster* id_fathers) {
+    unsigned char& adjc, unsigned short* adjv_part, cluster* id_fathers) {
     //const unsigned int pos = cid + start;
     // Check if this code can benefit from changing to structs of arrays, as the
     // recurring accesses to cell data in global memory is slow right now.
@@ -49,8 +49,7 @@ inline void reduce_problem_cell2(
          * in the current cell's adjacency set.
          */
         if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
-            adjv[id_v + adjc] = j ; 
-            adjc ++;
+            adjv_part[adjc ++] = j ; 
             if((j-start)< min_id) min_id = j;
         }
     }
@@ -67,8 +66,7 @@ inline void reduce_problem_cell2(
             break;
         }
         if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
-            adjv[id_v + adjc] = j; 
-            adjc ++;
+            adjv_part[adjc ++] = j; 
             if((j)< min_id) min_id = j;
         }
     }
