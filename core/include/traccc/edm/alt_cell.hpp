@@ -29,6 +29,7 @@ struct cluster{
     channel_id channel0 = 0;
     channel_id channel1 = 0;
     scalar activation = 0.;
+    using link_type = cell_module_collection_types::view::size_type;
     link_type module_link;
 };
 
