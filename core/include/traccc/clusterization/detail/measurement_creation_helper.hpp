@@ -30,7 +30,12 @@ inline vector2 position_from_cell(const cell& c, const cell_module& module) {
     return {module.pixel.min_center_x + c.channel0 * module.pixel.pitch_x,
             module.pixel.min_center_y + c.channel1 * module.pixel.pitch_y};
 }
-
+TRACCC_HOST_DEVICE
+inline vector2 position_from_cell(const unsigned int c0,const unsigned int c1, const cell_module& module) {
+    // Retrieve the specific values based on module idx
+    return {module.pixel.min_center_x + c0 * module.pixel.pitch_x,
+            module.pixel.min_center_y + c1 * module.pixel.pitch_y};
+}
 /// Function used for calculating the properties of the cluster during
 /// measurement creation
 ///
