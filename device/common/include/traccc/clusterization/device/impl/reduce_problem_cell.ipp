@@ -33,6 +33,7 @@ inline void reduce_problem_cell2(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
+    adjc =0;
     for (unsigned short j = cid - 1; j < cid ; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
