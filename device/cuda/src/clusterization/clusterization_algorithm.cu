@@ -234,6 +234,10 @@ __global__ void ccl_kernel(
          id_fathers[cid].module_link = cells_device[cid+start].module_link;
 
     }
+    #pragma unroll
+    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+        adjc[tst] = 0;
+    }
     __syncthreads();
 
     //unsigned short old_id,new_id;
