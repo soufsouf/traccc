@@ -160,7 +160,7 @@ __global__ void ccl_kernel(
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi ;
+    __shared__ unsigned int outi;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
    // index_t* f = &fathers[max_cells_per_partition];
@@ -180,7 +180,6 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-        
 
         /*
          * Next, shift the starting point to a position further in the array;
@@ -221,18 +220,9 @@ __global__ void ccl_kernel(
     const cell_module_collection_types::const_device modules_device(
         modules_view);
 
-   /** alt_measurement_collection_types::device measurements_device(
-        measurements_view);*/
-
-    // Vector of indices of the adjacent cells
+  
     index_t adjv[MAX_CELLS_PER_THREAD][8];
-    /*
-     * The number of adjacent cells for each cell must start at zero, to
-     * avoid uninitialized memory. adjv does not need to be zeroed, as
-     * we will only access those values if adjc indicates that the value
-     * is set.
-     */
-    // Number of adjacent cells
+   
     unsigned char adjc[MAX_CELLS_PER_THREAD];
 
 #pragma unroll
@@ -256,23 +246,6 @@ bool gf_changed;
     }
     
  __syncthreads();
-        /*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-            for(int k = 0 ; k< 10;k++){
-            old_id = id_fathers[cid];
-            count = 0;
-            for(unsigned char i = 0; i< adjc[tst]; i ++) {
-                if(id_fathers[adjv[tst][i]] < old_id) {
-                    new_id = id_fathers[adjv[tst][i]];
-                } 
-                else if(new_id == old_id)  count ++; 
-            }
-            id_fathers[cid] = new_id;
-
-            if(count > 3) break;
-            //printf("hello 2\n");
-            }
-        }*/
-        
    
       do {
         
@@ -289,7 +262,7 @@ bool gf_changed;
                 }
                 
                 }
-          
+
        } 
     }while (__syncthreads_or(gf_changed));
     
@@ -297,48 +270,7 @@ bool gf_changed;
     //printf("hello \n");
     
 __syncthreads();
-//printf(" hello after reduce \n");
-    /*
-     * These arrays are the meat of the pudding of this algorithm, and we
-     * will constantly be writing and reading from them which is why we
-     * declare them to be in the fast shared memory. Note that this places a
-     * limit on the maximum contiguous activations per module, as the amount of
-     * shared memory is limited. These could always be moved to global memory,
-     * but the algorithm would be decidedly slower in that case.
-     */
-    
-    
-/**
-#pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;*/
-        /*
-         * At the start, the values of f and f_next should be equal to the
-         * ID of the cell.
-         */
-        /*f[cid] = cid;
-        f_next[cid] = cid;
-    }
-*/
-    /*
-     * Now that the data has initialized, we synchronize again before we
-     * move onto the actual processing part.
-     */
-  //  __syncthreads();
 
-    /*
-     * Run FastSV algorithm, which will update the father index to that of the
-     * cell belonging to the same cluster with the lowest index.
-     */
-  //  fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
-
-  //  __syncthreads();
-    
-
-    /*
-     * Count the number of clusters by checking how many cells have
-     * themself assigned as a parent.
-     */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
         if (id_fathers[cid] == cid) {
@@ -347,41 +279,28 @@ __syncthreads();
     }
 
     __syncthreads();
-   
-    /*
-     * Add the number of clusters of each thread block to the total
-     * number of clusters. At the same time, a cluster id is retrieved
-     * for the next data processing step.
-     * Note that this might be not the same cluster as has been treated
-     * previously. However, since each thread block spawns a the maximum
-     * amount of threads per block, this has no sever implications.
-     */
-     unsigned int groupPos;
+
     if (tid == 0) {
-         groupPos  = atomicAdd(&measurement_count, outi);
-         outi = 0;
+        outi = atomicAdd(&measurement_count, outi);
     }
 
     __syncthreads();
 
-    /*
-     * Get the position to fill the measurements found in this thread group.
-     */
-   
+    const unsigned int groupPos = outi;
 
-    
+    __syncthreads();
 
-   
+    if (tid == 0) {
+        outi = 0;
+    }
 
-   // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
+    __syncthreads();
+
+ 
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (id_fathers[cid] == cid) {
-            /*
-             * If we are a cluster owner, atomically claim a position in the
-             * output array which we can write to.
-             */
-            unsigned int id = atomicAdd(&outi, 1);
+            const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                 cells_device, modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
