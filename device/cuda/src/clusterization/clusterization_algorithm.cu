@@ -145,7 +145,7 @@ __device__ void fast_sv_1(index_t* f,
        
         gf_changed = false;
 
-
+        #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
