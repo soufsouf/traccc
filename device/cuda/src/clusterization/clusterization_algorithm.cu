@@ -55,7 +55,7 @@ namespace kernels {
 
 
 __global__ void ccl_kernel(
-    const texture<traccc::alt_cell, 1, cudaReadModeElementType>* cells_device,
+    const texture<traccc::alt_cell, 1, cudaAddressModeWrap>* cells_device,
     const size_t num_cells;
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
