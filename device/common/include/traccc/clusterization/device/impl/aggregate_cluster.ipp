@@ -83,10 +83,7 @@ inline void aggregate_cluster(
             cell_links_device.at(pos) = link;
         }
 
-        /*
-         * Terminate the process earlier if we have reached a cell sufficiently
-         * far away from the cluster in the dominant axis.
-         */
+        
         if (c1 > maxChannel1 + 1) {
             break;
         }
