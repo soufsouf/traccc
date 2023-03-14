@@ -139,8 +139,7 @@ __device__ void fast_sv_1(index_t* f,
    // } while (__syncthreads_or(gf_changed)); 
 
    
-    //// new CC 
-    
+    //// new CC : help us to reduce shared memory usage 
     do {
         
        
@@ -150,9 +149,7 @@ __device__ void fast_sv_1(index_t* f,
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
             
-              ///the father is the cell that has no small neighbors
-
-               // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
+            
 
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                 if (f[cid] > f[adjv[tst][i]]) 
@@ -420,7 +417,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
                                      sizeof(unsigned int), stream));
 
-printf("num_cells %u \n " , num_cells);
+//printf("num_cells %u \n " , num_cells);
 
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
@@ -441,7 +438,7 @@ printf("num_cells %u \n " , num_cells);
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                      max_cells_per_partition * sizeof(index_t) , stream>>>(
+                      2 * max_cells_per_partition * sizeof(index_t) , stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
@@ -455,7 +452,7 @@ printf("num_cells %u \n " , num_cells);
         num_measurements_host.get(), num_measurements_device.get(),
         sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
     m_stream.synchronize();
-    printf("num_measurements_host %u " , *num_measurements_host);
+    //printf("num_measurements_host %u " , *num_measurements_host);
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
 
