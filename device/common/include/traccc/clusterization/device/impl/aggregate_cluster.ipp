@@ -16,7 +16,7 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
-    const texture<traccc::alt_cell, 1, cudaReadModeElementType> cells_device,
+    const texture<traccc::alt_cell, 1, cudaReadModeElementType>& cells_device,
     const cell_module_collection_types::const_device& modules,
     unsigned short* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
