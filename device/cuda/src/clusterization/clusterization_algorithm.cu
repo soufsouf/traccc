@@ -27,7 +27,7 @@ namespace {
 /// These indices in clusterization will only range from 0 to
 /// max_cells_per_partition, so we only need a short.
 using index_t = unsigned short;
-
+using link_type = cell_module_collection_types::view::size_type;
 static constexpr int TARGET_CELLS_PER_THREAD = 8;
 static constexpr int MAX_CELLS_PER_THREAD = 12;
 }  // namespace
@@ -375,7 +375,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
-    using link_type = cell_module_collection_types::view::size_type;
+    //using link_type = cell_module_collection_types::view::size_type;
 
     // Create buffer for linking cells to their spacepoints.
     vecmem::data::vector_buffer<unsigned int> cell_links(num_cells, m_mr.main);
