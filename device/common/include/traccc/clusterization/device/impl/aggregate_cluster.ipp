@@ -36,8 +36,8 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = module_link[cid];
-    const cell_module this_module = modules.at(module_link);
+    const auto mod_link = module_link[cid];
+    const cell_module this_module = modules.at(mod_link);
     const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
@@ -51,7 +51,7 @@ inline void aggregate_cluster(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (module_link[cid] != module_link) {
+        if (module_link[cid] != mod_link) {
             break;
         }
 
