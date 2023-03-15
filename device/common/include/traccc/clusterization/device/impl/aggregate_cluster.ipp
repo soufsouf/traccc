@@ -13,11 +13,13 @@
 #include "traccc/clusterization/detail/measurement_creation_helper.hpp"
 
 namespace traccc::device {
+using link_type = cell_module_collection_types::view::size_type;
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const cell_module_collection_types::const_device& modules,
-    cluster* id_fathers,
+    channel_id* channel0,
+    channel_id* channel1,link_type* module_link,unsigned short* id_clusters,scalar* activation,
     const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
@@ -34,7 +36,7 @@ inline void aggregate_cluster(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = id_fathers[cid].module_link;
+    const auto module_link = module_link[cid];
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
@@ -49,25 +51,25 @@ inline void aggregate_cluster(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (id_fathers[cid].module_link != module_link) {
+        if (module_link[cid] != module_link) {
             break;
         }
 
-        const channel_id c0 = id_fathers[j].channel0;
-        const channel_id c1 = id_fathers[j].channel1;
-        const scalar activation = id_fathers[j].activation;
+        const channel_id c0 = channel0[j];
+        const channel_id c1 = channel1[j];
+        const scalar Activation = activation[j];
 
-        if (id_fathers[j].id_cluster == cid) {
+        if (id_clusters[j] == cid) {
 
             if (c1 > maxChannel1) {
                 maxChannel1 = c1;
             }
 
             const float weight = traccc::detail::signal_cell_modelling(
-                activation, this_module);
+                Activation, this_module);
 
             if (weight > this_module.threshold) {
-                totalWeight += activation;
+                totalWeight += Activation;
                 const point2 cell_position =
                     traccc::detail::position_from_cell(c0,c1, this_module);
                 const point2 prev = mean;

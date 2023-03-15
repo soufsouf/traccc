@@ -27,12 +27,15 @@ namespace traccc::device {
 /// @param[out] ajc     Number of adjacent cells
 /// @param[out] ajv     Indices of adjacent cells
 ///
+using link_type = cell_module_collection_types::view::size_type;
+
 TRACCC_DEVICE
 
 
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short* adjv_part,cluster* id_fathers);
+    unsigned char& adjc, unsigned short* adjv_part, channel_id* channel0,
+    channel_id* channel1,link_type* module_link,unsigned short* id_clusters);
 
 }  // namespace traccc::device
 

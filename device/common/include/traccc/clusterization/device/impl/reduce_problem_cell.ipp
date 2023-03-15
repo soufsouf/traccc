@@ -20,13 +20,15 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short* adjv_part, cluster* id_fathers) {
+    unsigned char& adjc, unsigned short* adjv_part, 
+    channel_id* channel0,channel_id* channel1,link_type* module_link,unsigned short* id_clusters) {
     //const unsigned int pos = cid + start;
+
     // Check if this code can benefit from changing to structs of arrays, as the
     // recurring accesses to cell data in global memory is slow right now.
-    const channel_id c0 = id_fathers[cid].channel0;
-    const channel_id c1 = id_fathers[cid].channel1;
-    const unsigned int mod_id = id_fathers[cid].module_link;
+    const channel_id c0 = channel0[cid];
+    const channel_id c1 = channel1[cid];
+    const unsigned int mod_id = module_link[cid];
     unsigned short min_id = cid;
     /*
      * First, we traverse the cells backwards, starting from the current
@@ -43,14 +45,14 @@ inline void reduce_problem_cell2(
          * This is a small optimisation.
          */
         
-        if (id_fathers[j].channel1 + 1 < c1 || id_fathers[j].module_link != mod_id) {
+        if (channel1[j] + 1 < c1 || module_link[j] != mod_id) {
             break;
         }
         /*
          * If the cell examined is adjacent to the current cell, save it
          * in the current cell's adjacency set.
          */
-        if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
+        if (is_adjacent(c0, c1, channel0[j], channel1[j])) {
             adjv_part[adjc] = j ; 
             adjc ++;
             if((j-start)< min_id) min_id = j;
@@ -66,16 +68,16 @@ inline void reduce_problem_cell2(
          * Note that this check now looks in the opposite direction! An
          * important difference.
          */
-        if (id_fathers[j].channel1 > c1 + 1 || id_fathers[j].module_link != mod_id) {
+        if (channel1[j] > c1 + 1 || module_link[j] != mod_id) {
             break;
         }
-        if (is_adjacent(c0, c1, id_fathers[j].channel0, id_fathers[j].channel1)) {
+        if (is_adjacent(c0, c1, channel0[j], channel1[j])) {
             adjv_part[adjc] = j; 
             adjc ++;
             if((j)< min_id) min_id = j;
         }
     }
-    id_fathers[cid].id_cluster= min_id;
+    id_clusters[cid]= min_id;
     
     // if(blockIdx.x == 60 ||blockIdx.x == 100 || blockIdx.x == 10 )
     //printf(" blockIdx.x : %u | cid: %u |  id_fathers[cid]= %hu \n",blockIdx.x,cid, id_fathers[cid]);

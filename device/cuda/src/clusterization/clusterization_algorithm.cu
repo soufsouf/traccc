@@ -161,8 +161,15 @@ __global__ void ccl_kernel(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
-    extern __shared__ cluster fathers[];
-    cluster* id_fathers = &fathers[0];
+    extern __shared__ char fathers[];
+    channel_id* channel0 = (channel_id*)&fathers[0];
+    size_t size_ch = (sizeof(channel_id)/sizeof(char))*max_cells_per_partition;
+    channel_id* channel1 = (channel_id*)&fathers[size_ch];
+    scalar* activation = (scalar*)&fathers[2*size_ch];
+    size_t size_scalar= 2*size_ch + (sizeof(scalar)/sizeof(char))*max_cells_per_partition;
+    unsigned short* id_clusters = ( unsigned short*)&fathers[size_scalar];
+    size_t size_mod= size_scalar+ (sizeof(unsigned short)/sizeof(char))*max_cells_per_partition;
+    link_type* module_link = (link_type*)&fathers[size_mod];
    // index_t* f = &fathers[max_cells_per_partition];
     //index_t* f_next = &fathers[2*max_cells_per_partition];
     /*
@@ -228,10 +235,10 @@ __global__ void ccl_kernel(
 #pragma unroll
      for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
-        id_fathers[cid].channel0 = cells_device[cid+start].c.channel0;
-        id_fathers[cid].channel1 = cells_device[cid+start].c.channel1;
-        id_fathers[cid].activation = cells_device[cid+start].c.activation;
-         id_fathers[cid].module_link = cells_device[cid+start].module_link;
+        channel0[cid] = cells_device[cid+start].c.channel0;
+        channel1[cid] = cells_device[cid+start].c.channel1;
+        activation[cid] = cells_device[cid+start].c.activation;
+        module_link[cid] = cells_device[cid+start].module_link;
 
     }
    
@@ -246,7 +253,7 @@ bool gf_changed;
          * Look for adjacent cells to the current one.
          */ 
         index_t* adjv_part = &adjv[tst * 8];
-        device::reduce_problem_cell2(cid, start, end, adjc[tst],adjv_part,id_fathers);
+        device::reduce_problem_cell2(cid, start, end, adjc[tst],adjv_part, channel0,channel1,module_link,id_clusters);
       
        
     }
@@ -261,9 +268,9 @@ bool gf_changed;
                // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
                   index_t* adjv_part = &adjv[tst * 8];
                 for (index_t i = 0; i < adjc[tst]; i ++){    // neighbors communication
-                if (id_fathers[cid].id_cluster > id_fathers[adjv_part[i]].id_cluster) 
+                if (id_clusters[cid] > id_clusters[adjv_part[i]]) 
                 {
-                    id_fathers[cid].id_cluster = id_fathers[adjv_part[i]].id_cluster;
+                    id_clusters[cid] = id_clusters[adjv_part[i]];
                     gf_changed = true; 
                 }
                 
@@ -279,7 +286,7 @@ __syncthreads();
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
-        if (id_fathers[cid].id_cluster == cid) {
+        if (id_clusters[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
@@ -305,10 +312,10 @@ __syncthreads();
  
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (id_fathers[cid].id_cluster == cid) {
+        if (id_clusters[cid] == cid) {
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                 modules_device, id_fathers, start, end, cid,
+                 modules_device, channel0,channel1,module_link,id_clusters,activation, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
         }
     }
@@ -368,14 +375,16 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const unsigned int num_partitions =
         (num_cells + m_target_cells_per_partition - 1) /
         m_target_cells_per_partition;
+    using link_type = cell_module_collection_types::view::size_type;
 
     // Create buffer for linking cells to their spacepoints.
     vecmem::data::vector_buffer<unsigned int> cell_links(num_cells, m_mr.main);
-
+size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
+                max_cells_per_partition * sizeof(scalar) + max_cells_per_partition * sizeof(unsigned short)
+                 + max_cells_per_partition * sizeof(link_type);
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
-        ccl_kernel<<<num_partitions, threads_per_partition,
-                      max_cells_per_partition * sizeof(traccc::cluster), stream>>>(
+        ccl_kernel<<<num_partitions, threads_per_partition,size, stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
             *num_measurements_device, cell_links);
