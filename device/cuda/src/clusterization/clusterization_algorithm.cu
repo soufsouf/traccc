@@ -144,6 +144,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
 __global__ void ccl_kernel(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
+    const traccc::CellsView cellsSoA,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     spacepoint_collection_types::view spacepoints_view,
@@ -154,6 +155,7 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
+    const alt_cell_collection_types::const_device cellsSoA_device(cellsSoA);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
@@ -342,10 +344,13 @@ clusterization_algorithm::clusterization_algorithm(
       m_stream(str),
       m_target_cells_per_partition(target_cells_per_partition) {}
 
-clusterization_algorithm::output_type clusterization_algorithm::operator()(
-    const alt_cell_collection_types::const_view& cells,
-    const cell_module_collection_types::const_view& modules) const {
 
+
+
+clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
+    const alt_cell_collection_types::const_view& cells,
+    const cell_module_collection_types::const_view& modules,
+    const traccc::CellsView& cellsSoA) const {
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
@@ -385,7 +390,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,size, stream>>>(
-            cells, modules, max_cells_per_partition,
+            cells, modules, cellsSoA,max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
             *num_measurements_device, cell_links);
 
