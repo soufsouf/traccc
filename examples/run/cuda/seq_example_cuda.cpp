@@ -145,7 +145,9 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::cuda::stream stream;
     vecmem::cuda::copy copy;
     vecmem::cuda::async_copy async_copy{stream.cudaStream()};
-    traccc::cuda::clusterization_algorithm2 ca_cuda(
+    traccc::cuda::clusterization_algorithm ca_cuda(
+        mr, async_copy, stream, common_opts.target_cells_per_partition);
+        traccc::cuda::clusterization_algorithm2 ca_cuda2(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
     traccc::cuda::seeding_algorithm sa_cuda(mr);
     traccc::cuda::track_params_estimation tp_cuda(mr);
@@ -163,7 +165,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         // Instantiate host containers/collections
         traccc::cell_container_types::host cells_per_event;
         traccc::alt_cell_reader_output_t alt_read_out_per_event;
-        traccc::clusterization_algorithm2::output_type measurements_per_event;
+        traccc::clusterization_algorithm::output_type measurements_per_event;
         traccc::spacepoint_formation::output_type spacepoints_per_event;
         traccc::seeding_algorithm::output_type seeds;
         traccc::track_params_estimation::output_type params;
@@ -213,7 +215,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
                 spacepoints_cuda_buffer =
-                    ca_cuda(cells_buffer, modules_buffer).first;
+                    ca_cuda2(cells_buffer, modules_buffer).first;
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
             if (run_cpu) {
