@@ -148,7 +148,7 @@ __global__ void ccl_kernel(
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     spacepoint_collection_types::view spacepoints_view,
-    vecmem::data::vector_view<unsigned int> measurement_c,
+    unsigned int& measurement_count,
     vecmem::data::vector_view<unsigned int> cell_links) {
 
     const index_t tid = threadIdx.x;
@@ -157,7 +157,7 @@ __global__ void ccl_kernel(
     const alt_cell_collection_types::const_device cells_device(cells_view);
     const traccc::CellsRefDevice cellsSoA_device(cellsSoA);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
-    vecmem::device_vector<unsigned int> measurement_count(measurement_c);
+    //vecmem::device_vector<unsigned int> measurement_count(measurement_c);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
@@ -366,9 +366,9 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     // Counter for number of measurements
     spacepoint_collection_types::buffer spacepoints_buffer(
         0.3*num_cells, m_mr.main);
-    vecmem::data::vector_buffer<unsigned int> num_measurements_buffer(1, m_mr.main);
-   /*vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
-        vecmem::make_unique_alloc<unsigned int>(m_mr.main);*/
+   // vecmem::data::vector_buffer<unsigned int> num_measurements_buffer(1, m_mr.main);
+   vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
+        vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
                                      sizeof(unsigned int), stream));
     
@@ -394,7 +394,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
         ccl_kernel<<<num_partitions, threads_per_partition,size, stream>>>(
             cells, modules, cellsSoA,max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
-            num_measurements_buffer, cell_links);
+            num_measurements_device, cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
 
@@ -424,7 +424,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
     CUDA_ERROR_CHECK(cudaGetLastError());*/
     m_stream.synchronize();
 
-    return {std::move(spacepoints_buffer), std::move(num_measurements_buffer)};
+    return {std::move(spacepoints_buffer), std::move(cell_links)};
 }
 
 }  // namespace traccc::cuda
