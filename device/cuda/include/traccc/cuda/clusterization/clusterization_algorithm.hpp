@@ -30,8 +30,8 @@ namespace traccc::cuda {
 /// algorithm, but also a pretty bad algorithm for a GPU.
 ///
 class clusterization_algorithm
-    : public algorithm<std::pair<spacepoint_collection_types::buffer,
-                                 vecmem::data::vector_buffer<unsigned int>>(
+    : public algorithm<std::tuple<spacepoint_collection_types::buffer,
+                                 vecmem::data::vector_buffer<unsigned int>,unsigned int>(
           const alt_cell_collection_types::const_view&,
           const cell_module_collection_types::const_view&)> {
 
