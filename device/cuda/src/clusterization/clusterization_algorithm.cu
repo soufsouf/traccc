@@ -294,14 +294,12 @@ bool gf_changed;
     __syncthreads();
 
     if (tid == 0) {
-        outi = atomicAdd(&measurement_count, outi);
+        count = atomicAdd(&measurement_count, outi);
     }
 
     __syncthreads();
 
-    const unsigned int groupPos = outi;
-
-    __syncthreads();
+   
 
    
 
@@ -310,7 +308,7 @@ bool gf_changed;
             const unsigned int id = atomicAdd(&count, 1);
             device::aggregate_cluster(
                  modules_device, channel0,channel1,module_link,id_clusters,activation, start, end, cid,
-                spacepoints_device, cell_links, groupPos + id);
+                spacepoints_device, cell_links, id);
         }
     }
 }
