@@ -238,7 +238,7 @@ __global__ void ccl_kernel(
 #pragma unroll
      for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
-        channel0[cid] = cellsSoA.channel0[cid+start];
+        channel0[cid] = cellsSoA_device.channel0[cid+start];
         channel1[cid] = cells_device[cid+start].c.channel1;
         activation[cid] = cells_device[cid+start].c.activation;
         module_link[cid] = cells_device[cid+start].module_link;
