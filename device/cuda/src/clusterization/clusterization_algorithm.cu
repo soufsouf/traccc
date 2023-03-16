@@ -144,6 +144,7 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
 __global__ void ccl_kernel(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
+    const traccc::CellsView cellsSoA,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     spacepoint_collection_types::view spacepoints_view,
@@ -154,13 +155,14 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
+    const alt_cell_collection_types::const_device cellsSoA_device(cellsSoA);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi , count;
+    __shared__ unsigned int outi;
     extern __shared__ char fathers[];
     channel_id* channel0 = (channel_id*)&fathers[0];
     size_t size_ch = (sizeof(channel_id)/sizeof(char))*max_cells_per_partition;
@@ -187,7 +189,7 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-        count = 0;
+
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
@@ -282,7 +284,7 @@ bool gf_changed;
             
     //printf("hello \n");
     
-//__syncthreads();
+__syncthreads();
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
@@ -294,21 +296,29 @@ bool gf_changed;
     __syncthreads();
 
     if (tid == 0) {
-        count = atomicAdd(&measurement_count, outi);
+        outi = atomicAdd(&measurement_count, outi);
     }
 
     __syncthreads();
 
-   
+    const unsigned int groupPos = outi;
 
-   
+    __syncthreads();
+
+    if (tid == 0) {
+        outi = 0;
+    }
+
+    __syncthreads();
+
+ 
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (id_clusters[cid] == cid) {
-            const unsigned int id = atomicAdd(&count, 1);
+            const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
                  modules_device, channel0,channel1,module_link,id_clusters,activation, start, end, cid,
-                spacepoints_device, cell_links, id);
+                spacepoints_device, cell_links, groupPos + id);
         }
     }
 }
@@ -334,10 +344,13 @@ clusterization_algorithm::clusterization_algorithm(
       m_stream(str),
       m_target_cells_per_partition(target_cells_per_partition) {}
 
-clusterization_algorithm::output_type clusterization_algorithm::operator()(
-    const alt_cell_collection_types::const_view& cells,
-    const cell_module_collection_types::const_view& modules) const {
 
+
+
+clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
+    const alt_cell_collection_types::const_view& cells,
+    const cell_module_collection_types::const_view& modules,
+    const traccc::CellsView& cellsSoA) const {
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
@@ -377,7 +390,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,size, stream>>>(
-            cells, modules, max_cells_per_partition,
+            cells, modules, cellsSoA,max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
             *num_measurements_device, cell_links);
 
@@ -409,7 +422,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
     CUDA_ERROR_CHECK(cudaGetLastError());*/
     m_stream.synchronize();
 
-    return {std::move(spacepoints_buffer), std::move(cell_links),num_measurements_device};
+    return {std::move(spacepoints_buffer), std::move(cell_links)};
 }
 
 }  // namespace traccc::cuda
