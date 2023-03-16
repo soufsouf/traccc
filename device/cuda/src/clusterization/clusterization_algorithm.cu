@@ -282,7 +282,7 @@ bool gf_changed;
             
     //printf("hello \n");
     
-__syncthreads();
+//__syncthreads();
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
