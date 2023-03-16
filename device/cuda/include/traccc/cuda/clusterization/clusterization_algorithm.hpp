@@ -104,7 +104,7 @@ struct CellsRefDevice {
     scalar_collection_types::device time;
     uint_collection_types::device   module_link;
     CellsRefDevice() = delete;
-TRACCC_HOST_DEVICE
+
     CellsRefDevice(const traccc::CellsView &c)
     : channel0{c.channel0},
       channel1(c.channel1),
