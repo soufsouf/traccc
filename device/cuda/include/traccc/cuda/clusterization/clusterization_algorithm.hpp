@@ -16,6 +16,11 @@
 #include "traccc/edm/spacepoint.hpp"
 #include "traccc/utils/algorithm.hpp"
 #include "traccc/utils/memory_resource.hpp"
+#include <vecmem/memory/cuda/device_memory_resource.hpp>
+#include <vecmem/memory/cuda/host_memory_resource.hpp>
+#include <vecmem/memory/host_memory_resource.hpp>
+#include <vecmem/utils/cuda/async_copy.hpp>
+#include <vecmem/utils/cuda/copy.hpp>
 
 // VecMem include(s).
 #include <vecmem/utils/copy.hpp>
