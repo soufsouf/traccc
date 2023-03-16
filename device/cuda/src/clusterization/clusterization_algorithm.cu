@@ -700,6 +700,6 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());
     m_stream.synchronize();
 
-    return {std::move(spacepoints_buffer)};
+    return {std::move(spacepoints_buffer), std::move(cell_links)};
 }
 }  // namespace traccc::cuda
