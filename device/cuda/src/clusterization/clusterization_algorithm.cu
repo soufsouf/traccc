@@ -297,7 +297,7 @@ __syncthreads();
     __syncthreads();
 
     if (tid == 0) {
-        outi = atomicAdd(&measurement_count[0], outi);
+        outi = atomicAdd(&measurement_count, outi);
     }
 
     __syncthreads();
@@ -394,7 +394,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
         ccl_kernel<<<num_partitions, threads_per_partition,size, stream>>>(
             cells, modules, cellsSoA,max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_buffer,
-            num_measurements_device, cell_links);
+            *num_measurements_device, cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
 
