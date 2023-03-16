@@ -38,7 +38,7 @@
 #include <iostream>
 
 using namespace traccc ;
-namespace traccc {
+/*amespace traccc {
 using scalar = TRACCC_CUSTOM_SCALARTYPE;
 using uint_collection_types = collection_types<unsigned int>;
 using scalar_collection_types = collection_types<scalar>;
@@ -111,7 +111,7 @@ struct CellsView {
     }
 };
 
-}
+}*/
 
 
 namespace po = boost::program_options;
