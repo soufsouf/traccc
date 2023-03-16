@@ -97,6 +97,7 @@ struct CellsView {
         size = c.size;
     }
 };
+
 struct CellsRefDevice {
     uint_collection_types::device   channel0;
     uint_collection_types::device   channel1;
@@ -104,7 +105,7 @@ struct CellsRefDevice {
     scalar_collection_types::device time;
     uint_collection_types::device   module_link;
     CellsRefDevice() = delete;
-
+TRACCC_DEVICE
     CellsRefDevice(const traccc::CellsView &c)
     : channel0{c.channel0},
       channel1(c.channel1),
