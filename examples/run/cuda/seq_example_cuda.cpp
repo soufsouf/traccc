@@ -209,12 +209,15 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
+            traccc::CellsBuffer SOA_buffer;
+            SOA_buffer.SetSize(alt_read_out_per_event.cellsSoA.size(), mr.main,copy);
+            SOA_buffer.CopyToDevice(alt_read_out_per_event.cellsSoA,copy);
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
                 spacepoints_cuda_buffer =
-                    ca_cuda(cells_buffer, modules_buffer).first;
+                    ca_cuda(cells_buffer, modules_buffer,SOA_buffer).first;
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
             if (run_cpu) {
