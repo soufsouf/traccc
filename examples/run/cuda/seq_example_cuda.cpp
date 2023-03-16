@@ -163,7 +163,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         // Instantiate host containers/collections
         traccc::cell_container_types::host cells_per_event;
         traccc::alt_cell_reader_output_t alt_read_out_per_event;
-        traccc::clusterization_algorithm::output_type measurements_per_event;
+        traccc::clusterization_algorithm2::output_type measurements_per_event;
         traccc::spacepoint_formation::output_type spacepoints_per_event;
         traccc::seeding_algorithm::output_type seeds;
         traccc::track_params_estimation::output_type params;
