@@ -31,7 +31,7 @@ namespace traccc::cuda {
 ///
 class clusterization_algorithm
     : public algorithm<std::tuple<spacepoint_collection_types::buffer,
-                                 vecmem::data::vector_buffer<unsigned int>,unsigned int>(
+                                 vecmem::data::vector_buffer<unsigned int>,vecmem::unique_alloc_ptr<unsigned int>>(
           const alt_cell_collection_types::const_view&,
           const cell_module_collection_types::const_view&)> {
 
