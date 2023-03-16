@@ -32,9 +32,16 @@ namespace traccc::device {
 /// @param[in] cid      current cell id
 /// @param[out] out     cluster to fill
 using link_type = cell_module_collection_types::view::size_type;
-
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
+    const alt_cell_collection_types::const_device& cells,
+    const cell_module_collection_types::const_device& modules,
+    const vecmem::data::vector_view<unsigned short> f_view,
+    const unsigned int start, const unsigned int end, const unsigned short cid,
+    alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
+    const unsigned int link);
+TRACCC_HOST_DEVICE
+inline void aggregate_cluster2(
     const cell_module_collection_types::const_device& modules,
    channel_id* channel0,
     channel_id* channel1,link_type* module_link,unsigned short* id_clusters,scalar* activation,

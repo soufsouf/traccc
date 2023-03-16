@@ -317,7 +317,7 @@ __syncthreads();
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (id_clusters[cid] == cid) {
             const unsigned int id = atomicAdd(&outi, 1);
-            device::aggregate_cluster(
+            device::aggregate_cluster2(
                  modules_device, channel0,channel1,module_link,id_clusters,activation, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
         }
