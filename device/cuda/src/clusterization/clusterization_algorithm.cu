@@ -155,7 +155,7 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
-    const alt_cell_collection_types::const_device cellsSoA_device(cellsSoA);
+    const traccc::CellsRefDevice cellsSoA_device(cellsSoA);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     vecmem::device_vector<unsigned int> measurement_count(measurement_c);
     const unsigned int num_cells = cells_device.size();
@@ -238,7 +238,7 @@ __global__ void ccl_kernel(
 #pragma unroll
      for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
-        channel0[cid] = cells_device[cid+start].c.channel0;
+        channel0[cid] = cellsSoA.channel0[cid+start];
         channel1[cid] = cells_device[cid+start].c.channel1;
         activation[cid] = cells_device[cid+start].c.activation;
         module_link[cid] = cells_device[cid+start].module_link;
