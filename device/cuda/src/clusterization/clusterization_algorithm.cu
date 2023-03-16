@@ -236,7 +236,7 @@ __global__ void ccl_kernel(
     unsigned char adjc[MAX_CELLS_PER_THREAD];
 
 #pragma unroll
-     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+     for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
         channel0[cid] = cellsSoA.channel0[cid+start];
         channel1[cid] = cells_device[cid+start].c.channel1;
