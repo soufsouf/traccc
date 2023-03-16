@@ -6,9 +6,9 @@
  */
 
 // Local include(s).
-#include "traccc/io/read_cells_alt.hpp"
+#include "traccc/io/csv/read_cells_alt.hpp"
 
-#include "traccc/io/make_cell_reader.hpp"
+#include "traccc/io/csv/make_cell_reader.hpp"
 
 // System include(s).
 #include <algorithm>
