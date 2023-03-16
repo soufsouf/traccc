@@ -6,7 +6,7 @@
  */
 
 // Local include(s).
-#include "csv/read_cells_alt.hpp"
+#include "traccc/csv/read_cells_alt.hpp"
 
 #include "csv/make_cell_reader.hpp"
 
