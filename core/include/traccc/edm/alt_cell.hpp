@@ -12,7 +12,7 @@
 #include "traccc/edm/cell.hpp"
 #include "traccc/edm/container.hpp"
 // VecMem include(s).
-#include <vecmem/memory/cuda/device_memory_resource.hpp>
+#include "vecmem/memory/cuda/device_memory_resource.hpp"
 #include <vecmem/memory/cuda/host_memory_resource.hpp>
 #include <vecmem/memory/host_memory_resource.hpp>
 #include <vecmem/utils/cuda/copy.hpp>
