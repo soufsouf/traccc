@@ -167,7 +167,7 @@ class clusterization_algorithm
 
 class clusterization_algorithm2
     : public algorithm<std::pair<spacepoint_collection_types::buffer,
-                                 vecmem::data::vector_buffer<unsigned int>>>(
+                                 vecmem::data::vector_buffer<unsigned int>>(
           const alt_cell_collection_types::const_view&,
           const cell_module_collection_types::const_view&,
           const traccc::CellsView&)> {
