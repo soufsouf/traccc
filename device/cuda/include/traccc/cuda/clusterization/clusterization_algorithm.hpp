@@ -102,7 +102,7 @@ struct CellsRefDevice {
     uint_collection_types::device   channel1;
     scalar_collection_types::device activation;
     scalar_collection_types::device time;
-    uint_collection_types::device   module_id;
+    uint_collection_types::device   module_link;
     CellsRefDevice() = delete;
 TRACCC_HOST_DEVICE
     CellsRefDevice(const traccc::CellsView &c)
@@ -110,7 +110,7 @@ TRACCC_HOST_DEVICE
       channel1(c.channel1),
       activation(c.activation),
       time(c.time),
-      module_id(c.module_id) {}
+      module_link(c.module_link) {}
 };
 }
 
