@@ -160,7 +160,7 @@ __global__ void ccl_kernel(
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi;
+    __shared__ unsigned int outi , count;
     extern __shared__ char fathers[];
     channel_id* channel0 = (channel_id*)&fathers[0];
     size_t size_ch = (sizeof(channel_id)/sizeof(char))*max_cells_per_partition;
@@ -187,7 +187,7 @@ __global__ void ccl_kernel(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-
+        count = 0;
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
@@ -303,17 +303,11 @@ bool gf_changed;
 
     __syncthreads();
 
-    if (tid == 0) {
-        outi = 0;
-    }
-
-    __syncthreads();
-
- 
+   
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         if (id_clusters[cid] == cid) {
-            const unsigned int id = atomicAdd(&outi, 1);
+            const unsigned int id = atomicAdd(&count, 1);
             device::aggregate_cluster(
                  modules_device, channel0,channel1,module_link,id_clusters,activation, start, end, cid,
                 spacepoints_device, cell_links, groupPos + id);
