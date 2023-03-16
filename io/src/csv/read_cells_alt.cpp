@@ -6,7 +6,7 @@
  */
 
 // Local include(s).
-#include "traccc/io/read_cells_alt.hpp"
+#include "read_cells_alt.hpp"
 
 #include "make_cell_reader.hpp"
 
@@ -162,18 +162,8 @@ alt_cell_reader_output_t read_cells_alt(std::string_view filename,
                   result_cells.begin() + cellCounts[i], comp);
     }
 
-    CellsHost cellsSoA;
-    cellsSoA.SetSize(totalCells, mr);
-    for (int i=0; i < totalCells; ++i) {
-        cellsSoA.channel0[i]    = result_cells[i].c.channel0;
-        cellsSoA.channel1[i]    = result_cells[i].c.channel1;
-        cellsSoA.activation[i]  = result_cells[i].c.activation;
-        cellsSoA.time[i]        = result_cells[i].c.time;
-        cellsSoA.module_link[i] = result_cells[i].module_link;
-    }
-
     // Return the two collections.
-    return {result_cells, result_modules, cellsSoA};
+    return {result_cells, result_modules};
 }
 
 }  // namespace traccc::io::csv

@@ -77,7 +77,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     vecmem::cuda::copy copy;
     vecmem::cuda::async_copy async_copy{stream.cudaStream()};
 
-    traccc::cuda::clusterization_algorithm2 ca_cuda(
+    traccc::cuda::clusterization_algorithm ca_cuda(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
     traccc::cuda::seeding_algorithm sa_cuda(mr);
     traccc::cuda::track_params_estimation tp_cuda(mr);
@@ -103,8 +103,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         traccc::spacepoint_formation::output_type spacepoints_per_event;
         traccc::seeding_algorithm::output_type seeds;
         traccc::track_params_estimation::output_type params;
-        // Cells Buffer
-        traccc::CellsBuffer cellsSoA;
 
         // Instantiate cuda containers/collections
         traccc::spacepoint_collection_types::buffer spacepoints_cuda_buffer(
@@ -152,17 +150,13 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
-            // copy Cells SoA from Host to Buffer
-            cellsSoA.SetSize(alt_read_out_per_event.cellsSoA.size,
-                             mr.main, copy);
-            cellsSoA.CopyToDevice(alt_read_out_per_event.cellsSoA, copy);
 
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
                 spacepoints_cuda_buffer =
-                    ca_cuda(cells_buffer, modules_buffer, cellsSoA).first;
+                    ca_cuda(cells_buffer, modules_buffer).first;
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 
