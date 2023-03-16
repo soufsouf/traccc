@@ -211,7 +211,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
             traccc::CellsBuffer SOA_buffer;
-            SOA_buffer.SetSize(CellsSoA_per_event.size(), mr.main,copy);
+            SOA_buffer.SetSize(CellsSoA_per_event.size, mr.main,copy);
             SOA_buffer.CopyToDevice(CellsSoA_per_event,copy);
             {
                 traccc::performance::timer t("Clusterization (cuda)",
