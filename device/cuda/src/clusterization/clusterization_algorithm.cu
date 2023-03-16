@@ -409,7 +409,7 @@ size_t size = 2*max_cells_per_partition * sizeof(unsigned int) +
     CUDA_ERROR_CHECK(cudaGetLastError());*/
     m_stream.synchronize();
 
-    return {std::move(spacepoints_buffer), std::move(cell_links),num_measurements_device};
+    return {std::move(spacepoints_buffer), std::move(cell_links),*num_measurements_device};
 }
 
 }  // namespace traccc::cuda
