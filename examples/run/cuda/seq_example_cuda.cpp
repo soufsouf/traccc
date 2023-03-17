@@ -175,6 +175,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                                                                     *mr.host);
         traccc::bound_track_parameters_collection_types::buffer
             params_cuda_buffer(0, *mr.host);
+            traccc::CellsBuffer SOA_buffer;
         {
             traccc::performance::timer wall_t("Wall time", elapsedTimes);
             if (run_cpu) {
@@ -210,7 +211,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
-            traccc::CellsBuffer SOA_buffer;
+            
             SOA_buffer.SetSize(CellsSoA_per_event.size, mr.main,copy);
             SOA_buffer.CopyToDevice(CellsSoA_per_event,copy);
             {
