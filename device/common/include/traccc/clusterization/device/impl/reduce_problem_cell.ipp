@@ -10,8 +10,15 @@ namespace traccc::device {
  * Check if two cells are considered close enough to be part of the same
  * cluster.
  */
-TRACCC_DEVICE
+TRACCC_HOST_DEVICE
 bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
+                 channel_id bc1) {
+    unsigned int p0 = (ac0 - bc0);
+    unsigned int p1 = (ac1 - bc1);
+    return p0 * p0 <= 1 && p1 * p1 <= 1;
+}
+TRACCC_DEVICE
+bool is_adjacent2(channel_id ac0, channel_id ac1, channel_id bc0,
                  channel_id bc1) {
     unsigned int p0 = (ac0 - bc0);
     unsigned int p1 = (ac1 - bc1);
@@ -113,7 +120,7 @@ inline void reduce_problem_cell3(
          * If the cell examined is adjacent to the current cell, save it
          * in the current cell's adjacency set.
          */
-        if (is_adjacent(c0, c1, cellsSoA_device.channel0[j], cellsSoA_device.channel1[j])) {
+        if (is_adjacent2(c0, c1, cellsSoA_device.channel0[j], cellsSoA_device.channel1[j])) {
             adjv[adjc++] = j - start;
         }
     }
@@ -131,7 +138,7 @@ inline void reduce_problem_cell3(
             break;
         }
 
-        if (is_adjacent(c0, c1, cellsSoA_device.channel0[j] , cellsSoA_device.channel1[j] )) {
+        if (is_adjacent2(c0, c1, cellsSoA_device.channel0[j] , cellsSoA_device.channel1[j] )) {
             adjv[adjc++] = j - start;
         }
     }
@@ -171,7 +178,7 @@ inline void reduce_problem_cell2(
          * If the cell examined is adjacent to the current cell, save it
          * in the current cell's adjacency set.
          */
-        if (is_adjacent(c0, c1, channel0[j], channel1[j])) {
+        if (is_adjacent2(c0, c1, channel0[j], channel1[j])) {
             adjv_part[adjc] = j ; 
             adjc ++;
             if((j-start)< min_id) min_id = j;
@@ -190,7 +197,7 @@ inline void reduce_problem_cell2(
         if (channel1[j] > c1 + 1 || module_link[j] != mod_id) {
             break;
         }
-        if (is_adjacent(c0, c1, channel0[j], channel1[j])) {
+        if (is_adjacent2(c0, c1, channel0[j], channel1[j])) {
             adjv_part[adjc] = j; 
             adjc ++;
             if((j)< min_id) min_id = j;
