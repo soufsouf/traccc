@@ -629,7 +629,7 @@ __global__ void ccl_kernel3(
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell(cells_device, cellsSoA_device, cid, start, end, adjc[tst],
+        device::reduce_problem_cell3(cells_device, cellsSoA_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
 
@@ -718,7 +718,7 @@ __global__ void ccl_kernel3(
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
-            device::aggregate_cluster(
+            device::aggregate_cluster3(
                 cells_device, modules_device, cellsSoA_device, f_view, start, end, cid,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
