@@ -277,12 +277,12 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
-for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+/*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         
         
         printf (" block id %u cid %u \n" ,  blockIdx.x, cid); 
-    }
+    }*/
 
 
     /*
@@ -293,6 +293,7 @@ for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         if (f[cid] == cid) {
             atomicAdd(&outi, 1);
         }
+        printf("f[cid] %u \n ", f[cid] );
     }
 
     __syncthreads();
