@@ -29,13 +29,17 @@ namespace traccc::device {
 ///
 using link_type = cell_module_collection_types::view::size_type;
 TRACCC_DEVICE
-inline void reduce_problem_cell(
+inline void reduce_problem_cell3(
     const alt_cell_collection_types::const_device& cells,
     const traccc::CellsRefDevice& cellsSoA_device,
     const unsigned short cid, const unsigned int start, const unsigned int end,
     unsigned char& adjc, unsigned short adjv[8]);
 
-
+TRACCC_HOST_DEVICE
+inline void reduce_problem_cell(
+    const alt_cell_collection_types::const_device& cells,
+    const unsigned short cid, const unsigned int start, const unsigned int end,
+    unsigned char& adjc, unsigned short adjv[8]);
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
