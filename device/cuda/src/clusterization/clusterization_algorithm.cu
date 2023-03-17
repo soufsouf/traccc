@@ -573,10 +573,10 @@ __global__ void ccl_kernel3(
          * cells that have been claimed by the previous block (if any).
          */
         while (start != 0 &&
-               cells_device[start - 1].module_link ==
-                   cells_device[start].module_link &&
-               cells_device[start].c.channel1 <=
-                   cells_device[start - 1].c.channel1 + 1) {
+               cellsSoA.module_link[start - 1] ==
+                   cellsSoA.module_link[start] &&
+               cellsSoA.channel1[start] <=
+                   cellsSoA.channel1[start - 1] + 1) {
             ++start;
         }
 
@@ -586,10 +586,10 @@ __global__ void ccl_kernel3(
          * that is not a possible boundary!
          */
         while (end < num_cells &&
-               cells_device[end - 1].module_link ==
-                   cells_device[end].module_link &&
-               cells_device[end].c.channel1 <=
-                   cells_device[end - 1].c.channel1 + 1) {
+               cellsSoA.module_link[end - 1] ==
+                   cellsSoA.module_link[end] &&
+               cellsSoA.channel1[end] <=
+                   cellsSoA.channel1[end -1] + 1) {
             ++end;
         }
     }
