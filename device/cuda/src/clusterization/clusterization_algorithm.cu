@@ -862,7 +862,7 @@ clusterization_algorithm3::output_type clusterization_algorithm3::operator()(
 
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
-        ccl_kernel<<<num_partitions, threads_per_partition,
+        ccl_kernel3<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules,cellsSoA, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
