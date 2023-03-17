@@ -633,7 +633,7 @@ clusterization_algorithm::clusterization_algorithm(
 
 clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const alt_cell_collection_types::const_view& cells,
-    const cell_module_collection_types::const_view& modules
+    const cell_module_collection_types::const_view& modules,
     const traccc::CellsView& cellsSoA) const {
 
     // Get a convenience variable for the stream that we'll be using.

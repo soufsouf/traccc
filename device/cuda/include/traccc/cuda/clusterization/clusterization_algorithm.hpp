@@ -152,9 +152,9 @@ class clusterization_algorithm
     /// @return a spacepoint collection (buffer) and a collection (buffer) of
     /// links from cells to the spacepoints they belong to.
     output_type operator()(
-        const alt_cell_collection_types::const_view& cells,
+         const alt_cell_collection_types::const_view& cells,
         const cell_module_collection_types::const_view& modules,
-        const traccc::CellsRefDevice& cellsSoA_device) const override;
+        const traccc::CellsView& cellsSoA) const override;
 
     private:
     /// The average number of cells in each partition
