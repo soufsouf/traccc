@@ -145,7 +145,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::cuda::stream stream;
     vecmem::cuda::copy copy;
     vecmem::cuda::async_copy async_copy{stream.cudaStream()};
-    traccc::cuda::clusterization_algorithm ca_cuda(
+    traccc::cuda::clusterization_algorithm3 ca_cuda(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
        
     traccc::cuda::seeding_algorithm sa_cuda(mr);

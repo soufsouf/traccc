@@ -152,7 +152,7 @@ inline void aggregate_cluster3(
             break;
         }
 
-        const cell this_cell = cells[pos].c;
+        //const cell this_cell = cells[pos].c;
 
         /*
          * If the value of this cell is equal to our, that means it
