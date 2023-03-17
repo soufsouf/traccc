@@ -234,7 +234,7 @@ __global__ void ccl_kernel2(
     index_t adjv[MAX_CELLS_PER_THREAD*8];
    
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-
+   
 #pragma unroll
      for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
@@ -339,6 +339,7 @@ __global__ void form_spacepoints(
 __global__ void ccl_kernel(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
+    const traccc::CellsView cellsSoA,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     alt_measurement_collection_types::view measurements_view,
@@ -349,6 +350,7 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
+    const traccc::CellsRefDevice cellsSoA_device(cellsSoA);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
@@ -399,7 +401,7 @@ __global__ void ccl_kernel(
         }
     }
     __syncthreads();
-
+    
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
 
@@ -434,7 +436,7 @@ __global__ void ccl_kernel(
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
+        device::reduce_problem_cell(cells_device, cellsSoA_device, cid, start, end, adjc[tst],
                                     adjv[tst]);
     }
 
@@ -524,7 +526,7 @@ __global__ void ccl_kernel(
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f_view, start, end, cid,
+                cells_device, modules_device, cellsSoA_device, f_view, start, end, cid,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
@@ -631,7 +633,8 @@ clusterization_algorithm::clusterization_algorithm(
 
 clusterization_algorithm::output_type clusterization_algorithm::operator()(
     const alt_cell_collection_types::const_view& cells,
-    const cell_module_collection_types::const_view& modules) const {
+    const cell_module_collection_types::const_view& modules
+    const traccc::CellsView& cellsSoA) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
@@ -668,7 +671,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
                      2 * max_cells_per_partition * sizeof(index_t), stream>>>(
-            cells, modules, max_cells_per_partition,
+            cells, modules,cellsSoA, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
 

@@ -18,6 +18,7 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
+    const traccc::CellsRefDevice& cellsSoA_device,
     const vecmem::data::vector_view<unsigned short> f_view,
     const unsigned int start, const unsigned int end, const unsigned short cid,
     alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
@@ -34,7 +35,7 @@ inline void aggregate_cluster(
      */
     scalar totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = cells[cid + start].module_link;
+    const auto module_link = cellsSoA_device.module_link[cid + start];
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
@@ -49,7 +50,7 @@ inline void aggregate_cluster(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (cells[pos].module_link != module_link) {
+        if (cellsSoA_device.module_link[pos] != module_link) {
             break;
         }
 
@@ -62,17 +63,17 @@ inline void aggregate_cluster(
          */
         if (f[j] == cid) {
 
-            if (this_cell.channel1 > maxChannel1) {
-                maxChannel1 = this_cell.channel1;
+            if (cellsSoA_device.channel1[pos] > maxChannel1) {
+                maxChannel1 = cellsSoA_device.channel1[pos];
             }
 
             const float weight = traccc::detail::signal_cell_modelling(
-                this_cell.activation, this_module);
+                cellsSoA_device.activation[pos], this_module);
 
             if (weight > this_module.threshold) {
-                totalWeight += this_cell.activation;
+                totalWeight += cellsSoA_device.activation[pos];
                 const point2 cell_position =
-                    traccc::detail::position_from_cell(this_cell, this_module);
+                    traccc::detail::position_from_cell(cellsSoA_device.channel0[pos],cellsSoA_device.channel1[pos], this_module);
                 const point2 prev = mean;
                 const point2 diff = cell_position - prev;
 
@@ -90,7 +91,7 @@ inline void aggregate_cluster(
          * Terminate the process earlier if we have reached a cell sufficiently
          * far away from the cluster in the dominant axis.
          */
-        if (this_cell.channel1 > maxChannel1 + 1) {
+        if (cellsSoA_device.channel1[pos] > maxChannel1 + 1) {
             break;
         }
     }

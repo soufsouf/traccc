@@ -145,7 +145,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     traccc::cuda::stream stream;
     vecmem::cuda::copy copy;
     vecmem::cuda::async_copy async_copy{stream.cudaStream()};
-    traccc::cuda::clusterization_algorithm2 ca_cuda(
+    traccc::cuda::clusterization_algorithm ca_cuda(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
        
     traccc::cuda::seeding_algorithm sa_cuda(mr);
@@ -219,7 +219,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 // Reconstruct it into spacepoints on the device.
                 spacepoints_cuda_buffer =
                     ca_cuda(cells_buffer, modules_buffer,SOA_buffer).first;
-                    printf("hello");
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
             if (run_cpu) {
