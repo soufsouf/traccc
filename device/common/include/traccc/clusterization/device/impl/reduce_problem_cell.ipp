@@ -85,64 +85,7 @@ inline void reduce_problem_cell(
 
 
 
-TRACCC_DEVICE
-inline void reduce_problem_cell3(
-    const alt_cell_collection_types::const_device& cells,
-    const traccc::CellsRefDevice& cellsSoA_device,
-    const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short adjv[8]) {
 
-    const unsigned int pos = cid + start;
-
-    // Check if this code can benefit from changing to structs of arrays, as the
-    // recurring accesses to cell data in global memory is slow right now.
-    const channel_id c0 = cellsSoA_device.channel0[pos];
-    const channel_id c1 = cellsSoA_device.channel1[pos];
-    const unsigned int mod_id = cellsSoA_device.module_link[pos];
-
-    /*
-     * First, we traverse the cells backwards, starting from the current
-     * cell and working back to the first, collecting adjacent cells
-     * along the way.
-     */
-    for (unsigned int j = pos - 1; j < pos; --j) {
-        /*
-         * Since the data is sorted, we can assume that if we see a cell
-         * sufficiently far away in both directions, it becomes
-         * impossible for that cell to ever be adjacent to this one.
-         * This is a small optimisation.
-         */
-        if (cellsSoA_device.channel1[j] + 1 < c1 || cellsSoA_device.module_link[j] != mod_id) {
-            break;
-        }
-
-        /*
-         * If the cell examined is adjacent to the current cell, save it
-         * in the current cell's adjacency set.
-         */
-        if (is_adjacent2(c0, c1, cellsSoA_device.channel0[j], cellsSoA_device.channel1[j])) {
-            adjv[adjc++] = j - start;
-        }
-    }
-
-    /*
-     * Now we examine all the cells past the current one, using almost
-     * the same logic as in the backwards pass.
-     */
-    for (unsigned int j = pos + 1; j < end; ++j) {
-        /*
-         * Note that this check now looks in the opposite direction! An
-         * important difference.
-         */
-        if (cellsSoA_device.channel1[j] > c1 + 1 || cellsSoA_device.module_link[j] != mod_id) {
-            break;
-        }
-
-        if (is_adjacent2(c0, c1, cellsSoA_device.channel0[j] , cellsSoA_device.channel1[j] )) {
-            adjv[adjc++] = j - start;
-        }
-    }
-}
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
