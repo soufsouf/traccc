@@ -366,7 +366,7 @@ __global__ void ccl_kernel2(
     unsigned short* id_clusters = ( unsigned short*)&fathers[size_scalar];
     size_t size_mod= size_scalar+ (sizeof(unsigned short)/sizeof(char))*max_cells_per_partition;
     link_type* module_link = (link_type*)&fathers[size_mod];*/
-    __shared__ channel_id channel0[max_cells_per_partition] ;
+    __shared__ channel_id channel0[0] ;
     __shared__ channel_id channel1[max_cells_per_partition] ;
     __shared__ scalar activation[max_cells_per_partition] ;
     __shared__ unsigned short id_clusters[max_cells_per_partition];
