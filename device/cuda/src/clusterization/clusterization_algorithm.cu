@@ -337,7 +337,7 @@ __global__ void ccl_kernel(
 __global__ void ccl_kernel2(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
-    const traccc::CellsView cellsSoA,
+    const CellsView cellsSoA,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     spacepoint_collection_types::view spacepoints_view,
@@ -348,7 +348,7 @@ __global__ void ccl_kernel2(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
-    const traccc::CellsRefDevice cellsSoA_device(cellsSoA);
+    const CellsRefDevice cellsSoA_device(cellsSoA);
     spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     //vecmem::device_vector<unsigned int> measurement_count(measurement_c);
     const unsigned int num_cells = cells_device.size();
