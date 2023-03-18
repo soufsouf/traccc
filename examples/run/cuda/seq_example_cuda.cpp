@@ -138,7 +138,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     vecmem::cuda::host_memory_resource cuda_host_mr;
     vecmem::cuda::device_memory_resource device_mr;
     traccc::memory_resource mr{device_mr, &cuda_host_mr};
-    traccc::clusterization_algorithm ca(host_mr);
+    traccc::clusterization_algorithm2 ca(host_mr);
     traccc::spacepoint_formation sf(host_mr);
     traccc::seeding_algorithm sa(host_mr);
     traccc::track_params_estimation tp(host_mr);
@@ -200,7 +200,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 alt_read_out_per_event.cells;
             const traccc::cell_module_collection_types::host&
                 modules_per_event = alt_read_out_per_event.modules;
-            const traccc::CellsHost& CellsSoA_per_event =alt_read_out_per_event.cellsSoA;
+            
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
             -----------------------------*/
@@ -212,8 +212,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
             
-            SOA_buffer.SetSize(CellsSoA_per_event.size, mr.main,copy);
-            SOA_buffer.CopyToDevice(CellsSoA_per_event,copy);
+            SOA_buffer.SetSize(alt_read_out_per_event.cellsSoA.size, mr.main,copy);
+            SOA_buffer.CopyToDevice(alt_read_out_per_event.cellsSoA,copy);
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
