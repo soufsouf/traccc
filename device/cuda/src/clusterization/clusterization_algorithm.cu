@@ -432,9 +432,9 @@ __global__ void ccl_kernel2(
      for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         //adjc[tst] = 0;
         channel0[cid] = cellsSoA_device.channel0[cid+start];
-        channel1[cid] = cells_device[cid+start].c.channel1;
-        activation[cid] = cells_device[cid+start].c.activation;
-        module_link[cid] = cells_device[cid+start].module_link;
+        channel1[cid] = cellsSoA_device.channel1[cid+start];
+        activation[cid] = cellsSoA_device.activation[cid+start];
+        module_link[cid] = cellsSoA_device.module_link[cid+start];
 
     }
    
