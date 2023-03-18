@@ -147,7 +147,7 @@ inline void aggregate_cluster2(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (module_link[cid] != mod_link) {
+        if (id_clusters[cid].module_link != mod_link) {
             break;
         }
 
