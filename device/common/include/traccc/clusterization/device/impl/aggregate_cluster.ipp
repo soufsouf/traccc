@@ -116,9 +116,7 @@ inline void aggregate_cluster(
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
     const cell_module_collection_types::const_device& modules,
-    channel_id* channel0,
-    channel_id* channel1,link_type* module_link,unsigned short* id_clusters,scalar* activation,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    cluster* id_clusters,const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
@@ -134,7 +132,7 @@ inline void aggregate_cluster2(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto mod_link = module_link[cid];
+    const auto mod_link = id_clusters[cid].module_link;
     const cell_module this_module = modules.at(mod_link);
     const unsigned short partition_size = end - start;
 
@@ -153,11 +151,11 @@ inline void aggregate_cluster2(
             break;
         }
 
-        const channel_id c0 = channel0[j];
-        const channel_id c1 = channel1[j];
-        const scalar Activation = activation[j];
+        const channel_id c0 = id_clusters[j].channel0;
+        const channel_id c1 = id_clusters[j].channel1;
+        const scalar Activation = id_clusters[j].activation;
 
-        if (id_clusters[j] == cid) {
+        if (id_clusters[j].id_cluster == cid) {
 
             if (c1 > maxChannel1) {
                 maxChannel1 = c1;

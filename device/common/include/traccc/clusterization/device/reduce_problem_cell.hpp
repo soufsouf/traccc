@@ -38,8 +38,7 @@ inline void reduce_problem_cell(
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
     const unsigned short cid, const unsigned int start, const unsigned int end,
-    unsigned char& adjc, unsigned short* adjv_part, channel_id* channel0,
-    channel_id* channel1,link_type* module_link,unsigned short* id_clusters);
+    unsigned char& adjc, unsigned short* adjv_part,cluster* id_fathers);
 
 }  // namespace traccc::device
 

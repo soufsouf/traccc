@@ -44,9 +44,7 @@ inline void aggregate_cluster(
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
     const cell_module_collection_types::const_device& modules,
-   channel_id* channel0,
-    channel_id* channel1,link_type* module_link,unsigned short* id_clusters,scalar* activation,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+   cluster* id_clusters, const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link);
