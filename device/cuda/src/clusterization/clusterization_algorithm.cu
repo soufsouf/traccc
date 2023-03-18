@@ -357,7 +357,7 @@ __global__ void ccl_kernel2(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi;
-    extern __shared__ char fathers[];
+   /* extern __shared__ char fathers[];
     channel_id* channel0 = (channel_id*)&fathers[0];
     size_t size_ch = (sizeof(channel_id)/sizeof(char))*max_cells_per_partition;
     channel_id* channel1 = (channel_id*)&fathers[size_ch];
@@ -365,8 +365,15 @@ __global__ void ccl_kernel2(
     size_t size_scalar= 2*size_ch + (sizeof(scalar)/sizeof(char))*max_cells_per_partition;
     unsigned short* id_clusters = ( unsigned short*)&fathers[size_scalar];
     size_t size_mod= size_scalar+ (sizeof(unsigned short)/sizeof(char))*max_cells_per_partition;
-    link_type* module_link = (link_type*)&fathers[size_mod];
-   // index_t* f = &fathers[max_cells_per_partition];
+    link_type* module_link = (link_type*)&fathers[size_mod];*/
+    __shared__ channel_id channel0[max_cells_per_partition] ;
+    __shared__ channel_id channel1[max_cells_per_partition] ;
+    __shared__ scalar activation[max_cells_per_partition] ;
+    __shared__ unsigned short id_clusters[max_cells_per_partition];
+    __shared__ link_type module_link[max_cells_per_partition];
+    
+
+   //index_t* f = &fathers[max_cells_per_partition];
     //index_t* f_next = &fathers[2*max_cells_per_partition];
     /*
      * First, we determine the exact range of cells that is to be examined by
