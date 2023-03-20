@@ -20,7 +20,8 @@
 
 // System include(s).
 #include <algorithm>
-
+#define FP(i) 2*i
+#define FP_next(i) 2*i + 1 
 namespace traccc::cuda {
 
 namespace {
@@ -52,7 +53,7 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
-__device__ void fast_sv_1(index_t* f, index_t* gf,
+__device__ void fast_sv_1(index_t* f ,
                           unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][8], index_t tid,
                           const index_t blckDim) {
@@ -82,11 +83,11 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
 
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
-                index_t q = gf[adjv[tst][k]];
+                index_t q = f[FP_next(adjv[tst][k])];
 
-                if (gf[cid] > q) {
-                    f[f[cid]] = q;
-                    f[cid] = q;
+                if (f[FP_next(cid)] > q) {
+                    f[FP(f[FP(cid)])] = q;
+                    f[FP(cid)] = q;
                 }
             }
         }
@@ -105,8 +106,8 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
              * allows us to look at any shortcuts in the cluster IDs that we
              * can merge without adjacency information.
              */
-            if (f[cid] > gf[cid]) {
-                f[cid] = gf[cid];
+            if (f[FP(cid)] > f[FP_next(cid)]) {
+                f[FP(cid)] = f[FP_next(cid)];
             }
         }
 
@@ -122,8 +123,8 @@ __device__ void fast_sv_1(index_t* f, index_t* gf,
              * Update the array for the next generation, keeping track of any
              * changes we make.
              */
-            if (gf[cid] != f[f[cid]]) {
-                gf[cid] = f[f[cid]];
+            if (f[FP_next(cid)] != f[FP(f[FP(cid)])]) {
+                f[FP_next(cid)] = f[FP(f[FP(cid)])];
                 gf_changed = true;
             }
         }
@@ -250,7 +251,7 @@ __global__ void ccl_kernel(
      */
     extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];
+    //index_t* f_next = &shared_v[max_cells_per_partition];
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -259,8 +260,8 @@ __global__ void ccl_kernel(
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
-        f[cid] = cid;
-        f_next[cid] = cid;
+        f[FP(cid)] = cid;
+        f[FP_next(cid)] = cid;
     }
 
     /*
@@ -273,7 +274,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
+    fast_sv_1(f, adjc, adjv, tid, blckDim);
 
     __syncthreads();
 
@@ -290,7 +291,7 @@ __global__ void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
+        if (f[FP(cid)] == cid) {
             atomicAdd(&outi, 1);
         }
         //printf("f[cid] %u \n ", f[cid] );
@@ -325,17 +326,17 @@ __global__ void ccl_kernel(
 
     __syncthreads();
 
-    vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
+    //vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
+        if (f[FP(cid)] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f_view, start, end, cid,
+                cells_device, modules_device, f , max_cells_per_partition , start, end, cid,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
