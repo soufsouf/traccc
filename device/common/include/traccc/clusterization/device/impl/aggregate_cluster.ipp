@@ -4,7 +4,7 @@
  *
  * Mozilla Public License Version 2.0
  */
-#define FP(i) 8*i
+#define FP(i) 4*i
 #pragma once
 
 // Project include(s)

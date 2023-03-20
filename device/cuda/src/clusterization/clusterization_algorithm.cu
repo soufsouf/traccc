@@ -20,8 +20,8 @@
 
 // System include(s).
 #include <algorithm>
-#define FP(i) 8*i
-#define FP_next(i) 8*i + 1 
+#define FP(i) 4*i
+#define FP_next(i) 4*i + 1 
 namespace traccc::cuda {
 
 namespace {
@@ -401,7 +401,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     16 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                     8 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
