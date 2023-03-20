@@ -4,7 +4,7 @@
  *
  * Mozilla Public License Version 2.0
  */
-#define FP(i) 2*i
+#define FP(i) 8*i
 #pragma once
 
 // Project include(s)
@@ -43,7 +43,7 @@ inline void aggregate_cluster(
 
     for (unsigned short j = cid; j < partition_size; j++) {
 
-        assert(j < size);
+        assert(j < size );
 
         const unsigned int pos = j + start;
         /*

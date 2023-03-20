@@ -20,8 +20,8 @@
 
 // System include(s).
 #include <algorithm>
-#define FP(i) 2*i
-#define FP_next(i) 2*i + 1 
+#define FP(i) 8*i
+#define FP_next(i) 8*i + 1 
 namespace traccc::cuda {
 
 namespace {
