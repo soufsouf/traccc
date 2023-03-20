@@ -24,7 +24,7 @@ inline void aggregate_cluster(
     alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
 
-    const vecmem::device_vector<unsigned short> f(f_view);
+    //const vecmem::device_vector<unsigned short> f(f_view);
     vecmem::device_vector<unsigned int> cell_links_device(cell_links);
 
     /*
