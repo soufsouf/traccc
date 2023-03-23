@@ -152,7 +152,7 @@ __device__ void fast_sv_1(index_t* f,
             
                 #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                id = (adjv[tst][i] - tid)/blockIdx.x + tid*MAX_CELLS_PER_THREAD;
+                index_t id = (adjv[tst][i] - tid)/blockIdx.x + tid*MAX_CELLS_PER_THREAD;
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
