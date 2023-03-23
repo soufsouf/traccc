@@ -263,10 +263,7 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
-        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         adjc[tst] = 0;
-        f[ccid] = cid ;
-        
     }
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
@@ -294,7 +291,7 @@ __global__ void ccl_kernel(
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;
+        //const index_t cid = tst * blckDim + tid;
         const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         /*
          * At the start, the values of f and f_next should be equal to the
@@ -445,7 +442,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                       max_cells_per_partition * sizeof(index_t) , stream>>>(
+                       2 * max_cells_per_partition * sizeof(index_t) , stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
