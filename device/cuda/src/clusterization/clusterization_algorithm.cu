@@ -249,7 +249,7 @@ __global__ void ccl_kernel(
     // Vector of indices of the adjacent cells
     extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    index_t* vsmem = &shared_v[max_cells_per_partition];
+    //index_t* vsmem = &shared_v[max_cells_per_partition];
     index_t adjv[MAX_CELLS_PER_THREAD][9];
     /*
      * The number of adjacent cells for each cell must start at zero, to
