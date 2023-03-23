@@ -152,9 +152,10 @@ __device__ void fast_sv_1(index_t* f,
             
                 #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                if (f[cid] > f[adjv[tst][i]]) 
+                id = (adjv[tst][i] - tid)/blockIdx.x + tid*MAX_CELLS_PER_THREAD;
+                if (f[cid] > f[id]) 
                 {
-                    f[cid] = f[adjv[tst][i]];
+                    f[cid] = f[id];
                     gf_changed = true; 
                 }
                 
