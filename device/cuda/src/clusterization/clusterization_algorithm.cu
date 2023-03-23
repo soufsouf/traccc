@@ -147,7 +147,7 @@ __device__ void fast_sv_1(index_t* f,
 
         #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
             
             
                 #pragma unroll
@@ -247,7 +247,10 @@ __global__ void ccl_kernel(
         measurements_view);
 
     // Vector of indices of the adjacent cells
-    index_t adjv[MAX_CELLS_PER_THREAD][9];
+    extern __shared__ index_t shared_v[];
+    index_t* f = &shared_v[0];
+    index_t* vsmem = &shared_v[max_cells_per_partition];
+    //index_t adjv[MAX_CELLS_PER_THREAD][9];
     /*
      * The number of adjacent cells for each cell must start at zero, to
      * avoid uninitialized memory. adjv does not need to be zeroed, as
@@ -260,8 +263,9 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         adjc[tst] = 0;
-        adjv[tst][8] = cid ;
+        f[ccid] = cid ;
         
     }
 
@@ -284,19 +288,20 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ char shared_v[];
-    index_t* f = (index_t*)&shared_v[0];
+   /* extern __shared__ char shared_v[];
+    index_t* f = (index_t*)&shared_v[0]; */
     
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
-        f[cid] = adjv[tst][8];
+        f[ccid] = adjv[tst][8];
         
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
@@ -324,7 +329,8 @@ __global__ void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
         }
@@ -362,14 +368,15 @@ __global__ void ccl_kernel(
     vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[cid] == cid) {
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        if (f[ccid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f_view, start, end, cid,
+                cells_device, modules_device, f_view, start, end, cid, ccid,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }

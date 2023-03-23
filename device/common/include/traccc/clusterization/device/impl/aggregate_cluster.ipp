@@ -19,7 +19,7 @@ inline void aggregate_cluster(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
     const vecmem::data::vector_view<unsigned short> f_view,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const unsigned int start, const unsigned int end, const unsigned short cid, const unsigned short ccid,
     alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
 
@@ -39,6 +39,7 @@ inline void aggregate_cluster(
     const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
+     unsigned int ii = 0;
 
     for (unsigned short j = cid; j < partition_size; j++) {
 
@@ -60,7 +61,7 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (f[j] == cid) {
+        if (f[ccid + ii] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
@@ -93,6 +94,8 @@ inline void aggregate_cluster(
         if (this_cell.channel1 > maxChannel1 + 1) {
             break;
         }
+
+        ii = (ii)*12 +1 ;
     }
     if (totalWeight > static_cast<scalar>(0.)) {
         for (char i = 0; i < 2; ++i) {
