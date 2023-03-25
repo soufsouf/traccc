@@ -80,11 +80,9 @@ __device__ void fast_sv_1(index_t* f,
          */
         /*for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst * blckDim + tid;
-
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
                 index_t q = gf[adjv[tst][k]];
-
                 if (gf[cid] > q) {
                     f[f[cid]] = q;
                     f[cid] = q;
@@ -148,18 +146,7 @@ __device__ void fast_sv_1(index_t* f,
         #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
-            
-            
-                /*#pragma unroll
-                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                index_t id = (adjv[tst][i] - tid)/blockIdx.x + tid*MAX_CELLS_PER_THREAD;
-                if (f[cid] > f[id]) 
-                {
-                    f[cid] = f[id];
-                    gf_changed = true; 
-                }
                 
-                } */
                 #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                 const index_t test = adjv[tst][i] / blockDim.x ; 
@@ -260,9 +247,6 @@ __global__ void ccl_kernel(
         measurements_view);
 
     // Vector of indices of the adjacent cells
-    extern __shared__ index_t shared_v[];
-    index_t* f = &shared_v[0];
-    //index_t* vsmem = &shared_v[max_cells_per_partition];
     index_t adjv[MAX_CELLS_PER_THREAD][9];
     /*
      * The number of adjacent cells for each cell must start at zero, to
@@ -278,6 +262,7 @@ __global__ void ccl_kernel(
         const index_t cid = tst * blckDim + tid;
         adjc[tst] = 0;
         adjv[tst][8] = cid ;
+        
     }
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
@@ -299,21 +284,19 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-   /* extern __shared__ char shared_v[];
-    index_t* f = (index_t*)&shared_v[0]; */
+    extern __shared__ char shared_v[];
+    index_t* f = &shared_v[0];
     
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        //const index_t cid = tst * blckDim + tid;
-        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        const index_t cid = tst  + tid*MAX_CELLS_PER_THREAD;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
-        f[ccid] = adjv[tst][8];
-        //printf(" f %hu tid %hu \n", f[ccid] , adjv[tst][8]);
+        f[cid] = adjv[tst][8];
         
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
@@ -341,8 +324,7 @@ __global__ void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
-        printf(" f %u tid %u \n", f[ccid] , tid);
+        index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
@@ -381,7 +363,7 @@ __global__ void ccl_kernel(
     vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         if (f[ccid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
@@ -389,7 +371,7 @@ __global__ void ccl_kernel(
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f_view, start, end, cid, ccid,
+                cells_device, modules_device, f_view, start, end, cid, ccid ,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
