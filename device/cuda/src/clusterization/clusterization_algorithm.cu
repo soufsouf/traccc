@@ -392,8 +392,8 @@ __syncthreads();
    __threadfence_system(); 
       //printf("hello world 2 \n");
    if(blockIdx.x == 100 && tid==5){
-    printf("spacepoints_view.size_ptr 1: %u \n", *spacepoints_view.size_ptr());
-    *spacepoints_view.size_ptr() = measurement_count;
+    printf("spacepoints_view.size_ptr 1: %u \n",measurement_count );
+    //*spacepoints_view.size_ptr() = measurement_count;
      printf("spacepoints_view.size_ptr 2: %u \n", *spacepoints_view.size_ptr());
    }
 //printf("hello world 3 \n");
