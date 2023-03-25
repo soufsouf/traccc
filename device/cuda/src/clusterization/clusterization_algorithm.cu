@@ -329,7 +329,7 @@ __global__ void ccl_kernel(
     fast_sv_1(f, adjc, adjv ,tid, blckDim);
 
     __syncthreads();
-printf(" f %u \n", f);
+
     
 
 
