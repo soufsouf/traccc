@@ -397,7 +397,7 @@ __syncthreads();
     *spacepoints_view.size_ptr() = measurement_count;
      printf("spacepoints_view.size_ptr 2: %llu \n", *spacepoints_view.size_ptr());
    }
-
+printf("hello world 3 \n");
 }
 
 __global__ void form_spacepoints(
