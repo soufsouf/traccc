@@ -388,8 +388,9 @@ __syncthreads();
                 spacepoints_device, cell_links, groupPos + id);
         }
     }
+    printf("hello world \n");
    __threadfence_system(); 
-    
+      printf("hello world 2 \n");
    if(blockIdx.x == 0 && tid==0){
     printf("spacepoints_view.size_ptr 1: %llu \n", *spacepoints_view.size_ptr());
     *spacepoints_view.size_ptr() = measurement_count;
