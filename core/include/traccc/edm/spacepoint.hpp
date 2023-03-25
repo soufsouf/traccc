@@ -74,6 +74,6 @@ using spacepoint_container_types = container_types<geometry_id, spacepoint>;
 struct spacepoint_container {
     traccc::spacepoint_collection_types::buffer spacepoints_buffer;
     traccc::spacepoint_collection_types::view spacepoints_view;
-    unsigned int size = 0;
+    vecmem::unique_alloc_ptr<unsigned int> size;
 };
 }  // namespace traccc
