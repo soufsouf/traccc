@@ -329,7 +329,7 @@ __global__ void ccl_kernel(
     fast_sv_1(f, adjc, adjv ,tid, blckDim);
 
     __syncthreads();
-
+printf(" f %u \n", f);
     
 
 
@@ -340,6 +340,7 @@ __global__ void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        printf(" f %u tid %u \n", f[ccid] , tid);
         if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
