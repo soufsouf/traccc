@@ -313,7 +313,7 @@ __global__ void ccl_kernel(
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[ccid] = adjv[tst][8];
-        printf(" f %hu tid %hu \n", f[ccid] , adjv[tst][8]);
+        //printf(" f %hu tid %hu \n", f[ccid] , adjv[tst][8]);
         
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
@@ -342,7 +342,7 @@ __global__ void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
-        //printf(" f %u tid %u \n", f[ccid] , tid);
+        printf(" f %u tid %u \n", f[ccid] , tid);
         if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
