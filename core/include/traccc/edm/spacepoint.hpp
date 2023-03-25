@@ -42,10 +42,7 @@ struct spacepoint {
         return std::sqrt(global[0] * global[0] + global[1] * global[1]);
     }
 };
-struct spacepoint_container {
-    traccc::spacepoint_collection_types::buffer spacepoints;
-    unsigned int size = 0;
-}
+
 
 /// Comparison / ordering operator for spacepoints
 TRACCC_HOST_DEVICE
@@ -74,5 +71,8 @@ inline bool operator==(const spacepoint& lhs, const spacepoint& rhs) {
 using spacepoint_collection_types = collection_types<spacepoint>;
 /// Declare all spacepoint container types
 using spacepoint_container_types = container_types<geometry_id, spacepoint>;
-
+struct spacepoint_container {
+    traccc::spacepoint_collection_types::buffer spacepoints;
+    unsigned int size = 0;
+};
 }  // namespace traccc
