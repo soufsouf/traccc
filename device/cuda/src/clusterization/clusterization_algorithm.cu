@@ -389,7 +389,9 @@ __syncthreads();
         }
     }
    __threadfence_system(); 
-   if(tid==0){
+    
+   if(blockidx.x == 0 && tid==0){
+    printf("hello if \n");
     *spacepoints_view.size_ptr() = measurement_count;
    }
 
