@@ -150,8 +150,8 @@ __device__ void fast_sv_1(index_t* f,
                 #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                  index_t test = adjv[tst][i] / blockDim.x ; 
-                 scalar thread =  ( adjv[tst][i] / blockDim.x ) - test ; 
-                printf("thread %f \n", thread);
+                 scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
+                //printf("thread %f \n", thread);
                 const index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
                 if (f[cid] > f[id]) 
                 {
@@ -326,7 +326,7 @@ __global__ void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
-        //printf(" f %u \n " , f[ccid] );
+        printf(" f %u \n " , f[ccid] );
         if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
