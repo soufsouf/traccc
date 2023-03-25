@@ -31,7 +31,6 @@ struct cell {
     scalar time = 0.;
 };
 
-
 /// Comparison / ordering operator for cells
 TRACCC_HOST_DEVICE
 inline bool operator<(const cell& lhs, const cell& rhs) {

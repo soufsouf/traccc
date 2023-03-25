@@ -1,15 +1,15 @@
-
 /** TRACCC library, part of the ACTS project (R&D line)
  *
  * (c) 2022 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
+
 #pragma once
+
 // traccc include(s).
 #include "traccc/edm/cell.hpp"
 #include "traccc/edm/container.hpp"
-
 
 namespace traccc {
 
@@ -25,39 +25,6 @@ struct alt_cell {
     link_type module_link;
 };
 
-using scalar = TRACCC_CUSTOM_SCALARTYPE;
-using uint_collection_types = collection_types<unsigned int>;
-using scalar_collection_types = collection_types<scalar>;
-
-struct CellsHost {
-    uint_collection_types::host   channel0;
-    uint_collection_types::host   channel1;
-    scalar_collection_types::host activation;
-    scalar_collection_types::host time;
-    uint_collection_types::host   module_link;
-    std::size_t size;
-
-    CellsHost() : size(0) {}
-
-    void SetSize(std::size_t s) {
-        size = s;
-        channel0    = uint_collection_types::host(s);
-        channel1    = uint_collection_types::host(s);
-        activation  = scalar_collection_types::host(s);
-        time        = scalar_collection_types::host(s);
-        module_link = uint_collection_types::host(s);
-    }
-};
-
-struct cluster{
-    unsigned short id_cluster ;
-    channel_id channel0 = 0;
-    channel_id channel1 = 0;
-    scalar activation = 0.;
-    using link_type = cell_module_collection_types::view::size_type;
-    link_type module_link;
-};
-
 /// Declare all cell collection types
 using alt_cell_collection_types = collection_types<alt_cell>;
 
@@ -67,7 +34,6 @@ using alt_cell_collection_types = collection_types<alt_cell>;
 struct alt_cell_reader_output_t {
     alt_cell_collection_types::host cells;
     cell_module_collection_types::host modules;
-    CellsHost cellsSoA;
 };
 
 }  // namespace traccc
