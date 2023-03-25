@@ -59,7 +59,7 @@ inline void reduce_problem_cell(
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc++] = j - start;
-            if ( adjv[8] > j - start )  {adjv[8] = j - start ;  printf(" adjv[tst][8] %hu \n", adjv[tst][8]); }
+            if ( adjv[8] > j - start )  {adjv[8] = j - start ;  printf(" adjv[tst][8] %hu \n", adjv[8]); }
 
         }
     }
