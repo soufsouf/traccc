@@ -393,7 +393,7 @@ __syncthreads();
       //printf("hello world 2 \n");
    if(blockIdx.x == 100 && tid==5){
     printf("spacepoints_view.size_ptr 1: %u \n",measurement_count );
-    *(spacepoints_view.size_ptr()) = measurement_count;
+    *(spacepoints_view.size_ptr() = measurement_count;
      printf("spacepoints_view.size_ptr 2: %u \n", spacepoints_view.size_ptr());
    }
 //printf("hello world 3 \n");
@@ -436,8 +436,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
                                                                  m_mr.main);*/
 
     // Counter for number of measurements
-    spacepoint_collection_types::buffer spacepoints_buffer(
-        0.3*num_cells, m_mr.main);
+    traccc::spacepoint_container.spacepoints = spacepoint_collection_types::buffer(
+        num_cells, m_mr.main);
    vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,

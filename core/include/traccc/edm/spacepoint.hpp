@@ -42,6 +42,10 @@ struct spacepoint {
         return std::sqrt(global[0] * global[0] + global[1] * global[1]);
     }
 };
+struct spacepoint_container {
+    traccc::spacepoint_collection_types::buffer spacepoints;
+    unsigned int size = 0;
+}
 
 /// Comparison / ordering operator for spacepoints
 TRACCC_HOST_DEVICE
