@@ -277,6 +277,7 @@ __global__ void ccl_kernel(
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
         adjc[tst] = 0;
+        adjv[tst][8] = cid ;
     }
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {

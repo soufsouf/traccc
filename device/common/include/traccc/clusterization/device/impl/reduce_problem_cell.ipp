@@ -42,7 +42,6 @@ inline void reduce_problem_cell(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
-    printf("heloo \n ");
     for (unsigned int j = pos - 1; j < pos; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
