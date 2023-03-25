@@ -146,7 +146,7 @@ __global__ void ccl_kernel(
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
-    spacepoint_collection_types::view spacepoints_view,
+    //spacepoint_collection_types::view spacepoints_view,
     traccc::spacepoint_container spacepoints_container,
     unsigned int& measurement_count,
     vecmem::data::vector_view<unsigned int> cell_links) {
@@ -155,7 +155,7 @@ __global__ void ccl_kernel(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
-    spacepoint_collection_types::device spacepoints_device(spacepoints_view);
+    spacepoint_collection_types::device spacepoints_device(spacepoints_container.spacepoints_buffer);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
@@ -440,7 +440,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     traccc::spacepoint_container spacepoints_container;
     spacepoints_container.spacepoints_buffer  = spacepoint_collection_types::buffer(
         num_cells, m_mr.main);
-    spacepoints_container.spacepoints_view( spacepoints_container.spacepoints_buffer);
+    //spacepoints_container.spacepoints_view(spacepoints_container.spacepoints_buffer);
    vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
