@@ -388,6 +388,11 @@ __syncthreads();
                 spacepoints_device, cell_links, groupPos + id);
         }
     }
+   __threadfence_system(); 
+   if(tid==0){
+    *spacepoints_view.size_ptr() = measurement_count;
+   }
+
 }
 
 __global__ void form_spacepoints(
@@ -495,3 +500,5 @@ vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
 }
 
 }  // namespace traccc::cuda
+
+
