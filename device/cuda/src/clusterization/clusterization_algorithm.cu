@@ -440,7 +440,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     traccc::spacepoint_container spacepoints_container;
     spacepoints_container.spacepoints_buffer  = spacepoint_collection_types::buffer(
         num_cells, m_mr.main);
-    //spacepoints_container.spacepoints_view(spacepoints_container.spacepoints_buffer);
+    spacepoints_container.spacepoints_view=spacepoints_container.spacepoints_buffer;
    vecmem::unique_alloc_ptr<unsigned int> num_measurements_device =
         vecmem::make_unique_alloc<unsigned int>(m_mr.main);
     CUDA_ERROR_CHECK(cudaMemsetAsync(num_measurements_device.get(), 0,
