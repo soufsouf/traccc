@@ -72,7 +72,8 @@ using spacepoint_collection_types = collection_types<spacepoint>;
 /// Declare all spacepoint container types
 using spacepoint_container_types = container_types<geometry_id, spacepoint>;
 struct spacepoint_container {
-    traccc::spacepoint_collection_types::buffer spacepoints;
+    traccc::spacepoint_collection_types::buffer spacepoints_buffer;
+    traccc::spacepoint_collection_types::view spacepoints_view;
     unsigned int size = 0;
 };
 }  // namespace traccc
