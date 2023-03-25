@@ -149,8 +149,8 @@ __device__ void fast_sv_1(index_t* f,
                 
                 #pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                const index_t test = adjv[tst][i] / blockDim.x ; 
-                const index_t thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
+                 index_t test = adjv[tst][i] / blockDim.x ; 
+                 scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
                 printf("thread %u \n", thread);
                 const index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
                 if (f[cid] > f[id]) 
