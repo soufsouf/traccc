@@ -390,7 +390,7 @@ __syncthreads();
     }
    __threadfence_system(); 
     
-   if(blockidx.x == 0 && tid==0){
+   if(blockIdx.x == 0 && tid==0){
     printf("spacepoints_view.size_ptr 1: %llu \n", *spacepoints_view.size_ptr());
     *spacepoints_view.size_ptr() = measurement_count;
      printf("spacepoints_view.size_ptr 2: %llu \n", *spacepoints_view.size_ptr());
