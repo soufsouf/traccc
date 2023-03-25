@@ -326,8 +326,9 @@ __global__ void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
-        printf(" f %u \n " , f[ccid] );
+        //printf(" f %u \n " , f[ccid] );
         if (f[ccid] == cid) {
+            printf("heloo \n");
             atomicAdd(&outi, 1);
 
         }
