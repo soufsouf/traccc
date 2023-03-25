@@ -313,7 +313,7 @@ __global__ void ccl_kernel(
          */
         //printf (" adjv[tst][8] %u  block id %u cid %u  \n" , adjv[tst][8] , blockIdx.x, cid); 
         f[ccid] = adjv[tst][8];
-        //printf(" f %hu tid %hu \n", f[ccid] , adjv[tst][8]);
+        printf(" f %hu tid %hu \n", f[ccid] , adjv[tst][8]);
         
         //printf (" adjv[tst][8] %u \n" , adjv[tst][8]); 
     }
