@@ -150,9 +150,21 @@ __device__ void fast_sv_1(index_t* f,
             const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
             
             
-                #pragma unroll
+                /*#pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
                 index_t id = (adjv[tst][i] - tid)/blockIdx.x + tid*MAX_CELLS_PER_THREAD;
+                if (f[cid] > f[id]) 
+                {
+                    f[cid] = f[id];
+                    gf_changed = true; 
+                }
+                
+                } */
+                #pragma unroll
+                for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
+                const index_t test = adjv[tst][i] / blockDim.x ; 
+                const index_t thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
+                const index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
