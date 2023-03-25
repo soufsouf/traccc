@@ -42,6 +42,7 @@ inline void reduce_problem_cell(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
+    printf("heloo \n ");
     for (unsigned int j = pos - 1; j < pos; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
@@ -59,7 +60,7 @@ inline void reduce_problem_cell(
          */
         if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc++] = j - start;
-            if ( adjv[8] > j - start )  {adjv[8] = j - start ;  printf(" adjv[tst][8] %hu \n", adjv[8]); }
+            if ( adjv[8] > j - start )  adjv[8] = j - start ;
 
         }
     }
