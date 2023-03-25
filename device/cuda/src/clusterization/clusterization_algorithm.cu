@@ -284,7 +284,7 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ char shared_v[];
+    extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
     
 
