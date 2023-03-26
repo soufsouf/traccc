@@ -468,14 +468,14 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
             /**num_measurements_device,*/ cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
-vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
+    /*vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
     CUDA_ERROR_CHECK(cudaMemcpyAsync(
         num_measurements_host.get(), num_measurements_device.get(),
         sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
     m_stream.synchronize();
      vecmem::data::vector_view<spacepoint> spacepoints_view(
-       *num_measurements_host , vecmem::get_data(spacepoints_buffer).ptr() );
+       *num_measurements_host , vecmem::get_data(spacepoints_buffer).ptr() );*/
     // Copy number of measurements to host
     /*vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         vecmem::make_unique_alloc<unsigned int>(*(m_mr.host));
@@ -499,10 +499,10 @@ vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
         measurements_buffer, modules, *num_measurements_host,
         spacepoints_buffer);
 
-    CUDA_ERROR_CHECK(cudaGetLastError());
-    m_stream.synchronize();*/
+    CUDA_ERROR_CHECK(cudaGetLastError());*/
+    m_stream.synchronize();
 
-    return {std::move(spacepoints_view), std::move(spacepoints_buffer)};
+    return {std::move(spacepoints_container), std::move(cell_links)};
 }
 
 }  // namespace traccc::cuda
