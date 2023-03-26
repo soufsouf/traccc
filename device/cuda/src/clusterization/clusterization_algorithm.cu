@@ -153,6 +153,7 @@ __device__ void fast_sv_1(index_t* f,
                  //scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
                  float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
                 const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
+                printf(" id %hu \n ", id);
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
@@ -460,7 +461,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
 
-        printf("*num_measurements_host %u \n", *num_measurements_host);
+        //printf("*num_measurements_host %u \n", *num_measurements_host);
 
     // For the following kernel, we can now use whatever the desired number of
     // threads per block.
