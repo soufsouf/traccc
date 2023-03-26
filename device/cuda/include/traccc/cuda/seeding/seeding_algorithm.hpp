@@ -67,7 +67,7 @@ class seeding_algorithm2 : public algorithm<alt_seed_collection_types::buffer(
     /// @return the buffer of track seeds reconstructed from the spacepoints
     ///
     output_type operator()(const traccc::spacepoint_container&
-                               spacepoints ) const override;
+                               spacepoints ) const ;
 
     private:
     /// Sub-algorithm performing the spacepoint binning
