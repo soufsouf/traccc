@@ -153,6 +153,7 @@ __device__ void fast_sv_1(index_t* f,
                  //scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
                  float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
                 const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
+                
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
@@ -377,7 +378,7 @@ __global__ void ccl_kernel(
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
-   
+}
 
 __global__ void form_spacepoints(
     alt_measurement_collection_types::const_view measurements_view,
