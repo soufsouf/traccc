@@ -437,13 +437,13 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
                                                                  m_mr.main);*/
 
     // Counter for number of measurements
-    traccc::spacepoint_container spacepoints_container;
+    /*traccc::spacepoint_container spacepoints_container;
     spacepoints_container.spacepoints_buffer  = spacepoint_collection_types::buffer(
         num_cells, m_mr.main);
     spacepoints_container.spacepoints_view=spacepoints_container.spacepoints_buffer;
     cudaMallocManaged(&spacepoints_container.size,sizeof(unsigned int));
     CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_container.size, 0,
-                                     sizeof(unsigned int), stream));
+                                     sizeof(unsigned int), stream));*/
     
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +

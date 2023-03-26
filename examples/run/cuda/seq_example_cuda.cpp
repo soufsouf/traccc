@@ -91,7 +91,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     }
 
     traccc::performance::timing_info elapsedTimes;
-
+     
     // Loop over events
     for (unsigned int event = common_opts.skip;
          event < common_opts.events + common_opts.skip; ++event) {
@@ -108,6 +108,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         /*traccc::spacepoint_collection_types::buffer spacepoints_cuda_buffer(
             0, *mr.host);*/
         traccc::spacepoint_container spacepoints_cuda;
+
         traccc::alt_seed_collection_types::buffer seeds_cuda_buffer(0,
                                                                     *mr.host);
         traccc::bound_track_parameters_collection_types::buffer
@@ -151,7 +152,12 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
-
+            spacepoints_cuda.spacepoints_buffer  = spacepoint_collection_types::buffer(
+                    alt_cells_per_event.size(), m_mr.main);
+            spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
+            cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
+            CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
+                                     sizeof(unsigned int), stream));
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
