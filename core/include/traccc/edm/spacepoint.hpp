@@ -77,7 +77,7 @@ struct spacepoint_container {
     unsigned int* size;
 
     spacepoint_container(const spacepoint_container &a){
-     spacepoints_buffer = a.spacepoints_buffer;
+     //spacepoints_buffer = a.spacepoints_buffer;
      spacepoints_view = a.spacepoints_view;
      size = a.size;
     }
