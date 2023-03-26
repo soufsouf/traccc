@@ -367,7 +367,6 @@ __global__ void ccl_kernel(
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         if (f[ccid] == cid) {
-            printf(" hello i'm here ");
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
