@@ -1,17 +1,10 @@
-/** TRACCC library, part of the ACTS project (R&D line)
- *
- * (c) 2021-2022 CERN for the benefit of the ACTS project
- *
- * Mozilla Public License Version 2.0
- */
-
-// Project include(s).
 
 
-#include "../../device/cuda/src/utils/utils.hpp"
+// System include(s).
+
+#include "traccc/clusterization/clusterization_algorithm.hpp"
 #include "traccc/clusterization/spacepoint_formation.hpp"
 #include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
-#include "traccc/cuda/utils/definitions.hpp"
 #include "traccc/cuda/seeding/seeding_algorithm.hpp"
 #include "traccc/cuda/seeding/track_params_estimation.hpp"
 #include "traccc/cuda/utils/stream.hpp"
@@ -36,13 +29,13 @@
 #include <vecmem/utils/cuda/async_copy.hpp>
 #include <vecmem/utils/cuda/copy.hpp>
 
-// System include(s).
 #include <exception>
 #include <iomanip>
 #include <iostream>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-
+#include "../../device/cuda/src/utils/utils.hpp"
+#include "traccc/cuda/utils/definitions.hpp"
 
 namespace po = boost::program_options;
 
