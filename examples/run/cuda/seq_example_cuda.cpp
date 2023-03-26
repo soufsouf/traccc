@@ -41,7 +41,8 @@
 #include <iostream>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-//#include "../utils/utils.hpp"
+
+#include "../../device/cuda/src/utils/utils.hpp"
 namespace po = boost::program_options;
 
 int seq_run(const traccc::full_tracking_input_config& i_cfg,
