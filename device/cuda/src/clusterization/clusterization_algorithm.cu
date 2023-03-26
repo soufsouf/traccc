@@ -377,6 +377,7 @@ __global__ void ccl_kernel(
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
+    printf("hello here \n");
 }
 
 __global__ void form_spacepoints(
