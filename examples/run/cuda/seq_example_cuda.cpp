@@ -6,6 +6,8 @@
  */
 
 // Project include(s).
+
+#include "traccc/cuda/utils/definitions.hpp"
 #include "traccc/clusterization/clusterization_algorithm.hpp"
 #include "traccc/clusterization/spacepoint_formation.hpp"
 #include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
@@ -38,6 +40,7 @@
 #include <iomanip>
 #include <iostream>
 #include <cuda_runtime.h>
+#include "../utils/utils.hpp"
 namespace po = boost::program_options;
 
 int seq_run(const traccc::full_tracking_input_config& i_cfg,
