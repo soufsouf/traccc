@@ -75,7 +75,7 @@ struct spacepoint_container {
     traccc::spacepoint_collection_types::buffer spacepoints_buffer;
     traccc::spacepoint_collection_types::view spacepoints_view;
     unsigned int* size;
-
+    spacepoint_container(){}
     spacepoint_container(const spacepoint_container &a){
      //spacepoints_buffer = a.spacepoints_buffer;
      spacepoints_view = a.spacepoints_view;
