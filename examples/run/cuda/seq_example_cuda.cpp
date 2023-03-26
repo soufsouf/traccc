@@ -162,7 +162,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
             cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
             CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
-                                     sizeof(unsigned int),stream));
+                                     sizeof(unsigned int),m_stream));
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
