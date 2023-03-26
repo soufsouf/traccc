@@ -72,7 +72,8 @@ class clusterization_algorithm
 class clusterization_algorithm2
     : public algorithm<std::pair<traccc::spacepoint_container,vecmem::data::vector_buffer<unsigned int>>(
           const alt_cell_collection_types::const_view&,
-          const cell_module_collection_types::const_view&)>{
+          const cell_module_collection_types::const_view&,
+          const traccc::spacepoint_container&)>{
 
     public:
     /// Constructor for clusterization algorithm
