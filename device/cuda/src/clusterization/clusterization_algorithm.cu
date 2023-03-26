@@ -153,7 +153,6 @@ __device__ void fast_sv_1(index_t* f,
                  //scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
                  float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
                 const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
-                printf(" id %hu \n ", id);
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
@@ -368,6 +367,7 @@ __global__ void ccl_kernel(
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         if (f[ccid] == cid) {
+            printf(" hello i'm here ");
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
