@@ -146,14 +146,13 @@ __device__ void fast_sv_1(index_t* f,
         #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
-                
-                #pragma unroll
+            
+                //#pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                 index_t test = adjv[tst][i] / blockDim.x ; 
-                 //scalar thread =  (( adjv[tst][i] / blockDim.x ) - test ) * blockDim.x ; 
-                 float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
+                index_t test = adjv[tst][i] / blockDim.x ; 
+                printf(" adjv[tst][i] %u , test %u \n", adjv[tst][i] , test  );
+                float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
                 const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
-                
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
@@ -286,13 +285,13 @@ __global__ void ccl_kernel(
      * shared memory is limited. These could always be moved to global memory,
      * but the algorithm would be decidedly slower in that case.
      */
-    extern __shared__ index_t shared_v[];
-    index_t* f = &shared_v[0];
+    extern __shared__ char shared_v[];
+    index_t* f = (index_t*)&shared_v[0];
     
 
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst  + tid*MAX_CELLS_PER_THREAD;
+        const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
@@ -319,7 +318,7 @@ __global__ void ccl_kernel(
 
     
 
- 
+
     
     /*
      * Count the number of clusters by checking how many cells have
@@ -327,7 +326,6 @@ __global__ void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
-        //printf(" f %u \n " , f[ccid] );
         if (f[ccid] == cid) {
             atomicAdd(&outi, 1);
 
@@ -366,7 +364,7 @@ __global__ void ccl_kernel(
     vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        index_t ccid = tst + tid*MAX_CELLS_PER_THREAD; 
         if (f[ccid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
@@ -374,7 +372,7 @@ __global__ void ccl_kernel(
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f_view, start, end, cid, ccid ,
+                cells_device, modules_device, f_view, start, end, cid, ccid , 
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }
@@ -443,7 +441,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                        max_cells_per_partition * sizeof(index_t) , stream>>>(
+                       max_cells_per_partition * sizeof(index_t) , stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
@@ -460,8 +458,6 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     //printf("num_measurements_host %u " , *num_measurements_host);
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
-
-        //printf("*num_measurements_host %u \n", *num_measurements_host);
 
     // For the following kernel, we can now use whatever the desired number of
     // threads per block.
