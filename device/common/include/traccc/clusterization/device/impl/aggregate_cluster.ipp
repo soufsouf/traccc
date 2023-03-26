@@ -39,7 +39,7 @@ inline void aggregate_cluster(
     const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
-    unsigned int ii = 0;
+    //unsigned int ii = 0;
 
     for (unsigned short j = cid; j < partition_size; j++) {
 
@@ -61,7 +61,10 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (f[ccid + ii] == cid) {
+        index_t test = j / blockDim.x ; 
+        float thread = ((static_cast<float>(j) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
+        const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
+        if (f[id] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
@@ -95,7 +98,7 @@ inline void aggregate_cluster(
             break;
         }
 
-        ii = (ii)*12  ;
+        //ii = (ii)*12  ;
     }
     if (totalWeight > static_cast<scalar>(0.)) {
         for (char i = 0; i < 2; ++i) {
