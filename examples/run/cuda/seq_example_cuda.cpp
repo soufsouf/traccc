@@ -8,8 +8,10 @@
 // Project include(s).
 
 
+#include "../../device/cuda/src/utils/utils.hpp"
 #include "traccc/clusterization/spacepoint_formation.hpp"
 #include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
+#include "traccc/cuda/utils/definitions.hpp"
 #include "traccc/cuda/seeding/seeding_algorithm.hpp"
 #include "traccc/cuda/seeding/track_params_estimation.hpp"
 #include "traccc/cuda/utils/stream.hpp"
@@ -41,8 +43,7 @@
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 
-#include "../../device/cuda/src/utils/utils.hpp"
-#include "traccc/cuda/utils/definitions.hpp"
+
 namespace po = boost::program_options;
 
 int seq_run(const traccc::full_tracking_input_config& i_cfg,
@@ -162,7 +163,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
             cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
             CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
-                                     sizeof(unsigned int),m_stream));
+                                     sizeof(unsigned int),stream));
             {
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
