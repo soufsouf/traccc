@@ -460,6 +460,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     spacepoint_collection_types::buffer spacepoints_buffer(
         *num_measurements_host, m_mr.main);
 
+        printf("*num_measurements_host %u \n", *num_measurements_host);
+
     // For the following kernel, we can now use whatever the desired number of
     // threads per block.
     auto spacepointsLocalSize = 1024;
