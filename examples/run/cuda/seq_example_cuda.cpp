@@ -37,7 +37,7 @@
 #include <exception>
 #include <iomanip>
 #include <iostream>
-
+#include <cuda_runtime.h>
 namespace po = boost::program_options;
 
 int seq_run(const traccc::full_tracking_input_config& i_cfg,
@@ -152,8 +152,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
-            spacepoints_cuda.spacepoints_buffer  = spacepoint_collection_types::buffer(
-                    alt_cells_per_event.size(), m_mr.main);
+            spacepoints_cuda.spacepoints_buffer  = traccc::spacepoint_collection_types::buffer(
+                    alt_cells_per_event.size(), mr.main);
             spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
             cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
             CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
