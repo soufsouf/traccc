@@ -69,5 +69,17 @@ seeding_algorithm::output_type seeding_algorithm::operator()(
     return m_seed_finding(spacepoints_view,
                           m_spacepoint_binning(spacepoints_view));
 }
+seeding_algorithm2::seeding_algorithm2(const traccc::memory_resource& mr)
+    : m_spacepoint_binning(default_seedfinder_config(),
+                           default_spacepoint_grid_config(), mr),
+      m_seed_finding(default_seedfinder_config(), seedfilter_config(), mr) {}
+
+seeding_algorithm2::output_type seeding_algorithm2::operator()(
+    const traccc::spacepoint_container&
+                               spacepoints) const {
+
+    return m_seed_finding(spacepoints.spacepoints_view,
+                          m_spacepoint_binning(spacepoints));
+}
 
 }  // namespace traccc::cuda

@@ -78,7 +78,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
     traccc::cuda::clusterization_algorithm2 ca_cuda(
         mr, async_copy, stream, common_opts.target_cells_per_partition);
-    traccc::cuda::seeding_algorithm sa_cuda(mr);
+    traccc::cuda::seeding_algorithm2 sa_cuda(mr);
     traccc::cuda::track_params_estimation tp_cuda(mr);
 
     // performance writer
@@ -199,7 +199,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
             {
                 traccc::performance::timer t("Seeding (cuda)", elapsedTimes);
-                seeds_cuda_buffer = sa_cuda(spacepoints_cuda.spacepoints_buffer);
+                seeds_cuda_buffer = sa_cuda(spacepoints_cuda);
             }  // stop measuring seeding cuda timer
 
             // CPU

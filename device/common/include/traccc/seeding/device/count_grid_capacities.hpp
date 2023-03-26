@@ -45,7 +45,14 @@ inline void count_grid_capacities(
     const spacepoint_collection_types::const_view& spacepoints,
     vecmem::data::vector_view<unsigned int> grid_capacities);
 
-}  // namespace traccc::device
 
+TRACCC_HOST_DEVICE
+inline void count_grid_capacities2(
+    const std::size_t globalIndex, const seedfinder_config& config,
+    const sp_grid::axis_p0_type& phi_axis, const sp_grid::axis_p1_type& z_axis,
+    const traccc::spacepoint_container& spacepoints_,
+    vecmem::data::vector_view<unsigned int> grid_capacities);
+
+} 
 // Include the implementation.
 #include "traccc/seeding/device/impl/count_grid_capacities.ipp"

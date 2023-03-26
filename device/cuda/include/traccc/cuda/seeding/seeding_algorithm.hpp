@@ -50,5 +50,30 @@ class seeding_algorithm : public algorithm<alt_seed_collection_types::buffer(
     seed_finding m_seed_finding;
 
 };  // class seeding_algorithm
+class seeding_algorithm2 : public algorithm<alt_seed_collection_types::buffer(
+                              const traccc::spacepoint_collection_types::const_view&)> {
+
+    public:
+    /// Constructor for the seed finding algorithm
+    ///
+    /// @param mr The memory resource to use
+    ///
+    seeding_algorithm2(const traccc::memory_resource& mr);
+
+    /// Operator executing the algorithm.
+    ///
+    /// @param spacepoints_view is a view of all spacepoints in the event
+    /// @return the buffer of track seeds reconstructed from the spacepoints
+    ///
+    output_type operator()(const traccc::spacepoint_container&
+                               spacepoints ) const override;
+
+    private:
+    /// Sub-algorithm performing the spacepoint binning
+    spacepoint_binning2 m_spacepoint_binning;
+    /// Sub-algorithm performing the seed finding
+    seed_finding m_seed_finding;
+
+};  // class seeding_algorithm
 
 }  // namespace traccc::cuda

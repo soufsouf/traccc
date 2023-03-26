@@ -34,7 +34,11 @@ inline void populate_grid(
     unsigned int globalIndex, const seedfinder_config& config,
     const spacepoint_collection_types::const_view& spacepoints,
     sp_grid_view grid);
-
+TRACCC_DEVICE
+inline void populate_grid2(
+    unsigned int globalIndex, const seedfinder_config& config,
+    const spacepoint_collection_types::const_view& spacepoints,
+    sp_grid_view grid);
 }  // namespace traccc::device
 
 // Include the implementation.
