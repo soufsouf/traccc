@@ -22,6 +22,7 @@
 // traccc library include(s).
 #include "traccc/utils/memory_resource.hpp"
 
+
 namespace traccc::cuda {
 
 /// Main algorithm for performing the track seeding on an NVIDIA GPU
