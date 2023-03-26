@@ -42,8 +42,6 @@
 #include <cuda_runtime_api.h>
 
 #include "../../device/cuda/src/utils/utils.hpp"
-
-#include "traccc/cuda/clusterization/clusterization_algorithm.hpp"
 #include "traccc/cuda/utils/definitions.hpp"
 namespace po = boost::program_options;
 
