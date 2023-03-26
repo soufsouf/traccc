@@ -40,6 +40,7 @@
 #include <iomanip>
 #include <iostream>
 #include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 //#include "../utils/utils.hpp"
 namespace po = boost::program_options;
 
