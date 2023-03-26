@@ -442,7 +442,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
         num_cells, m_mr.main);
     spacepoints_container.spacepoints_view=spacepoints_container.spacepoints_buffer;
     cudaMallocManaged(&spacepoints_container.size,sizeof(unsigned int));
-    CUDA_ERROR_CHECK(cudaMemsetAsync(*spacepoints_container.size, 0,
+    CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_container.size, 0,
                                      sizeof(unsigned int), stream));
     
     const unsigned short max_cells_per_partition =
