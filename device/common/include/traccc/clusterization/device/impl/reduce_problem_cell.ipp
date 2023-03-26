@@ -11,6 +11,13 @@ namespace traccc::device {
  * cluster.
  */
 TRACCC_DEVICE
+bool is_adjacent2(channel_id ac0, channel_id ac1, channel_id bc0,
+                 channel_id bc1) {
+    unsigned int p0 = (ac0 - bc0);
+    unsigned int p1 = (ac1 - bc1);
+    return p0 * p0 <= 1 && p1 * p1 <= 1;
+}
+TRACCC_HOST_DEVICE
 bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
                  channel_id bc1) {
     unsigned int p0 = (ac0 - bc0);
@@ -18,8 +25,7 @@ bool is_adjacent(channel_id ac0, channel_id ac1, channel_id bc0,
     return p0 * p0 <= 1 && p1 * p1 <= 1;
 }
 
-
-TRACCC_DEVICE
+TRACCC_HOST_DEVICE
 inline void reduce_problem_cell(
     const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
@@ -111,7 +117,7 @@ inline void reduce_problem_cell2(
          * If the cell examined is adjacent to the current cell, save it
          * in the current cell's adjacency set.
          */
-        if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
+        if (is_adjacent2(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc] = j - start; 
             adjc ++;
             if((j-start)< min_id) min_id = j-start;
@@ -129,7 +135,7 @@ inline void reduce_problem_cell2(
         if (cells[j].c.channel1 > c1 + 1 || cells[j].module_link != mod_id) {
             break;
         }
-        if (is_adjacent(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
+        if (is_adjacent2(c0, c1, cells[j].c.channel0, cells[j].c.channel1)) {
             adjv[adjc] = j - start; 
             adjc ++;
             if((j-start)< min_id) min_id = j-start;
