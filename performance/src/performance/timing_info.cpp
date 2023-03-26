@@ -33,9 +33,9 @@ std::ostream& operator<<(std::ostream& out, const timing_info& info) {
     for (std::size_t i = 0; i < info.data.size(); ++i) {
         const timing_info_pair ti = info.data.at(i);
         out << std::setw(30) << std::right << ti.first << "  "
-            << std::chrono::duration_cast<std::chrono::microseconds>(ti.second)
+            << std::chrono::duration_cast<std::chrono::milliseconds>(ti.second)
                    .count()
-            << " µs";
+            << " ms";
         if ((i + 1) < info.data.size()) {
             out << "\n";
         }
