@@ -375,8 +375,7 @@ __global__ void ccl_kernel(
             device::aggregate_cluster(
                 cells_device, modules_device, f_view, start, end, cid, ccid ,
                 measurements_device[groupPos + id], cell_links, groupPos + id);
-                 printf("hello here \n");
-}
+                
         }
     }
    
