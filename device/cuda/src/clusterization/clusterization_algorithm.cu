@@ -318,7 +318,7 @@ __global__ void ccl_kernel(
 
     
 
-
+ 
     
     /*
      * Count the number of clusters by checking how many cells have
@@ -328,7 +328,6 @@ __global__ void ccl_kernel(
         index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         //printf(" f %u \n " , f[ccid] );
         if (f[ccid] == cid) {
-            printf("heloo \n");
             atomicAdd(&outi, 1);
 
         }
@@ -443,7 +442,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
    
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                       2 * max_cells_per_partition * sizeof(index_t) , stream>>>(
+                        max_cells_per_partition * sizeof(index_t) , stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
