@@ -39,7 +39,7 @@ inline void aggregate_cluster(
     const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
-     unsigned int ii = 0;
+    unsigned int ii = 0;
 
     for (unsigned short j = cid; j < partition_size; j++) {
 
@@ -95,7 +95,7 @@ inline void aggregate_cluster(
             break;
         }
 
-        ii = (ii)*12 +1 ;
+        ii = (ii)*12  ;
     }
     if (totalWeight > static_cast<scalar>(0.)) {
         for (char i = 0; i < 2; ++i) {
