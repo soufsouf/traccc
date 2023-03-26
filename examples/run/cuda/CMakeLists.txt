@@ -13,7 +13,9 @@ find_package( CUDAToolkit REQUIRED )
 traccc_add_executable( seq_example_cuda "seq_example_cuda.cpp"
    LINK_LIBRARIES vecmem::core vecmem::cuda traccc::io traccc::performance
                   traccc::core traccc::device_common traccc::cuda
-                  traccc::options )
+                  traccc::options 
+                  CUDA::cuda_driver 
+                  CUDA::cudart)
 traccc_add_executable( seeding_example_cuda "seeding_example_cuda.cpp"
    LINK_LIBRARIES vecmem::core vecmem::cuda traccc::io traccc::performance
                   traccc::core traccc::device_common traccc::cuda
