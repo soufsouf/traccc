@@ -347,7 +347,7 @@ __global__ void ccl_kernel2(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
-    spacepoint_collection_types::device spacepoints_device(spacepoints_container.spacepoints_buffer);
+    spacepoint_collection_types::device spacepoints_device(spacepoints_container.spacepoints_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
