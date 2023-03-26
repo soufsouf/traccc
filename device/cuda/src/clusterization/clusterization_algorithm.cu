@@ -357,7 +357,7 @@ __syncthreads();
      * amount of threads per block, this has no sever implications.
      */
     if (tid == 0) {
-        outi = atomicAdd(&spacepoints_container.size, outi);
+        outi = atomicAdd(spacepoints_container.size, outi);
     }
 
     __syncthreads();
