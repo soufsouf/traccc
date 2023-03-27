@@ -355,7 +355,7 @@ __global__ void ccl_kernel2(
     /*
      * This variable will be used to write to the output later.
      */
-    __shared__ unsigned int outi;
+    __shared__ unsigned int outi, count;
     extern __shared__ cluster fathers[];
     cluster* id_fathers = &fathers[0];
    // index_t* f = &fathers[max_cells_per_partition];
@@ -375,7 +375,7 @@ __global__ void ccl_kernel2(
         assert(start < num_cells);
         end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
-        //count =0;
+        count =0;
         /*
          * Next, shift the starting point to a position further in the array;
          * the purpose of this is to ensure that we are not operating on any
@@ -559,7 +559,7 @@ __syncthreads();
      * amount of threads per block, this has no sever implications.
      */
     if (tid == 0) {
-        outi = atomicAdd(spacepoints_container.size, outi);
+        count = atomicAdd(spacepoints_container.size, outi);
     }
 
     __syncthreads();
@@ -567,7 +567,7 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-    const unsigned int groupPos = outi;
+    /*const unsigned int groupPos = outi;
 
     __syncthreads();
 
@@ -575,7 +575,7 @@ __syncthreads();
         outi = 0;
     }
 
-    __syncthreads();
+    __syncthreads();*/
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
@@ -585,10 +585,10 @@ __syncthreads();
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
-            const unsigned int id = atomicAdd(&outi, 1);
+            const unsigned int id = atomicAdd(&count, 1);
             device::aggregate_cluster2(
                  modules_device, id_fathers, start, end, cid,
-                spacepoints_device, cell_links,groupPos+ id);
+                spacepoints_device, cell_links, id);
         }
     }
     //printf("hello world \n");
