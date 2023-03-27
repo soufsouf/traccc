@@ -86,7 +86,7 @@ inline void reduce_problem_cell(
 }
 
 TRACCC_DEVICE
-inline void reduce_problem_cell2(
+inline void reduce_problem_cell2(const alt_cell_collection_types::const_device& cells,
     const unsigned short cid, const unsigned int start, const unsigned int end,
     unsigned char& adjc, unsigned short adjv[8],cluster* id_fathers) {
     //const unsigned int pos = cid + start;
@@ -94,7 +94,7 @@ inline void reduce_problem_cell2(
     // recurring accesses to cell data in global memory is slow right now.
     const channel_id c0 = id_fathers[cid].channel0;
     const channel_id c1 = id_fathers[cid].channel1;
-    const unsigned int mod_id = id_fathers[cid].module_link;
+    const unsigned int mod_id = cells[cid+start].module_link;
     unsigned short min_id = cid;
     adjc =0;
     /*
@@ -110,7 +110,7 @@ inline void reduce_problem_cell2(
          * This is a small optimisation.
          */
         
-        if (id_fathers[j].channel1 + 1 < c1 || id_fathers[j].module_link != mod_id) {
+        if (id_fathers[j].channel1 + 1 < c1 || cells[j+start].module_link != mod_id) {
             break;
         }
         /*
@@ -132,7 +132,7 @@ inline void reduce_problem_cell2(
          * Note that this check now looks in the opposite direction! An
          * important difference.
          */
-        if (id_fathers[j].channel1 > c1 + 1 || id_fathers[j].module_link != mod_id) {
+        if (id_fathers[j].channel1 > c1 + 1 || cells[j+start].module_link != mod_id) {
             break;
         }
         if (is_adjacent2(c0, c1, id_fathers[j].channel0,id_fathers[j].channel1)) {
