@@ -293,11 +293,6 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
-        
-        cid = tst*blockDim + tid 
-         int test  = cid / blockdim 
-         cid / blockdim  - test 
-
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
