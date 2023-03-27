@@ -356,8 +356,8 @@ __global__ void ccl_kernel2(
      * This variable will be used to write to the output later.
      */
     __shared__ unsigned int outi, count;
-    extern __shared__ index_t fathers[];
-    index_t* id_fathers = &fathers[0];
+    extern __shared__ cluster fathers[];
+    cluster* id_fathers = &fathers[0];
    // index_t* f = &fathers[max_cells_per_partition];
     //index_t* f_next = &fathers[2*max_cells_per_partition];
     /*
@@ -428,6 +428,14 @@ __global__ void ccl_kernel2(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
+    for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
+        id_fathers[cid].channel0 = cells_device[cid+start].channel0;
+        id_fathers[cid].channel1 = cells_device[cid+start].channel1;
+        id_fathers[cid].activation = cells_device[cid+start].activation;
+        id_fathers[cid].module_link = cells_device[cid+start].module_link;
+
+    }
+    __syncthreads();
 /*
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
@@ -476,9 +484,9 @@ bool gf_changed;
                // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
 
                 for (index_t i = 0; i < adjc[tst]; i ++){    // neighbors communication
-                if (id_fathers[cid] > id_fathers[adjv[tst][i]]) 
+                if (id_fathers[cid].id_cluster > id_fathers[adjv[tst][i]].id_cluster) 
                 {
-                    id_fathers[cid] = id_fathers[adjv[tst][i]];
+                    id_fathers[cid].id_cluster = id_fathers[adjv[tst][i]].id_cluster;
                     gf_changed = true; 
                 }
                 
@@ -535,7 +543,7 @@ __syncthreads();
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
-        if (id_fathers[cid] == cid) {
+        if (id_fathers[cid].id_cluster == cid) {
             atomicAdd(&outi, 1);
         }
     }
@@ -572,7 +580,7 @@ __syncthreads();
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (id_fathers[cid] == cid) {
+        if (id_fathers[cid].id_cluster == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
@@ -687,6 +695,8 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
 
     return {std::move(spacepoints_buffer), std::move(cell_links)};
 }
+
+
 clusterization_algorithm2::clusterization_algorithm2(
     const traccc::memory_resource& mr, vecmem::copy& copy, stream& str,
     const unsigned short target_cells_per_partition)
@@ -737,7 +747,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel2<<<num_partitions, threads_per_partition,
-                      max_cells_per_partition * sizeof(index_t), stream>>>(
+                      max_cells_per_partition * sizeof(cluster), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_container,
             /**num_measurements_device,*/ cell_links);

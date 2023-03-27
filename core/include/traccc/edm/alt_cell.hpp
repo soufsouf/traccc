@@ -24,6 +24,14 @@ struct alt_cell {
     using link_type = cell_module_collection_types::view::size_type;
     link_type module_link;
 };
+struct cluster{
+    unsigned short id_cluster ;
+    channel_id channel0 = 0;
+    channel_id channel1 = 0;
+    scalar activation = 0.;
+    using link_type = cell_module_collection_types::view::size_type;
+    link_type module_link;
+};
 
 /// Declare all cell collection types
 using alt_cell_collection_types = collection_types<alt_cell>;
