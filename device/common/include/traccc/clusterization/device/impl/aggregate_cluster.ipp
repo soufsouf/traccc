@@ -61,9 +61,9 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        index_t thread = j % blockDim.x ; 
-        index_t test = j / blockDim.x ;
-        const index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
+        unsigned short thread = j % blockDim.x ; 
+        unsigned short test = j / blockDim.x ;
+        unsigned short id = test + thread*12 ; 
 
 
         if (f[id] == cid) {
