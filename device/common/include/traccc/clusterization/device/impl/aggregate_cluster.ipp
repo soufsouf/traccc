@@ -61,9 +61,11 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        unsigned short test = j / blockDim.x ; 
-        float thread = ((static_cast<float>(j) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
-        const unsigned short id = test + static_cast<unsigned short>(thread)*12 ; 
+        index_t thread = j % blockDim.x ; 
+        index_t test = j / blockDim.x ;
+        const index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
+
+
         if (f[id] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {

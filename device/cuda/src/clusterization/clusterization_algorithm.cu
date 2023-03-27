@@ -146,13 +146,14 @@ __device__ void fast_sv_1(index_t* f,
         #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
             const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
-            
+
                 //#pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
-                index_t test = adjv[tst][i] / blockDim.x ; 
-                //printf(" adjv[tst][i] %u , test %u \n", adjv[tst][i] , test  );
-                float thread = ((static_cast<float>(adjv[tst][i]) / static_cast<float>(blockDim.x)) - static_cast<float>(test)) * static_cast<float>(blockDim.x);
-                const index_t id = test + static_cast<index_t>(thread)*MAX_CELLS_PER_THREAD ; 
+            
+                index_t thread = adjv[tst][i] % blockDim.x ; 
+                index_t test = adjv[tst][i] / blockDim.x ;
+                index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
+
                 if (f[cid] > f[id]) 
                 {
                     f[cid] = f[id];
@@ -292,6 +293,11 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
+        
+        cid = tst*blockDim + tid 
+         int test  = cid / blockdim 
+         cid / blockdim  - test 
+
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
