@@ -111,7 +111,6 @@ inline void aggregate_cluster(
 }
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
-    const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
     cluster* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
@@ -149,7 +148,7 @@ inline void aggregate_cluster2(
             break;
         }
 
-        const cell this_cell = cells[pos].c;
+        //const cell this_cell = cells[pos].c;
         const unsigned int this_cell_ch0  = id_fathers[j].channel0;
         const unsigned int this_cell_ch1  = id_fathers[j].channel1;
         const scalar this_cell_activation  = id_fathers[j].activation;

@@ -429,9 +429,9 @@ __global__ void ccl_kernel2(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
     for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        id_fathers[cid].channel0 = cells_device[cid+start].channel0;
-        id_fathers[cid].channel1 = cells_device[cid+start].channel1;
-        id_fathers[cid].activation = cells_device[cid+start].activation;
+        id_fathers[cid].channel0 = cells_device[cid+start].c.channel0;
+        id_fathers[cid].channel1 = cells_device[cid+start].c.channel1;
+        id_fathers[cid].activation = cells_device[cid+start].c.activation;
         id_fathers[cid].module_link = cells_device[cid+start].module_link;
 
     }
@@ -451,7 +451,7 @@ bool gf_changed;
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
+        device::reduce_problem_cell2( cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
       
        
@@ -587,7 +587,7 @@ __syncthreads();
              */
             const unsigned int id = atomicAdd(&count, 1);
             device::aggregate_cluster2(
-                cells_device, modules_device, id_fathers, start, end, cid,
+                 modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links, id);
         }
     }

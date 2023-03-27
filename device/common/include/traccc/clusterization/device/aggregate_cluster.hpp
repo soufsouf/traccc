@@ -42,7 +42,7 @@ inline void aggregate_cluster(
 
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
-    const alt_cell_collection_types::const_device& cells,
+    
     const cell_module_collection_types::const_device& modules,
     cluster* f,
     const unsigned int start, const unsigned int end, const unsigned short cid,
