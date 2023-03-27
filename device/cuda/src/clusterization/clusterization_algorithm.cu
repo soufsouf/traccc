@@ -333,6 +333,8 @@ __global__ void ccl_kernel(
         }
     }
 }
+
+
 __global__ void ccl_kernel2(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
@@ -426,12 +428,12 @@ __global__ void ccl_kernel2(
      */
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
-
+/*
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
     }
-    __syncthreads();
+    __syncthreads();*/
 
     //unsigned short old_id,new_id;
     

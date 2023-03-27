@@ -97,6 +97,7 @@ inline void reduce_problem_cell2(
     const channel_id c1 = cells[pos].c.channel1;
     const unsigned int mod_id = cells[pos].module_link;
     unsigned short min_id = cid;
+    adjc =0;
     /*
      * First, we traverse the cells backwards, starting from the current
      * cell and working back to the first, collecting adjacent cells
