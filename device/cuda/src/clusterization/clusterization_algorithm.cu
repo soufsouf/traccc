@@ -56,8 +56,7 @@ __device__ void fast_sv_1(index_t* f,
                            unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][9],
                            index_t tid,
-                          const index_t blckDim , 
-                          unsigned int size) {
+                          const index_t blckDim) {
     /*
      * The algorithm finishes if an iteration leaves the arrays unchanged.
      * This varible will be set if a change is made, and dictates if another
@@ -145,7 +144,8 @@ __device__ void fast_sv_1(index_t* f,
         gf_changed = false;
 
         #pragma unroll
-        for (index_t tst = 0 , cid ; (cid = tst + tid*MAX_CELLS_PER_THREAD) <  size; ++tst) {
+        for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
+            const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
 
                 //#pragma unroll
                 for (index_t i = 0; i < adjc[tst]; ++i){    // neighbors communication
@@ -293,6 +293,8 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
+        
+
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
@@ -313,7 +315,7 @@ __global__ void ccl_kernel(
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-    fast_sv_1(f, adjc, adjv ,tid, blckDim , size);
+    fast_sv_1(f, adjc, adjv ,tid, blckDim);
 
     __syncthreads();
 
