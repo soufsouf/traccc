@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "locale": "cpp",
+        "thread": "cpp",
+        "xlocale": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp"
     }
 }

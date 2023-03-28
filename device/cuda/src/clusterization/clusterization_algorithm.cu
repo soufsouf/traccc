@@ -20,8 +20,8 @@
 
 // System include(s).
 #include <algorithm>
-#define FP(i) 4*i
-#define FP_next(i) 4*i + 1 
+#define FP(i) 2*i
+#define FP_next(i) 2*i + 1 
 namespace traccc::cuda {
 
 namespace {
@@ -79,11 +79,15 @@ __device__ void fast_sv_1(index_t* f ,
          * together.
          */
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + MAX_CELLS_PER_THREAD*tid;
 
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
-                index_t q = f[FP_next(adjv[tst][k])];
+
+                index_t thread = adjv[tst][k] % blockDim.x ; 
+                index_t id = (adjv[tst][k] / blockDim.x) + (thread*MAX_CELLS_PER_THREAD) ; 
+
+                index_t q = f[FP_next(id)];
 
                 if (f[FP_next(cid)] > q) {
                     f[FP(f[FP(cid)])] = q;
@@ -100,7 +104,7 @@ __device__ void fast_sv_1(index_t* f ,
 
 #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + MAX_CELLS_PER_THREAD*tid;
             /*
              * The second stage is shortcutting, which is an optimisation that
              * allows us to look at any shortcuts in the cluster IDs that we
@@ -118,7 +122,7 @@ __device__ void fast_sv_1(index_t* f ,
 
 #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + MAX_CELLS_PER_THREAD*tid;
             /*
              * Update the array for the next generation, keeping track of any
              * changes we make.
@@ -256,12 +260,13 @@ __global__ void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + tid;
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
-        f[FP(cid)] = cid;
-        f[FP_next(cid)] = cid;
+        f[FP(ccid)] = cid;
+        f[FP_next(ccid)] = cid;
     }
 
     /*
@@ -291,7 +296,8 @@ __global__ void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[FP(cid)] == cid) {
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        if (f[FP(ccid)] == cid) {
             atomicAdd(&outi, 1);
         }
         //printf("f[cid] %u \n ", f[cid] );
@@ -329,14 +335,15 @@ __global__ void ccl_kernel(
     //vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (f[FP(cid)] == cid) {
+        const index_t ccid = tst + tid*MAX_CELLS_PER_THREAD;
+        if (f[FP(ccid)] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster(
-                cells_device, modules_device, f , max_cells_per_partition , start, end, cid,
+                cells_device, modules_device, f , max_cells_per_partition , start, end, cid, 
                 measurements_device[groupPos + id], cell_links, groupPos + id);
         }
     }

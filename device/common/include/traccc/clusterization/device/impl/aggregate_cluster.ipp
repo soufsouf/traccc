@@ -20,7 +20,7 @@ inline void aggregate_cluster(
     const cell_module_collection_types::const_device& modules,
     const unsigned short* f,
     const unsigned int size , 
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const unsigned int start, const unsigned int end, const unsigned short cid, 
     alt_measurement& out, vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
 
@@ -61,7 +61,12 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (f[FP(j)] == cid) {
+
+        index_t thread = j % blockDim.x ; 
+        index_t id = (j / blockDim.x) + (thread*12) ; 
+
+
+        if (f[FP(id)] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
