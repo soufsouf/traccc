@@ -62,8 +62,8 @@ inline void aggregate_cluster(
          * for position and add them to our accumulators.
          */
 
-        index_t thread = j % blockDim.x ; 
-        index_t id = (j / blockDim.x) + (thread*12) ; 
+        unsigned short thread = j % blockDim.x ; 
+        unsigned short id = (j / blockDim.x) + (thread*12) ; 
 
 
         if (f[FP(id)] == cid) {
