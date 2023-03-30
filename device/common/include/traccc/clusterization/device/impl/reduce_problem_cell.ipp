@@ -87,7 +87,7 @@ inline void reduce_problem_cell(
 
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
-    const unsigned short cid, const index_t size,
+    const unsigned short cid, const unsigned int size,
     unsigned char& adjc, unsigned short adjv[8], cluster* id_fathers) {
     //const unsigned int pos = cid + start;
     // Check if this code can benefit from changing to structs of arrays, as the
