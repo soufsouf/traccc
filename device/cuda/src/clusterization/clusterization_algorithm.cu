@@ -567,7 +567,7 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-    const unsigned int groupPos = outi;
+     unsigned int groupPos = outi;
 
     __syncthreads();
 
