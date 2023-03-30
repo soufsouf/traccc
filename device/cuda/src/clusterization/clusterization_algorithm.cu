@@ -451,7 +451,7 @@ bool gf_changed;
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell2( cid, start, end, adjc[tst],
+        device::reduce_problem_cell2( cid, size, adjc[tst],
                                     adjv[tst],id_fathers);
       
        

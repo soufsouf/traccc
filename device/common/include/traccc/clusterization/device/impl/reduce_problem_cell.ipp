@@ -87,7 +87,7 @@ inline void reduce_problem_cell(
 
 TRACCC_DEVICE
 inline void reduce_problem_cell2(
-    const unsigned short cid, const unsigned int start, const unsigned int end,
+    const unsigned short cid, const index_t size,
     unsigned char& adjc, unsigned short adjv[8], cluster* id_fathers) {
     //const unsigned int pos = cid + start;
     // Check if this code can benefit from changing to structs of arrays, as the
@@ -127,7 +127,7 @@ inline void reduce_problem_cell2(
      * Now we examine all the cells past the current one, using almost
      * the same logic as in the backwards pass.
      */
-    for (unsigned int j = cid + 1; j < end - start; ++j) {
+    for (unsigned int j = cid + 1; j < size; ++j) {
         /*
          * Note that this check now looks in the opposite direction! An
          * important difference.
