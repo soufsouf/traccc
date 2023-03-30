@@ -567,7 +567,7 @@ __syncthreads();
     /*
      * Get the position to fill the measurements found in this thread group.
      */
-    const unsigned int groupPos = outi;
+    /*const unsigned int groupPos = outi;
 
     __syncthreads();
 
@@ -575,7 +575,7 @@ __syncthreads();
         outi = 0;
     }
 
-    __syncthreads();
+    __syncthreads();*/
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
@@ -588,7 +588,7 @@ __syncthreads();
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster2(
                  modules_device, id_fathers, start,size, cid,
-                spacepoints_device, cell_links,groupPos+id);
+                spacepoints_device, cell_links,id);
         }
     }
     //printf("hello world \n");
