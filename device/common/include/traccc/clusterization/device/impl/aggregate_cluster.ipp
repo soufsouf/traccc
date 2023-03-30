@@ -111,10 +111,9 @@ inline void aggregate_cluster(
 }
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
-    const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    unsigned short* id_fathers,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const cluster* id_fathers,
+    const unsigned int start, const unsigned short size, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
@@ -130,45 +129,49 @@ inline void aggregate_cluster2(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = cells[cid + start].module_link;
+    const auto module_link = id_fathers[cid].module_link;
     const cell_module this_module = modules.at(module_link);
-    const unsigned short partition_size = end - start;
+   // const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
 
-    for (unsigned short j = cid; j < partition_size; j++) {
+    for (unsigned short j = cid; j < size; j++) {
 
-        assert(j < f.size());
+        //assert(j < f.size());
 
-        const unsigned int pos = j + start;
+       // const unsigned int pos = j + start;
         /*
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (cells[pos].module_link != module_link) {
+        if (id_fathers[j].module_link != module_link) {
             break;
         }
 
-        const cell this_cell = cells[pos].c;
+        //const cell this_cell = cells[pos].c;
+        const unsigned int this_cell_ch0  = id_fathers[j].channel0;
+        const unsigned int this_cell_ch1  = id_fathers[j].channel1;
+        const scalar this_cell_activation  = id_fathers[j].activation;
+        
 
         /*
          * If the value of this cell is equal to our, that means it
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (id_fathers[j] == cid) {
+        if (id_fathers[j].id_cluster == cid) {
 
-            if (this_cell.channel1 > maxChannel1) {
-                maxChannel1 = this_cell.channel1;
+            if (this_cell_ch1 > maxChannel1) {
+                maxChannel1 = this_cell_ch1;
             }
 
             const float weight = traccc::detail::signal_cell_modelling(
-                this_cell.activation, this_module);
+                this_cell_activation, this_module);
 
             if (weight > this_module.threshold) {
-                totalWeight += this_cell.activation;
+                totalWeight += this_cell_activation;
                 const point2 cell_position =
-                    traccc::detail::position_from_cell(this_cell, this_module);
+                    traccc::detail::position_from_cell2(this_cell_ch0,this_cell_ch1, this_module);
                 const point2 prev = mean;
                 const point2 diff = cell_position - prev;
 
@@ -179,14 +182,14 @@ inline void aggregate_cluster2(
                 }
             }
 
-            cell_links_device.at(pos) = link;
+            cell_links_device.at(j + start) = link;
         }
 
         /*
          * Terminate the process earlier if we have reached a cell sufficiently
          * far away from the cluster in the dominant axis.
          */
-        if (this_cell.channel1 > maxChannel1 + 1) {
+        if (this_cell_ch1 > maxChannel1 + 1) {
             break;
         }
     }
