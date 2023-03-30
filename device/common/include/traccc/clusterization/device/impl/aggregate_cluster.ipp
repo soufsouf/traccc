@@ -113,7 +113,7 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
     const cell_module_collection_types::const_device& modules,
     const cluster* id_fathers,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const unsigned int start, const unsigned short size, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
@@ -131,13 +131,13 @@ inline void aggregate_cluster2(
     point2 mean{0., 0.}, var{0., 0.};
     const auto module_link = id_fathers[cid].module_link;
     const cell_module this_module = modules.at(module_link);
-    const unsigned short partition_size = end - start;
+   // const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
 
-    for (unsigned short j = cid; j < partition_size; j++) {
+    for (unsigned short j = cid; j < size; j++) {
 
-        assert(j < f.size());
+        //assert(j < f.size());
 
        // const unsigned int pos = j + start;
         /*

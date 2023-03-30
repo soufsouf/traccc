@@ -45,7 +45,7 @@ inline void aggregate_cluster2(
     
     const cell_module_collection_types::const_device& modules,
     const cluster* f,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const unsigned int start, const unsigned short size, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link);

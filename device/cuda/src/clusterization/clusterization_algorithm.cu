@@ -587,7 +587,7 @@ __syncthreads();
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster2(
-                 modules_device, id_fathers, start, end, cid,
+                 modules_device, id_fathers, start,size, cid,
                 spacepoints_device, cell_links,groupPos+ id);
         }
     }
