@@ -102,6 +102,7 @@ inline void reduce_problem_cell2(
      * cell and working back to the first, collecting adjacent cells
      * along the way.
      */
+    #pragma unroll
     for (unsigned int j = cid - 1; j < cid ; --j) {
         /*
          * Since the data is sorted, we can assume that if we see a cell
@@ -127,6 +128,7 @@ inline void reduce_problem_cell2(
      * Now we examine all the cells past the current one, using almost
      * the same logic as in the backwards pass.
      */
+    #pragma unroll
     for (unsigned int j = cid + 1; j < size; ++j) {
         /*
          * Note that this check now looks in the opposite direction! An
