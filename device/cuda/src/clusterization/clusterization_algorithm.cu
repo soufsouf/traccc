@@ -571,11 +571,11 @@ __syncthreads();
 
     __syncthreads();
 
-    if (tid == 0) {
+  /*  if (tid == 0) {
         outi = 0;
     }
 
-    __syncthreads();
+    __syncthreads();*/
 
    // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
@@ -585,10 +585,10 @@ __syncthreads();
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
-            const unsigned int id = atomicAdd(&outi, 1);
+            const unsigned int id = atomicAdd(&groupPos, 1);
             device::aggregate_cluster2(
                  modules_device, id_fathers, start,size, cid,
-                spacepoints_device, cell_links,groupPos+ id);
+                spacepoints_device, cell_links,groupPos);
         }
     }
     //printf("hello world \n");
