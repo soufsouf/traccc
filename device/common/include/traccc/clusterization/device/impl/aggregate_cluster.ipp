@@ -111,9 +111,8 @@ inline void aggregate_cluster(
 }
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
-    const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    cluster* id_fathers,
+    const cluster* id_fathers,
     const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
@@ -130,7 +129,7 @@ inline void aggregate_cluster2(
      */
     float totalWeight = 0.;
     point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = cells[cid+start].module_link;
+    const auto module_link = id_fathers[cid].module_link;
     const cell_module this_module = modules.at(module_link);
     const unsigned short partition_size = end - start;
 
@@ -145,7 +144,7 @@ inline void aggregate_cluster2(
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (cells[j+start].module_link != module_link) {
+        if (id_fathers[j].module_link != module_link) {
             break;
         }
 

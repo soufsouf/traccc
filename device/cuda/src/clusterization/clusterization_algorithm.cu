@@ -432,7 +432,7 @@ __global__ void ccl_kernel2(
         id_fathers[cid].channel0 = cells_device[cid+start].c.channel0;
         id_fathers[cid].channel1 = cells_device[cid+start].c.channel1;
         id_fathers[cid].activation = cells_device[cid+start].c.activation;
-       // id_fathers[cid].module_link = cells_device[cid+start].module_link;
+        id_fathers[cid].module_link = cells_device[cid+start].module_link;
 
     }
     __syncthreads();
@@ -451,7 +451,7 @@ bool gf_changed;
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell2( cells_device,cid, start, end, adjc[tst],
+        device::reduce_problem_cell2( cid, start, end, adjc[tst],
                                     adjv[tst],id_fathers);
       
        
@@ -586,7 +586,7 @@ __syncthreads();
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
-            device::aggregate_cluster2(cells_device,
+            device::aggregate_cluster2(
                  modules_device, id_fathers, start, end, cid,
                 spacepoints_device, cell_links,groupPos+ id);
         }
