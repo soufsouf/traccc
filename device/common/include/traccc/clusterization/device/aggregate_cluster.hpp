@@ -41,11 +41,11 @@ inline void aggregate_cluster(
     const unsigned int link);
 
 TRACCC_HOST_DEVICE
-inline void aggregate_cluster(
-    const alt_cell_collection_types::const_device& cells,
+inline void aggregate_cluster2(
+    
     const cell_module_collection_types::const_device& modules,
-     unsigned short* f,
-    const unsigned int start, const unsigned int end, const unsigned short cid,
+    const cluster* f,
+    const unsigned int start, const unsigned short size, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link);
