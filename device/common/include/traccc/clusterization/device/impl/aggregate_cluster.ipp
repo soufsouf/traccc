@@ -173,7 +173,7 @@ inline void aggregate_cluster2(
                 const point2 diff = cell_position - prev;
 
                 mean = prev + (weight / totalWeight) * diff;
-                #pragma unroll
+                
                 for (char i = 0; i < 2; ++i) {
                     var[i] = var[i] +
                              weight * (diff[i]) * (cell_position[i] - mean[i]);
@@ -192,7 +192,7 @@ inline void aggregate_cluster2(
         }
     }
     if (totalWeight > 0.) {
-        #pragma unroll
+        
         for (char i = 0; i < 2; ++i) {
             var[i] /= totalWeight;
         }
