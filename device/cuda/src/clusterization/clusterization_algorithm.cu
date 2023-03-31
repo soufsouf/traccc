@@ -376,7 +376,7 @@ __global__ void ccl_kernel2(
         start_partition_device[blockIdx.x] = blockIdx.x * target_cells_per_partition;
         unsigned int start = start_partition_device[blockIdx.x];
         assert(start < num_cells);
-        end = std::min(num_cells, start + target_cells_per_partition);
+        //end = std::min(num_cells, start + target_cells_per_partition);
         outi = 0;
         //count =0;
         /*
@@ -408,9 +408,9 @@ __global__ void ccl_kernel2(
     __syncthreads();
 
     //const index_t size = end - start;
-    const index_t size = (blockIdx.x == 0? partitions_start_device[blockIdx.x]:
-                                std::min(gridDim.x, partitions_start_device[blockIdx.x + 1])-
-                                        partitions_start_device[blockIdx.x]);
+    const index_t size = (blockIdx.x == 0? start_partition_device[blockIdx.x]:
+                                std::min(gridDim.x, start_partition_device[blockIdx.x + 1])-
+                                        start_partition_device[blockIdx.x]);
     assert(size <= max_cells_per_partition);
 
     // Check if any work needs to be done
