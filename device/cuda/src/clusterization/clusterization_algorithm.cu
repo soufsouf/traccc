@@ -435,10 +435,10 @@ __global__ void ccl_kernel2(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
     for (unsigned int tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        id_fathers[cid].channel0 = cells_device[cid+partitions_start_device[blockIdx.x]].c.channel0;
-        id_fathers[cid].channel1 = cells_device[cid+partitions_start_device[blockIdx.x]].c.channel1;
-        id_fathers[cid].activation = cells_device[cid+partitions_start_device[blockIdx.x]].c.activation;
-        id_fathers[cid].module_link = cells_device[cid+partitions_start_device[blockIdx.x]].module_link;
+        id_fathers[cid].channel0 = cells_device[cid+start_partition_device[blockIdx.x]].c.channel0;
+        id_fathers[cid].channel1 = cells_device[cid+start_partition_device[blockIdx.x]].c.channel1;
+        id_fathers[cid].activation = cells_device[cid+start_partition_device[blockIdx.x]].c.activation;
+        id_fathers[cid].module_link = cells_device[cid+start_partition_device[blockIdx.x]].module_link;
 
     }
     __syncthreads();
@@ -593,7 +593,7 @@ __syncthreads();
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster2(
-                 modules_device, id_fathers, partitions_start_device[blockIdx.x],size, cid,
+                 modules_device, id_fathers, start_partition_device[blockIdx.x],size, cid,
                 spacepoints_device, cell_links,id);
         }
     }
