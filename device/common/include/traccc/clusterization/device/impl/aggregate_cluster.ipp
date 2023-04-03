@@ -128,17 +128,14 @@ inline void aggregate_cluster2(
      * with a higher ID.
      */
     float totalWeight = 0.;
-<<<<<<< HEAD
+
    // point2 mean{0., 0.}, var{0., 0.};
     scalar mean_x = 0.;
     scalar mean_y = 0.;
     scalar var_x = 0.;
     scalar var_y = 0.;
     const auto module_link = cells[cid + start].module_link;
-=======
-    point2 mean{0., 0.}, var{0., 0.};
-    const auto module_link = id_fathers[cid].module_link;
->>>>>>> 67767691eae67cc408a08dddeddd8194309f0dce
+
     const cell_module this_module = modules.at(module_link);
    // const unsigned short partition_size = end - start;
 
@@ -188,19 +185,10 @@ inline void aggregate_cluster2(
                 const scalar diff_y = cell_position[1] - prev_y;
                 //const point2 diff = cell_position - prev;
 
-<<<<<<< HEAD
                 mean_x = prev_x + (weight / totalWeight) * diff_x;
                 mean_y = prev_y + (weight / totalWeight) * diff_y;
                 
-                /*for (char i = 0; i < 2; ++i) {
-=======
-                mean = prev + (weight / totalWeight) * diff;
-                #pragma unroll
-                for (char i = 0; i < 2; ++i) {
->>>>>>> 67767691eae67cc408a08dddeddd8194309f0dce
-                    var[i] = var[i] +
-                             weight * (diff[i]) * (cell_position[i] - mean[i]);
-                }*/
+  
                 var_x = var_x +
                              weight * (diff_x) * (cell_position[i] - mean_x);
                 var_y = var_y +
@@ -219,15 +207,7 @@ inline void aggregate_cluster2(
         }
     }
     if (totalWeight > 0.) {
-<<<<<<< HEAD
-        
-        /*for (char i = 0; i < 2; ++i) {
-=======
-        #pragma unroll
-        for (char i = 0; i < 2; ++i) {
->>>>>>> 67767691eae67cc408a08dddeddd8194309f0dce
-            var[i] /= totalWeight;
-        }*/
+
         var_x /= totalWeight;
         var_y /= totalWeight;
         const auto pitch = this_module.pixel.get_pitch();
