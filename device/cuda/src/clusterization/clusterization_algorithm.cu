@@ -356,8 +356,7 @@ __global__ void ccl_kernel2(
     __shared__ unsigned int outi;
     extern __shared__ index_t fathers[];
     index_t* id_fathers = &fathers[0];
-   // index_t* f = &fathers[max_cells_per_partition];
-    //index_t* f_next = &fathers[2*max_cells_per_partition];
+
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -427,13 +426,7 @@ __global__ void ccl_kernel2(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
 
-/*#pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        adjc[tst] = 0;
-    }
-    __syncthreads();*/
 
-    //unsigned short old_id,new_id;
     
 bool gf_changed;
 #pragma unroll
@@ -448,24 +441,7 @@ bool gf_changed;
     }
     
  __syncthreads();
-        /*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-            for(int k = 0 ; k< 10;k++){
-            old_id = id_fathers[cid];
-            count = 0;
-            for(unsigned char i = 0; i< adjc[tst]; i ++) {
-                if(id_fathers[adjv[tst][i]] < old_id) {
-                    new_id = id_fathers[adjv[tst][i]];
-                } 
-                else if(new_id == old_id)  count ++; 
-            }
-            id_fathers[cid] = new_id;
 
-            if(count > 3) break;
-            //printf("hello 2\n");
-            }
-        }*/
-        
-   
       do {
         
         gf_changed = false;
@@ -500,18 +476,6 @@ __syncthreads();
      */
     
     
-/**
-#pragma unroll
-    for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;*/
-        /*
-         * At the start, the values of f and f_next should be equal to the
-         * ID of the cell.
-         */
-        /*f[cid] = cid;
-        f_next[cid] = cid;
-    }
-*/
     /*
      * Now that the data has initialized, we synchronize again before we
      * move onto the actual processing part.
