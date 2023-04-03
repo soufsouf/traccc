@@ -111,9 +111,10 @@ inline void aggregate_cluster(
 }
 TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
+    const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    const cluster* id_fathers,
-    const unsigned int start, const unsigned short size, const unsigned short cid,
+    unsigned short* id_fathers,
+    const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
@@ -128,104 +129,92 @@ inline void aggregate_cluster2(
      * with a higher ID.
      */
     float totalWeight = 0.;
-
-   // point2 mean{0., 0.}, var{0., 0.};
     scalar mean_x = 0.;
     scalar mean_y = 0.;
     scalar var_x = 0.;
     scalar var_y = 0.;
     const auto module_link = cells[cid + start].module_link;
-
     const cell_module this_module = modules.at(module_link);
-   // const unsigned short partition_size = end - start;
+    const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
     #pragma unroll
-    for (unsigned short j = cid; j < size; j++) {
+    for (unsigned short j = cid; j < partition_size; j++) {
 
         //assert(j < f.size());
 
-       // const unsigned int pos = j + start;
+        const unsigned int pos = j + start;
         /*
          * Terminate the process earlier if we have reached a cell sufficiently
          * in a different module.
          */
-        if (id_fathers[j].module_link != module_link) {
+        if (cells[pos].module_link != module_link) {
             break;
         }
 
-        //const cell this_cell = cells[pos].c;
-        const unsigned int this_cell_ch0  = id_fathers[j].channel0;
-        const unsigned int this_cell_ch1  = id_fathers[j].channel1;
-        const scalar this_cell_activation  = id_fathers[j].activation;
-        
+        const cell this_cell = cells[pos].c;
 
         /*
          * If the value of this cell is equal to our, that means it
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (id_fathers[j].id_cluster == cid) {
+        if (id_fathers[j] == cid) {
 
-            if (this_cell_ch1 > maxChannel1) {
-                maxChannel1 = this_cell_ch1;
+            if (this_cell.channel1 > maxChannel1) {
+                maxChannel1 = this_cell.channel1;
             }
 
             const float weight = traccc::detail::signal_cell_modelling(
-                this_cell_activation, this_module);
+                this_cell.activation, this_module);
 
             if (weight > this_module.threshold) {
-                totalWeight += this_cell_activation;
+                totalWeight += this_cell.activation;
                 const point2 cell_position =
-                    traccc::detail::position_from_cell2(this_cell_ch0,this_cell_ch1, this_module);
-                const point2 prev = mean;
+                    traccc::detail::position_from_cell(this_cell, this_module);
                 const scalar prev_x = mean_x ;
-                const scalar prev_x = mean_y ;
+                const scalar prev_y= mean_y ;
                 const scalar diff_x = cell_position[0] - prev_x;
                 const scalar diff_y = cell_position[1] - prev_y;
-                //const point2 diff = cell_position - prev;
 
-                mean_x = prev_x + (weight / totalWeight) * diff_x;
+
+                 mean_x = prev_x + (weight / totalWeight) * diff_x;
                 mean_y = prev_y + (weight / totalWeight) * diff_y;
-                
-  
+
                 var_x = var_x +
                              weight * (diff_x) * (cell_position[i] - mean_x);
                 var_y = var_y +
                              weight * (diff_y) * (cell_position[i] - mean_y);
+
             }
 
-            cell_links_device.at(j + start) = link;
+            cell_links_device.at(pos) = link;
         }
 
         /*
          * Terminate the process earlier if we have reached a cell sufficiently
          * far away from the cluster in the dominant axis.
          */
-        if (this_cell_ch1 > maxChannel1 + 1) {
+        if (this_cell.channel1 > maxChannel1 + 1) {
             break;
         }
     }
     if (totalWeight > 0.) {
-
+        
         var_x /= totalWeight;
         var_y /= totalWeight;
         const auto pitch = this_module.pixel.get_pitch();
         var_x = var_x + pitch[0] * pitch[0] / 12;
         var_y = var_y +  pitch[1] * pitch[1] / 12;
+
     }
-
-    /*
-     * Fill output vector with calculated cluster properties
-     */
-   
-
-    point3 local_3d = {mean_x, mean_y, 0.};
+ point3 local_3d = {mean_x, mean_y, 0.};
     point3 global = this_module.placement.point_to_global(local_3d);
     point2 mean = {mean_x, mean_y};
     point2 var = {var_x, var_y};
     // Fill the result object with this spacepoint
     spacepoints_device[link] = {global, {mean, var, 0}};
 }
+
 
 }  // namespace traccc::device
