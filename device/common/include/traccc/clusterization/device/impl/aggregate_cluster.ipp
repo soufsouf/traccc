@@ -182,9 +182,9 @@ inline void aggregate_cluster2(
                 mean_y = prev_y + (weight / totalWeight) * diff_y;
 
                 var_x = var_x +
-                             weight * (diff_x) * (cell_position[i] - mean_x);
+                             weight * (diff_x) * (cell_position[0] - mean_x);
                 var_y = var_y +
-                             weight * (diff_y) * (cell_position[i] - mean_y);
+                             weight * (diff_y) * (cell_position[1] - mean_y);
 
             }
 
