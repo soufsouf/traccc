@@ -152,7 +152,10 @@ inline void aggregate_cluster2(
             break;
         }
 
-        const cell this_cell = cells[pos].c;
+        //const cell this_cell = cells[pos].c;
+        const unsigned int ch0 = cells[pos].c.channel0 ;
+        const unsigned int ch1 = cells[pos].c.channel1;
+        const scalar activation = cells[pos].c.activation;
 
         /*
          * If the value of this cell is equal to our, that means it
@@ -161,17 +164,17 @@ inline void aggregate_cluster2(
          */
         if (id_fathers[j] == cid) {
 
-            if (this_cell.channel1 > maxChannel1) {
-                maxChannel1 = this_cell.channel1;
+            if (ch1 > maxChannel1) {
+                maxChannel1 = ch1;
             }
 
             const float weight = traccc::detail::signal_cell_modelling(
-                this_cell.activation, this_module);
+                activation, this_module);
 
             if (weight > this_module.threshold) {
-                totalWeight += this_cell.activation;
+                totalWeight += activation;
                 const point2 cell_position =
-                    traccc::detail::position_from_cell(this_cell, this_module);
+                    traccc::detail::position_from_cell2(ch0,ch1, this_module);
                 const scalar prev_x = mean_x ;
                 const scalar prev_y= mean_y ;
                 const scalar diff_x = cell_position[0] - prev_x;
@@ -195,7 +198,7 @@ inline void aggregate_cluster2(
          * Terminate the process earlier if we have reached a cell sufficiently
          * far away from the cluster in the dominant axis.
          */
-        if (this_cell.channel1 > maxChannel1 + 1) {
+        if (ch1 > maxChannel1 + 1) {
             break;
         }
     }
