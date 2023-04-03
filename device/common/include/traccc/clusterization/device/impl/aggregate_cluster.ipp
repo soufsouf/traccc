@@ -141,9 +141,6 @@ inline void aggregate_cluster2(
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
     #pragma unroll
     for (unsigned short j = cid; j < partition_size; j++) {
-
-        //assert(j < f.size());
-
         const unsigned int pos = j + start;
         /*
          * Terminate the process earlier if we have reached a cell sufficiently
@@ -204,10 +201,7 @@ inline void aggregate_cluster2(
         }
     }
     if (totalWeight > 0.) {
-        
-        /*for (char i = 0; i < 2; ++i) {
-            var[i] /= totalWeight;
-        }*/
+
         var_x /= totalWeight;
         var_y/= totalWeight;
         const auto pitch = this_module.pixel.get_pitch();
