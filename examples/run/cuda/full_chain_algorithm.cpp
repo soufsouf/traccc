@@ -85,13 +85,20 @@ full_chain_algorithm::output_type full_chain_algorithm::operator()(
     cell_module_collection_types::buffer modules_buffer(modules.size(),
                                                         *m_cached_device_mr);
     m_copy(vecmem::get_data(modules), modules_buffer);
-
+    traccc::spacepoint_container spacepoints_cuda;
+     spacepoints_cuda.spacepoints_buffer  = traccc::spacepoint_collection_types::buffer(
+                    alt_cells_per_event.size(), mr.main);
+            spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
+            cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
+            cudaStream_t m_stream = traccc::cuda::details::get_stream(stream);
+            CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
+                                     sizeof(unsigned int),m_stream));
     // Run the clusterization (asynchronously).
-    const clusterization_algorithm::output_type spacepoints =
-        m_clusterization(cells_buffer, modules_buffer);
+    const clusterization_algorithm2::output_type spacepoints =
+        m_clusterization(cells_buffer, modules_buffer,spacepoints_cuda );
     const track_params_estimation::output_type track_params =
         m_track_parameter_estimation(spacepoints.first,
-                                     m_seeding(spacepoints.first));
+                                     m_seeding(spacepoints_cuda));
 
     // Get the final data back to the host.
     bound_track_parameters_collection_types::host result;

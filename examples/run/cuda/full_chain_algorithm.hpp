@@ -88,9 +88,9 @@ class full_chain_algorithm
     /// Adapt to different GPUs' capabilities.
     unsigned short m_target_cells_per_partition;
     /// Clusterization algorithm
-    clusterization_algorithm m_clusterization;
+    clusterization_algorithm2 m_clusterization;
     /// Seeding algorithm
-    seeding_algorithm m_seeding;
+    seeding_algorithm2 m_seeding;
     /// Track parameter estimation algorithm
     track_params_estimation m_track_parameter_estimation;
 
