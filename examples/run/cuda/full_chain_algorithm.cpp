@@ -87,7 +87,7 @@ full_chain_algorithm::output_type full_chain_algorithm::operator()(
     m_copy(vecmem::get_data(modules), modules_buffer);
     spacepoint_container spacepoints_cuda;
      spacepoints_cuda.spacepoints_buffer  = traccc::spacepoint_collection_types::buffer(
-                    cells.size(), *m_cached_device_mr);
+                    cells.size(), memory_resource{*m_cached_device_mr, &m_host_mr});
             spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
             cudaMallocManaged(&spacepoints_cuda.size,sizeof(unsigned int));
             CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_cuda.size, 0,
