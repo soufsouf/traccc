@@ -85,7 +85,7 @@ full_chain_algorithm::output_type full_chain_algorithm::operator()(
     cell_module_collection_types::buffer modules_buffer(modules.size(),
                                                         *m_cached_device_mr);
     m_copy(vecmem::get_data(modules), modules_buffer);
-    traccc::spacepoint_container spacepoints_cuda;
+    spacepoint_container spacepoints_cuda;
      spacepoints_cuda.spacepoints_buffer  = traccc::spacepoint_collection_types::buffer(
                     cells.size(), *m_cached_device_mr);
             spacepoints_cuda.spacepoints_view=spacepoints_cuda.spacepoints_buffer;
