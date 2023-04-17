@@ -72,15 +72,20 @@ using spacepoint_collection_types = collection_types<spacepoint>;
 /// Declare all spacepoint container types
 using spacepoint_container_types = container_types<geometry_id, spacepoint>;
 struct spacepoint_container {
-    traccc::spacepoint_collection_types::buffer spacepoints_buffer;
-    traccc::spacepoint_collection_types::view spacepoints_view;
+    std::shared_ptr<traccc::spacepoint_collection_types::buffer> spacepoints_buffer;
     unsigned int* size;
-    spacepoint_container(){}
-    spacepoint_container(const spacepoint_container &a){
-     //spacepoints_buffer = a.spacepoints_buffer;
-     spacepoints_view = a.spacepoints_view;
-     size = a.size;
-    }
 
+    /*spacepoint_container& operator=(const spacepoint_container& sp) {
+        size = sp.size;
+        spacepoints_buffer = sp.spacepoints_buffer;
+        return *this;
+    }*/
+
+    spacepoint_container() : spacepoints_buffer(nullptr), size(0) {};
+
+    /*spacepoint_container(const spacepoint_container& sp) {
+        ;
+        size = sp.size;
+    }*/
 };
 }  // namespace traccc

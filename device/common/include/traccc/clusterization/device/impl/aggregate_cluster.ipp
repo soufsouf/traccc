@@ -135,7 +135,7 @@ inline void aggregate_cluster2(
     const unsigned short partition_size = end - start;
 
     channel_id maxChannel1 = std::numeric_limits<channel_id>::min();
-    #pragma unroll
+    //#pragma unroll
     for (unsigned short j = cid; j < partition_size; j++) {
 
         const unsigned int pos = j + start;

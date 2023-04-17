@@ -338,7 +338,7 @@ __global__ void ccl_kernel2(
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
-    //spacepoint_collection_types::view spacepoints_view,
+    traccc::spacepoint_collection_types::view spacepoints_view,
     traccc::spacepoint_container spacepoints_container,
     /*unsigned int& measurement_count,*/
     vecmem::data::vector_view<unsigned int> cell_links) {
@@ -347,7 +347,7 @@ __global__ void ccl_kernel2(
     const index_t blckDim = blockDim.x;
 
     const alt_cell_collection_types::const_device cells_device(cells_view);
-    spacepoint_collection_types::device spacepoints_device(spacepoints_container.spacepoints_view);
+    traccc::spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     const unsigned int num_cells = cells_device.size();
     __shared__ unsigned int start, end;
     /*
@@ -695,8 +695,7 @@ clusterization_algorithm2::clusterization_algorithm2(
 
 clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const alt_cell_collection_types::const_view& cells,
-    const cell_module_collection_types::const_view& modules,
-    const traccc::spacepoint_container& spacepoints_container) const {
+    const cell_module_collection_types::const_view& modules) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
@@ -710,14 +709,15 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
                                                                  m_mr.main);*/
 
     // Counter for number of measurements
-    /*traccc::spacepoint_container spacepoints_container;
-    spacepoints_container.spacepoints_buffer  = spacepoint_collection_types::buffer(
-        num_cells, m_mr.main);
-    spacepoints_container.spacepoints_view=spacepoints_container.spacepoints_buffer;
+    traccc::spacepoint_container spacepoints_container;
+    spacepoints_container.spacepoints_buffer  = std::make_shared<spacepoint_collection_types::buffer>(
+        spacepoint_collection_types::buffer(num_cells, m_mr.main));
+    traccc::spacepoint_collection_types::view
+    spacepoints_view(*(spacepoints_container.spacepoints_buffer));
     cudaMallocManaged(&spacepoints_container.size,sizeof(unsigned int));
     CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_container.size, 0,
-                                     sizeof(unsigned int), stream));*/
-    
+                                     sizeof(unsigned int), stream));
+
     const unsigned short max_cells_per_partition =
         (m_target_cells_per_partition * MAX_CELLS_PER_THREAD +
          TARGET_CELLS_PER_THREAD - 1) /
@@ -737,7 +737,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         ccl_kernel2<<<num_partitions, threads_per_partition,
                       max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
-            m_target_cells_per_partition, spacepoints_container,
+            m_target_cells_per_partition, spacepoints_view, spacepoints_container,
             /**num_measurements_device,*/ cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());

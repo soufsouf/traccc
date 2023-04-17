@@ -78,7 +78,8 @@ seeding_algorithm2::output_type seeding_algorithm2::operator()(
     const traccc::spacepoint_container&
                                spacepoints) const {
 
-    return m_seed_finding(spacepoints.spacepoints_view,
+    return m_seed_finding(traccc::spacepoint_collection_types::const_view(
+                            *(spacepoints.spacepoints_buffer)),
                           m_spacepoint_binning(spacepoints));
 }
 

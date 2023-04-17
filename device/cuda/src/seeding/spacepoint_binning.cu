@@ -34,11 +34,12 @@ __global__ void count_grid_capacities(
 __global__ void count_grid_capacities2(
     seedfinder_config config, sp_grid::axis_p0_type phi_axis,
     sp_grid::axis_p1_type z_axis,
-    traccc::spacepoint_container spacepoints,
+    const traccc::spacepoint_collection_types::const_view spacepoints_view,
+    unsigned int size,
     vecmem::data::vector_view<unsigned int> grid_capacities) {
 
     device::count_grid_capacities2(threadIdx.x + blockIdx.x * blockDim.x, config,
-                                  phi_axis, z_axis, spacepoints,
+                                  phi_axis, z_axis, spacepoints_view, size,
                                   grid_capacities);
 }
 
@@ -52,10 +53,12 @@ __global__ void populate_grid(
 }
 __global__ void populate_grid2(
     seedfinder_config config,
-    traccc::spacepoint_container spacepoints, sp_grid_view grid) {
+    const traccc::spacepoint_collection_types::const_view spacepoints_view,
+    unsigned int size,
+    sp_grid_view grid) {
 
     device::populate_grid2(threadIdx.x + blockIdx.x * blockDim.x, config,
-                          spacepoints, grid);
+                          spacepoints_view, size, grid);
 }
 }  // namespace kernels
 
@@ -148,7 +151,8 @@ spacepoint_binning2::spacepoint_binning2(
 
     // Get the spacepoint sizes from the view
     auto sp_size = *spacepoints.size;
-
+    traccc::spacepoint_collection_types::const_view
+    spacepoints_view(*(spacepoints.spacepoints_buffer));
     // Set up the container that will be filled with the required capacities for
     // the spacepoint grid.
     const std::size_t grid_bins = m_axes.first.n_bins * m_axes.second.n_bins;
@@ -165,7 +169,7 @@ spacepoint_binning2::spacepoint_binning2(
 
     // Fill the grid capacity container.
     kernels::count_grid_capacities2<<<num_blocks, num_threads>>>(
-        m_config, m_axes.first, m_axes.second, spacepoints,
+        m_config, m_axes.first, m_axes.second, spacepoints_view, sp_size,
         grid_capacities_view);
     CUDA_ERROR_CHECK(cudaGetLastError());
     CUDA_ERROR_CHECK(cudaDeviceSynchronize());
@@ -186,7 +190,7 @@ spacepoint_binning2::spacepoint_binning2(
 
     // Populate the grid.
     kernels::populate_grid2<<<num_blocks, num_threads>>>(
-        m_config, spacepoints, grid_view);
+        m_config, spacepoints_view, sp_size, grid_view);
     CUDA_ERROR_CHECK(cudaGetLastError());
     CUDA_ERROR_CHECK(cudaDeviceSynchronize());
 

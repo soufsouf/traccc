@@ -54,13 +54,13 @@ TRACCC_HOST_DEVICE
 inline void count_grid_capacities2(
     const std::size_t globalIndex, const seedfinder_config& config,
     const sp_grid::axis_p0_type& phi_axis, const sp_grid::axis_p1_type& z_axis,
-    const traccc::spacepoint_container& spacepoints_,
+    const traccc::spacepoint_collection_types::const_view& spacepoints_view,
+    unsigned int size,
     vecmem::data::vector_view<unsigned int> grid_capacities_view) {
 
     // Check if anything needs to be done.
-    const spacepoint_collection_types::const_device spacepoints(
-        spacepoints_.spacepoints_view);
-    if (globalIndex >= *spacepoints_.size) {
+    const spacepoint_collection_types::const_device spacepoints(spacepoints_view);
+    if (globalIndex >= size) {
         return;
     }
     const spacepoint sp = spacepoints.at(globalIndex);

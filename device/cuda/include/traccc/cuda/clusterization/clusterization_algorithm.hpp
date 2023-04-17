@@ -72,8 +72,7 @@ class clusterization_algorithm
 class clusterization_algorithm2
     : public algorithm<std::pair<traccc::spacepoint_container,vecmem::data::vector_buffer<unsigned int>>(
           const alt_cell_collection_types::const_view&,
-          const cell_module_collection_types::const_view&,
-          const traccc::spacepoint_container&)>{
+          const cell_module_collection_types::const_view&)>{
 
     public:
     /// Constructor for clusterization algorithm
@@ -97,8 +96,7 @@ class clusterization_algorithm2
     /// links from cells to the spacepoints they belong to.
     output_type operator()(
         const alt_cell_collection_types::const_view& cells,
-        const cell_module_collection_types::const_view& modules,
-        const traccc::spacepoint_container& spacepoints_container) const override;
+        const cell_module_collection_types::const_view& modules) const override;
 
     private:
     /// The average number of cells in each partition

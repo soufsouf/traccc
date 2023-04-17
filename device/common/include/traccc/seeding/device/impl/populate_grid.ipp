@@ -49,13 +49,13 @@ inline void populate_grid(
 TRACCC_DEVICE
 inline void populate_grid2(
     unsigned int globalIndex, const seedfinder_config& config,
-    const traccc::spacepoint_container& spacepoints_,
+    const traccc::spacepoint_collection_types::const_view& spacepoints_view,
+    unsigned int size,
     sp_grid_view grid_view) {
 
     // Check if anything needs to be done.
-    const spacepoint_collection_types::const_device spacepoints(
-        spacepoints_.spacepoints_view);
-    if (globalIndex >= *spacepoints_.size) {
+    const spacepoint_collection_types::const_device spacepoints(spacepoints_view);
+    if (globalIndex >= size) {
         return;
     }
     const spacepoint sp = spacepoints.at(globalIndex);
