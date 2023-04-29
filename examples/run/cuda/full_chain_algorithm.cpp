@@ -87,11 +87,11 @@ full_chain_algorithm::output_type full_chain_algorithm::operator()(
     m_copy(vecmem::get_data(modules), modules_buffer);
 
     // Run the clusterization (asynchronously).
-    traccc::spacepoint_container spacepoints =
-        m_clusterization(cells_buffer, modules_buffer).first;
+    std::pair<traccc::spacepoint_collection_types::buffer, unsigned int>
+    spacepoints = m_clusterization(cells_buffer, modules_buffer);
     const track_params_estimation::output_type track_params =
-        m_track_parameter_estimation(*(spacepoints.spacepoints_buffer),
-                                     m_seeding(spacepoints));
+        m_track_parameter_estimation(spacepoints.first,
+                                     m_seeding(spacepoints.first, spacepoints.second));
 
     // Get the final data back to the host.
     bound_track_parameters_collection_types::host result;

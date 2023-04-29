@@ -75,12 +75,11 @@ seeding_algorithm2::seeding_algorithm2(const traccc::memory_resource& mr)
       m_seed_finding(default_seedfinder_config(), seedfilter_config(), mr) {}
 
 seeding_algorithm2::output_type seeding_algorithm2::operator()(
-    const traccc::spacepoint_container&
-                               spacepoints) const {
+    const spacepoint_collection_types::const_view& spacepoints_view,
+    const unsigned int &spacepoints_size) const {
 
-    return m_seed_finding(traccc::spacepoint_collection_types::const_view(
-                            *(spacepoints.spacepoints_buffer)),
-                          m_spacepoint_binning(spacepoints));
+    return m_seed_finding(spacepoints_view,
+                          m_spacepoint_binning(spacepoints_view, spacepoints_size));
 }
 
 }  // namespace traccc::cuda

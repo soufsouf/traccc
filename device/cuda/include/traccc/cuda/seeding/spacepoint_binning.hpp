@@ -47,7 +47,7 @@ class spacepoint_binning
 
 class spacepoint_binning2
     : public algorithm<sp_grid_buffer(
-          const traccc::spacepoint_container&)> {
+          const spacepoint_collection_types::const_view&, const unsigned int&)> {
 
     public:
     /// Constructor for the algorithm
@@ -56,7 +56,8 @@ class spacepoint_binning2
                        const traccc::memory_resource& mr);
 
     /// Function executing the algorithm with a a view of spacepoints
-    sp_grid_buffer operator()(const traccc::spacepoint_container& spacepoints) const override ;
+    sp_grid_buffer operator()(const spacepoint_collection_types::const_view& spacepoints_view,
+                              const unsigned int& spacepoints_size) const override ;
 
     private:
     /// Member variables

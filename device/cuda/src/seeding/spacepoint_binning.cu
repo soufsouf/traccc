@@ -147,12 +147,11 @@ spacepoint_binning2::spacepoint_binning2(
 }
 
     sp_grid_buffer spacepoint_binning2::operator()(
-    const traccc::spacepoint_container& spacepoints) const {
+    const spacepoint_collection_types::const_view& spacepoints_view, const unsigned int &spacepoints_size) const {
 
     // Get the spacepoint sizes from the view
-    auto sp_size = *spacepoints.size;
-    traccc::spacepoint_collection_types::const_view
-    spacepoints_view(*(spacepoints.spacepoints_buffer));
+    auto sp_size = spacepoints_size;
+
     // Set up the container that will be filled with the required capacities for
     // the spacepoint grid.
     const std::size_t grid_bins = m_axes.first.n_bins * m_axes.second.n_bins;

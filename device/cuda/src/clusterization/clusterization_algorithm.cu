@@ -333,14 +333,14 @@ __global__ void ccl_kernel(
         }
     }
 }
+
 __global__ void ccl_kernel2(
     const alt_cell_collection_types::const_view cells_view,
     const cell_module_collection_types::const_view modules_view,
     const unsigned short max_cells_per_partition,
     const unsigned short target_cells_per_partition,
     traccc::spacepoint_collection_types::view spacepoints_view,
-    traccc::spacepoint_container spacepoints_container,
-    /*unsigned int& measurement_count,*/
+    unsigned int* spacepoints_size,
     vecmem::data::vector_view<unsigned int> cell_links) {
 
     const index_t tid = threadIdx.x;
@@ -549,7 +549,7 @@ __syncthreads();
      * amount of threads per block, this has no sever implications.
      */
     if (tid == 0) {
-        outi = atomicAdd(spacepoints_container.size, outi);
+        outi = atomicAdd(spacepoints_size, outi);
     }
 
     __syncthreads();
@@ -709,13 +709,11 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
                                                                  m_mr.main);*/
 
     // Counter for number of measurements
-    traccc::spacepoint_container spacepoints_container;
-    spacepoints_container.spacepoints_buffer  = std::make_shared<spacepoint_collection_types::buffer>(
-        spacepoint_collection_types::buffer(num_cells, m_mr.main));
-    traccc::spacepoint_collection_types::view
-    spacepoints_view(*(spacepoints_container.spacepoints_buffer));
-    cudaMallocManaged(&spacepoints_container.size,sizeof(unsigned int));
-    CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_container.size, 0,
+    spacepoint_collection_types::buffer spacepoints_buffer(num_cells, m_mr.main);
+    traccc::spacepoint_collection_types::view spacepoints_view(spacepoints_buffer);
+    unsigned int* spacepoints_size;
+    cudaMallocManaged(&spacepoints_size, sizeof(unsigned int));
+    CUDA_ERROR_CHECK(cudaMemsetAsync(spacepoints_size, 0,
                                      sizeof(unsigned int), stream));
 
     const unsigned short max_cells_per_partition =
@@ -737,8 +735,8 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
         ccl_kernel2<<<num_partitions, threads_per_partition,
                       max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
-            m_target_cells_per_partition, spacepoints_view, spacepoints_container,
-            /**num_measurements_device,*/ cell_links);
+            m_target_cells_per_partition, spacepoints_view,
+            spacepoints_size, cell_links);
 
     CUDA_ERROR_CHECK(cudaGetLastError());
     /*vecmem::unique_alloc_ptr<unsigned int> num_measurements_host =
@@ -775,7 +773,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     CUDA_ERROR_CHECK(cudaGetLastError());*/
     m_stream.synchronize();
 
-    return {std::move(spacepoints_container), std::move(cell_links)};
+    return {std::move(spacepoints_buffer), std::move(*spacepoints_size)};
 }
 
 }  // namespace traccc::cuda

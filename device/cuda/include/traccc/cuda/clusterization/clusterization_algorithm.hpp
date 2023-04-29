@@ -69,10 +69,11 @@ class clusterization_algorithm
     /// The CUDA stream to use
     stream& m_stream;
 };
+
 class clusterization_algorithm2
-    : public algorithm<std::pair<traccc::spacepoint_container,vecmem::data::vector_buffer<unsigned int>>(
+    : public algorithm<std::pair<spacepoint_collection_types::buffer, unsigned int>(
           const alt_cell_collection_types::const_view&,
-          const cell_module_collection_types::const_view&)>{
+          const cell_module_collection_types::const_view&)> {
 
     public:
     /// Constructor for clusterization algorithm
