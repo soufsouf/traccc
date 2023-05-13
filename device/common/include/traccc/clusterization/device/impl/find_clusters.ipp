@@ -12,24 +12,24 @@ namespace traccc::device {
 TRACCC_HOST_DEVICE
 inline void find_clusters(
     std::size_t globalIndex, const cell_container_types::const_view& cells_view,
-    const CellsDevice& cellView,
-    const ModulesDevice& moduleView,
+    const CellsView& cellsView,
+    const ModulesView& modulesView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     // Ignore if idx is out of range
-    if (globalIndex >= moduleView.size)
+    if (globalIndex >= modulesView.size)
         return;
 
     // Initialize the device container for cells
     //printf(" hello 1");
     cell_container_types::const_device cells_device(cells_view);
    // printf(" hello 2");
-    vecmem::device_vector<unsigned int> ch0(cellView.channel0);
+    vecmem::device_vector<unsigned int> ch0(cellsView.channel0);
     //printf(" hello 3");
-    vecmem::device_vector<unsigned int> ch1(cellView.channel1);
-    vecmem::device_vector<unsigned int> sum(moduleView.cells_prefix_sum);
-    vecmem::device_vector<unsigned int> midx(cellView.module_id);
+    vecmem::device_vector<unsigned int> ch1(cellsView.channel1);
+    vecmem::device_vector<unsigned int> sum(modulesView.cells_prefix_sum);
+    vecmem::device_vector<unsigned int> midx(cellsView.module_link);
     vecmem::device_vector<unsigned int> labels(label_view);
     //printf(" hello 4");
 

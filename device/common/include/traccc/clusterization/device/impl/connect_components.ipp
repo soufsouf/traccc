@@ -73,17 +73,17 @@ inline void connect_components(
 TRACCC_DEVICE
 inline void connect_components(
     std::size_t globalIndex,
-    const CellsDevice& cellView,
+    const CellsView& cellsView,
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,//cluster per module
     vecmem::data::vector_view<unsigned int > cluster_atomic,
     cluster_container_types::view clusters_view) {
 
     // Get device vector of the cells prefix sum
-    vecmem::device_vector<scalar> activation(cellView.activation);
-    vecmem::device_vector<unsigned int> ch0(cellView.channel0);
-    vecmem::device_vector<unsigned int> ch1(cellView.channel1);
-    vecmem::device_vector<unsigned int> midx(cellView.module_id);
+    vecmem::device_vector<scalar> activation(cellsView.activation);
+    vecmem::device_vector<unsigned int> ch0(cellsView.channel0);
+    vecmem::device_vector<unsigned int> ch1(cellsView.channel1);
+    vecmem::device_vector<unsigned int> midx(cellsView.module_link);
     cluster_container_types::device clusters_device(clusters_view);
     vecmem::device_vector<unsigned int> labels(celllabel);
     vecmem::device_vector<unsigned int> cluster_index_atomic(cluster_atomic);

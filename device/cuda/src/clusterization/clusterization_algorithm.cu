@@ -33,36 +33,36 @@ namespace kernels {
 
 __global__ void find_clusters(
     const cell_container_types::const_view cells_view,
-    const CellsDevice cellsDevice,
-    const ModulesDevice modulesDevice,
+    const CellsView cellsView,
+    const ModulesView modulesView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
     device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
-                          cellsDevice,modulesDevice,
+                          cellsView,modulesView,
                           label_view, clusters_per_module_view);
 }
 
 __global__ void count_cluster_cells(
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
-    const CellsDevice cellsDevice,
+    const CellsView cellsView,
     vecmem::data::vector_view<unsigned int> clusters_view) {
 
     device::count_cluster_cells(
         threadIdx.x + blockIdx.x * blockDim.x, label_view,
-        cluster_prefix_sum_view , cellsDevice , clusters_view );
+        cluster_prefix_sum_view , cellsView , clusters_view );
 }
 
 __global__ void connect_components(
-     const CellsDevice cellsDevice,
+     const CellsView cellsView,
      vecmem::data::vector_view<unsigned int> label_view,
      vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,
      vecmem::data::vector_view<unsigned int> cluster_idx_atomic,
      cluster_container_types::view  clusters_view) {
 
     device::connect_components(threadIdx.x + blockIdx.x * blockDim.x,
-                               cellsDevice, label_view,
+                               cellsView, label_view,
                                cluster_prefix_sum_view, cluster_idx_atomic,
                                clusters_view);
 }
@@ -131,14 +131,14 @@ clusterization_algorithm2::clusterization_algorithm2(
 
 clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     const cell_container_types::const_view& cells_view,
-    const traccc::CellsDevice& cellsDevice, const traccc::ModulesDevice& modulesDevice ) const {
+    const traccc::CellsView& cellsView, const traccc::ModulesView& modulesView) const {
 
     // Get a convenience variable for the stream that we'll be using.
     cudaStream_t stream = details::get_stream(m_stream);
 
     // Number of modules
     const cell_container_types::const_device::header_vector::size_type
-    num_modules = modulesDevice.size;
+    num_modules = modulesView.size;
 
     /*
      * Helper container for sparse CCL calculations.
@@ -147,7 +147,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
      * and will indicate to which cluster, a particular cell in the module
      * belongs to.
      */
-    vecmem::data::vector_buffer<unsigned int> label_buff(cellsDevice.size, m_mr.main);
+    vecmem::data::vector_buffer<unsigned int> label_buff(cellsView.size, m_mr.main);
     m_copy.setup(label_buff);
 
     /*
@@ -191,7 +191,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, cellsDevice, modulesDevice, label_buff, cl_per_module_prefix_buff);
+        cells_view, cellsView, modulesView, label_buff, cl_per_module_prefix_buff);
     CUDA_ERROR_CHECK(cudaGetLastError());
 
     /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
@@ -256,14 +256,14 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
 
     //printf("capacity : %llu\n", cells_prefix_sum_buff.capacity());
     // Calclating grid size for cluster counting kernel (block size 64)
-    blocksPerGrid = (cellsDevice.size + threadsPerBlock - 1) /
+    blocksPerGrid = (cellsView.size + threadsPerBlock - 1) /
                     threadsPerBlock;
     // Invoke cluster counting will call count cluster cells kernel
     vecmem::data::vector_buffer<unsigned int> cells_cluster_ps(total_clusters, m_mr.main);
     m_copy.setup(cells_cluster_ps);//prefix sum cells per cluster 
 
     kernels::count_cluster_cells<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        label_buff, cl_per_module_prefix_buff, cellsDevice,
+        label_buff, cl_per_module_prefix_buff, cellsView,
         cluster_sizes_buffer);
     // Check for kernel launch errors and Wait for the cluster_counting kernel
     // to finish
@@ -294,7 +294,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
     // Using previous block size and thread size (64)
     // Invoke connect components will call connect components kernel
     kernels::connect_components<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cellsDevice, label_buff,
+        cellsView, label_buff,
         cl_per_module_prefix_buff, cluster_index_atomic,
         clusters_buffer);
     CUDA_ERROR_CHECK(cudaGetLastError()); 

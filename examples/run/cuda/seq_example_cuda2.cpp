@@ -88,8 +88,6 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     
     traccc::CellsHost cellsHost;
     traccc::ModulesHost modulesHost;
-    traccc::CellsDevice cellsDevice;
-    traccc::ModulesDevice modulesDevice;
 
     // performance writer
     traccc::seeding_performance_writer sd_performance_writer(
@@ -111,6 +109,9 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         traccc::spacepoint_formation::output_type spacepoints_per_event;
         traccc::seeding_algorithm::output_type seeds;
         traccc::track_params_estimation::output_type params;
+        // Cells Buffer
+        traccc::CellsBuffer cellsBuffer;
+        traccc::ModulesBuffer modulesBuffer;
 
         // Instantiate cuda containers/collections
         traccc::spacepoint_container_types::buffer spacepoints_cuda_buffer{
@@ -137,10 +138,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     &digi_cfg, &cuda_host_mr);
             }  // stop measuring file reading timer
                 
-            cellsDevice.SetSize(cellsHost.size, device_mr, async_copy);
-            cellsDevice.CopyToDevice(cellsHost, async_copy);
-            modulesDevice.SetSize(modulesHost.size, device_mr, async_copy);
-            modulesDevice.CopyToDevice(modulesHost, async_copy);
+            cellsBuffer.SetSize(cellsHost.size, device_mr, copy);
+            cellsBuffer.CopyToDevice(cellsHost, copy);
+            modulesBuffer.SetSize(modulesHost.size, device_mr, copy);
+            modulesBuffer.CopyToDevice(modulesHost, copy);
 
             /*-----------------------------
                 Clusterization and Spacepoint Creation (cuda)
@@ -152,7 +153,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 traccc::performance::timer t("Clusterization (cuda)",
                                              elapsedTimes);
                 // Reconstruct it into spacepoints on the device.
-                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsDevice, modulesDevice);
+                spacepoints_cuda_buffer = ca_cuda(cells_cuda_buffer, cellsBuffer, modulesBuffer);
                 stream.synchronize();
             }  // stop measuring clusterization cuda timer
 

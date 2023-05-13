@@ -18,13 +18,13 @@ inline void count_cluster_cells(
     std::size_t globalIndex,
     vecmem::data::vector_view<unsigned int > celllabel,
     vecmem::data::vector_view<std::size_t> cluster_prefix_sum_view,   /// not used 
-    const CellsDevice& cellView,
+    const CellsView& cellsView,
     vecmem::data::vector_view<unsigned int> cluster_sizes_view
     )   {
 
     // Get the device vector of the cell prefix sum
    // printf("hello yes \n");
-    vecmem::device_vector<unsigned int> midx(cellView.module_id);
+    vecmem::device_vector<unsigned int> midx(cellsView.module_link);
        //if(globalIndex < 10) printf("hello no \n");
      //printf(" midx count cluster est %u \n", midx[globalIndex]);
     vecmem::device_vector<unsigned int> labels(celllabel);

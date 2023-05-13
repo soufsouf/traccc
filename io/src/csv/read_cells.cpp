@@ -191,8 +191,8 @@ cell_container_types::host read_cells(std::string_view filename,
 
 cell_container_types::host
 read_cells2(std::string_view filename,
-            CellsHost *cellsVec,
-            ModulesHost *moduleVec,
+            CellsHost *cellsHost,
+            ModulesHost *modulesHost,
             const geometry* geom,
             const digitization_config* dconfig,
             vecmem::memory_resource* mr) {
@@ -243,17 +243,8 @@ read_cells2(std::string_view filename,
     const std::size_t cellsCount = allCells.size();
 
     //cells = vecmem::data::vector_buffer<Cell>(1, m_mr.main);
-    (*cellsVec).channel0 = int_vec(cellsCount); //channel0
-    (*cellsVec).channel1 = int_vec(cellsCount); // channel1
-    (*cellsVec).activation = scalar_vec(cellsCount); // activation
-    (*cellsVec).time = scalar_vec(cellsCount); // time
-    (*cellsVec).module_id = int_vec(cellsCount); // module_id
-    (*cellsVec).cluster_id = int_vec(cellsCount); // cluster_id
-    (*cellsVec).size = cellsCount;
-
-    (*moduleVec).cells_prefix_sum = int_vec(modulesCount);
-    (*moduleVec).clusters_prefix_sum = int_vec(modulesCount);
-    (*moduleVec).size = modulesCount;
+    (*cellsHost).SetSize(cellsCount, mr);
+    (*modulesHost).SetSize(modulesCount, mr);
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
 
@@ -261,12 +252,12 @@ read_cells2(std::string_view filename,
     auto sum = [](auto x, auto y) {return x + y;};
     std::transform_inclusive_scan(modules.begin(),
                         modules.end(),
-                        (*moduleVec).cells_prefix_sum.begin(),
+                        (*modulesHost).cells_prefix_sum.begin(),
                         sum,
                         nCellsReader);
 
    // for (int i = 0 ; i< 60 ; i++ ) 
-                //  printf("(*moduleVec).cells_prefix_sum: %u  \n", (*moduleVec).cells_prefix_sum[i] );
+                //  printf("(*modulesHost).cells_prefix_sum: %u  \n", (*modulesHost).cells_prefix_sum[i] );
     
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
 
@@ -325,7 +316,7 @@ read_cells2(std::string_view filename,
 
     std::chrono::high_resolution_clock::time_point t5 = std::chrono::high_resolution_clock::now();
 
-    // fill counter for cellsVec vectors
+    // fill counter for cellsHost vectors
     //std::vector<unsigned int> module_fill_counter(size, 0);
 
     // Now loop over all the cells, and put them into the appropriate modules.
@@ -362,11 +353,11 @@ read_cells2(std::string_view filename,
                         iocell.timestamp});
 
        /* unsigned int midx = module_fill_counter[last_module_index];
-        (*cellsVec).channel0[midx]   = iocell.channel0;
-        (*cellsVec).channel1[midx]   = iocell.channel1;
-        (*cellsVec).activation[midx] = iocell.value;
-        (*cellsVec).time[midx]       = iocell.timestamp;
-        (*cellsVec).module_id[midx] = last_module_index;*/
+        (*cellsHost).channel0[midx]   = iocell.channel0;
+        (*cellsHost).channel1[midx]   = iocell.channel1;
+        (*cellsHost).activation[midx] = iocell.value;
+        (*cellsHost).time[midx]       = iocell.timestamp;
+        (*cellsHost).module_id[midx] = last_module_index;*/
 
         // increment the fill counter for the current module
         //module_fill_counter[last_module_index]++;
@@ -385,14 +376,14 @@ read_cells2(std::string_view filename,
                       return c1.channel1 < c2.channel1;
                   });
         auto module_cells = result.at(i).items;
-        lb = ( i == 0 ? 0 : (*moduleVec).cells_prefix_sum[i - 1]);
-        unsigned int n_cells = (*moduleVec).cells_prefix_sum[i] - lb;
+        lb = ( i == 0 ? 0 : (*modulesHost).cells_prefix_sum[i - 1]);
+        unsigned int n_cells = (*modulesHost).cells_prefix_sum[i] - lb;
         for(std::size_t j = 0; j < n_cells; ++j) {
-            (*cellsVec).channel0[lb+j]   = module_cells[j].channel0;
-            (*cellsVec).channel1[lb+j]   = module_cells[j].channel1;
-            (*cellsVec).activation[lb+j] = module_cells[j].activation;
-            (*cellsVec).time[lb+j]       = module_cells[j].time;
-            (*cellsVec).module_id[lb+j]  = i;
+            (*cellsHost).channel0[lb+j]   = module_cells[j].channel0;
+            (*cellsHost).channel1[lb+j]   = module_cells[j].channel1;
+            (*cellsHost).activation[lb+j] = module_cells[j].activation;
+            (*cellsHost).time[lb+j]       = module_cells[j].time;
+            (*cellsHost).module_link[lb+j]  = i;
           // if(i ==0) std::cout<< "le channel 0 de module cell de j "<< j << " est : " <<  module_cells[j].channel0<< std::endl;
 
         }
