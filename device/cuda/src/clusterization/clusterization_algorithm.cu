@@ -32,14 +32,13 @@ namespace traccc::cuda {
 namespace kernels {
 
 __global__ void find_clusters(
-    const cell_container_types::const_view cells_view,
     const CellsView cellsView,
     const ModulesView modulesView,
     vecmem::data::vector_view<unsigned int> label_view,
     vecmem::data::vector_view<std::size_t> clusters_per_module_view) {
 
-    device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x, cells_view,
-                          cellsView,modulesView,
+    device::find_clusters(threadIdx.x + blockIdx.x * blockDim.x,
+                          cellsView, modulesView,
                           label_view, clusters_per_module_view);
 }
 
@@ -191,27 +190,8 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
 
     // Invoke find clusters that will call cluster finding kernel
     kernels::find_clusters<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        cells_view, cellsView, modulesView, label_buff, cl_per_module_prefix_buff);
-    CUDA_ERROR_CHECK(cudaGetLastError());
-
-    /*kernels::fill2<<<blocksPerGrid, threadsPerBlock, 0, stream>>>(
-        label_buff, sparse_ccl_indices_buff, prefixsum);
-    CUDA_ERROR_CHECK(cudaGetLastError());*/
-
- 
-    // Create prefix sum buffer
-  /*/ vecmem::data::vector_buffer cells_prefix_sum_buff =
-        make_prefix_sum_buff(cell_sizes, m_copy, m_mr, m_stream); 
-printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
-    // Copy the sizes of clusters per module to the host
-    // and create a copy of "clusters per module" vector
-     
-    /*vecmem::data::vector_buffer<unsigned int> label_buf(cellcount, m_mr.main);
-    m_copy.setup(label_buf);
-    m_copy(label_buff, label_buf,
-           vecmem::copy::type::copy_type::device_to_host);
-    for(int i = 230; i<261;i++) printf("label : %u \n",label_buf[i] ); */      
-   
+        cellsView, modulesView, label_buff, cl_per_module_prefix_buff);
+    CUDA_ERROR_CHECK(cudaGetLastError());  
    
     vecmem::vector<std::size_t> cl_per_module_prefix_host(
         m_mr.host ? m_mr.host : &(m_mr.main));
@@ -220,10 +200,9 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
            vecmem::copy::type::copy_type::device_to_host);
        
     m_stream.synchronize();
-    //for(int i = 23; i<29;i++) printf("label 1 : %u \n",cl_per_module_prefix_host[i] );    
+   
     std::vector<std::size_t> clusters_per_module_host(
         cl_per_module_prefix_host.begin(), cl_per_module_prefix_host.end());
-  //for(int j = 5; j<20;j++) printf("host avant IS : %llu *** \n",cl_per_module_prefix_host[j] );
     
     // Perform the inclusive scan operation
     std::inclusive_scan(cl_per_module_prefix_host.begin(),
@@ -231,9 +210,7 @@ printf("capacity : %llu " ,cells_prefix_sum_buff.capacity());*/
                         cl_per_module_prefix_host.begin());
 
     unsigned int total_clusters = cl_per_module_prefix_host.back();
-   /* printf(" n cluster %u \n", total_clusters );
-    for(int i = 230; i<290;i++) printf("label 2 : %u \n",cl_per_module_prefix_host[i] );*/
-//for(int i = 230; i<261;i++) printf("host : %llu \n",cl_per_module_prefix_host[i] );
+
     // Copy the prefix sum back to its device container
     m_copy(vecmem::get_data(cl_per_module_prefix_host),
            cl_per_module_prefix_buff,

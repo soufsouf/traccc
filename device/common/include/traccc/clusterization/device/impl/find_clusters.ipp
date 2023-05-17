@@ -11,7 +11,7 @@ namespace traccc::device {
 
 TRACCC_HOST_DEVICE
 inline void find_clusters(
-    std::size_t globalIndex, const cell_container_types::const_view& cells_view,
+    std::size_t globalIndex,
     const CellsView& cellsView,
     const ModulesView& modulesView,
     vecmem::data::vector_view<unsigned int> label_view,
@@ -21,47 +21,21 @@ inline void find_clusters(
     if (globalIndex >= modulesView.size)
         return;
 
-    // Initialize the device container for cells
-    //printf(" hello 1");
-    cell_container_types::const_device cells_device(cells_view);
-   // printf(" hello 2");
     vecmem::device_vector<unsigned int> ch0(cellsView.channel0);
-    //printf(" hello 3");
     vecmem::device_vector<unsigned int> ch1(cellsView.channel1);
     vecmem::device_vector<unsigned int> sum(modulesView.cells_prefix_sum);
     vecmem::device_vector<unsigned int> midx(cellsView.module_link);
     vecmem::device_vector<unsigned int> labels(label_view);
-    //printf(" hello 4");
-
-
-    /*if (globalIndex < 100) {
-        printf("th %llu Channel0 : %u, Channel1 : %u, sum : %u, size: %llu\n",
-            globalIndex, ch0[globalIndex], ch1[globalIndex], sum[globalIndex],
-            moduleView.size);
-    }*/
-    // Get the cells for the current module
-    const auto& cells = cells_device.at(globalIndex).items;
-   
-
-    // Vectors used for cluster indices found by sparse CCL
-    //vecmem::jagged_device_vector<unsigned int> device_sparse_ccl_indices(
-    //    sparse_ccl_indices_view);
-    //auto cluster_indices = device_sparse_ccl_indices[globalIndex];
 
     // Run the sparse CCL algorithm
-    unsigned int n_clusters = detail::sparse_ccl(cells, globalIndex, ch0, ch1,
+    unsigned int n_clusters = detail::sparse_ccl(globalIndex, ch0, ch1,
                                         sum, midx, labels);
 
     // Fill the "number of clusters per
     // module" vector
-   
     vecmem::device_vector<std::size_t> device_clusters_per_module(
         clusters_per_module_view);
     device_clusters_per_module[globalIndex] = n_clusters;
-    //printf("module %llu number of clusters %llu \n", globalIndex, device_clusters_per_module[globalIndex]);
-  /*if(globalIndex<100) 
-    printf("th %llu label find cluster est %llu\n", globalIndex,
-            device_clusters_per_module[globalIndex]);*/
 }
 
 }  // namespace traccc::device

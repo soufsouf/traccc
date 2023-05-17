@@ -141,11 +141,11 @@ TRACCC_HOST_DEVICE inline bool is_far_enough(unsigned int i1, unsigned int j1) {
 /// belongs to)
 /// @param labels is the number of clusters found
 /// @return number of clusters
-template <typename cell_container_t, typename VV>
-TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(const cell_container_t& cells,
+template <typename INTVEC>
+TRACCC_HOST_DEVICE inline unsigned int sparse_ccl(
                         std::size_t idx,
-                        VV& channel0, VV& channel1,
-                        VV& cumulsize, VV& moduleidx, VV& L) {
+                        INTVEC& channel0, INTVEC& channel1,
+                        INTVEC& cumulsize, INTVEC& moduleidx, INTVEC& L) {
 
     unsigned int labels = 0;
 
