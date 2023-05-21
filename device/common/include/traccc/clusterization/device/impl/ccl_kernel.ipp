@@ -64,11 +64,11 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
 
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
-                index_t q = gf[adjv[tst][k]];
+                index_t q = gf[2*adjv[tst][k]];
 
-                if (gf[cid] > q) {
-                    f[f[cid]] = q;
-                    f[cid] = q;
+                if (gf[2*cid] > q) {
+                    f[f[2*cid]] = q;
+                    f[2*cid] = q;
                 }
             }
         }
@@ -87,8 +87,8 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
              * allows us to look at any shortcuts in the cluster IDs that we
              * can merge without adjacency information.
              */
-            if (f[cid] > gf[cid]) {
-                f[cid] = gf[cid];
+            if (f[2*cid] > gf[2*cid]) {
+                f[2*cid] = gf[2*cid];
             }
         }
 
@@ -104,8 +104,8 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
              * Update the array for the next generation, keeping track of any
              * changes we make.
              */
-            if (gf[cid] != f[f[cid]]) {
-                gf[cid] = f[f[cid]];
+            if (gf[2*cid] != f[2*f[2*cid]]) {
+                gf[2*cid] = f[2*f[2*cid]];
                 gf_changed = true;
             }
         }
@@ -228,8 +228,8 @@ TRACCC_DEVICE inline void ccl_kernel(
          * At the start, the values of f and gf should be equal to the
          * ID of the cell.
          */
-        f[cid] = cid;
-        gf[cid] = cid;
+        f[2*cid  ] = cid;
+        gf[2*cid ] = cid;
     }
 
     /*
@@ -252,7 +252,7 @@ TRACCC_DEVICE inline void ccl_kernel(
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + threadId) < size; ++tst) {
 
-        if (f[cid] == cid) {
+        if (f[2*cid] == cid) {
             // Increment the summary values in the header object.
             vecmem::device_atomic_ref<unsigned int,
                                       vecmem::device_address_space::local>
@@ -297,7 +297,7 @@ TRACCC_DEVICE inline void ccl_kernel(
         max_cells_per_partition, &f[0]);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + threadId) < size; ++tst) {
-        if (f[cid] == cid) {
+        if (f[2*cid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.

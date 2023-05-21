@@ -58,7 +58,7 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (f[j] == cid) {
+        if (f[2*j] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;

@@ -49,7 +49,7 @@ __global__ void ccl_kernel(
     __shared__ unsigned int outi;
     extern __shared__ index_t shared_v[];
     index_t* f = &shared_v[0];
-    index_t* f_next = &shared_v[max_cells_per_partition];
+    index_t* f_next = &shared_v[2*max_cells_per_partition];
     traccc::cuda::barrier barry_r;
 
     device::ccl_kernel(threadIdx.x, blockDim.x, blockIdx.x, cells_view,
@@ -120,7 +120,7 @@ clusterization_algorithm::output_type clusterization_algorithm::operator()(
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel<<<num_partitions, threads_per_partition,
-                     2 * max_cells_per_partition * sizeof(index_t), stream>>>(
+                     4 * max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, measurements_buffer,
             *num_measurements_device, cell_links);
