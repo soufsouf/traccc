@@ -59,12 +59,7 @@ inline void aggregate_cluster(
          * for position and add them to our accumulators.
          */
 
-        unsigned short thread = j % blockDim.x ; 
-        unsigned short test = j / blockDim.x ;
-        unsigned short ind = test + thread*12 ; 
-
-
-        if (f[ind] == cid) {
+        if (f[2*j] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
