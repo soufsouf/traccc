@@ -60,15 +60,27 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
          * together.
          */
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            //const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
 
             __builtin_assume(adjc[tst] <= 8);
             for (unsigned char k = 0; k < adjc[tst]; ++k) {
-                index_t q = gf[2*adjv[tst][k]];
 
-                if (gf[2*cid] > q) {
-                    f[f[2*cid]] = q;
-                    f[2*cid] = q;
+                index_t thread = adjv[tst][k] % blockDim.x ; 
+                index_t test = adjv[tst][k] / blockDim.x ;
+                index_t id = test + thread*MAX_CELLS_PER_THREAD ; 
+                
+                index_t q = gf[id];
+
+
+                if (gf[cid] > q) {
+                
+                  thread = f[cid] % blockDim.x ; 
+                  test = f[cid] / blockDim.x ;
+                 index_t ind = test + thread*MAX_CELLS_PER_THREAD ; 
+
+                    f[ind] = q;
+                    f[cid] = q;
                 }
             }
         }
@@ -81,14 +93,16 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
 
 #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            //const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
+
             /*
              * The second stage is shortcutting, which is an optimisation that
              * allows us to look at any shortcuts in the cluster IDs that we
              * can merge without adjacency information.
              */
-            if (f[2*cid] > gf[2*cid]) {
-                f[2*cid] = gf[2*cid];
+            if (f[cid] > gf[cid]) {
+                f[cid] = gf[cid];
             }
         }
 
@@ -99,13 +113,19 @@ TRACCC_DEVICE void fast_sv_1(index_t* f, index_t* gf,
 
 #pragma unroll
         for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-            const index_t cid = tst * blckDim + tid;
+            //const index_t cid = tst * blckDim + tid;
+            const index_t cid = tst + tid*MAX_CELLS_PER_THREAD;
+
             /*
              * Update the array for the next generation, keeping track of any
              * changes we make.
              */
-            if (gf[2*cid] != f[2*f[2*cid]]) {
-                gf[2*cid] = f[2*f[2*cid]];
+                index_t thread = f[cid] % blockDim.x ; 
+                index_t test = f[cid] / blockDim.x ;
+                index_t ind = test + thread*MAX_CELLS_PER_THREAD ; 
+
+            if (gf[cid] != f[ind]) {
+                gf[cid] = f[ind];
                 gf_changed = true;
             }
         }
@@ -224,12 +244,14 @@ TRACCC_DEVICE inline void ccl_kernel(
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         const index_t cid = tst * blckDim + threadId;
+        const index_t ccid = tst + threadId*MAX_CELLS_PER_THREAD;
+
         /*
          * At the start, the values of f and gf should be equal to the
          * ID of the cell.
          */
-        f[2*cid  ] = cid;
-        gf[2*cid ] = cid;
+        f[ccid] = cid;
+        gf[ccid] = cid;
     }
 
     /*
@@ -251,8 +273,9 @@ TRACCC_DEVICE inline void ccl_kernel(
      * themself assigned as a parent.
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + threadId) < size; ++tst) {
+        const index_t ccid = tst + threadId*MAX_CELLS_PER_THREAD;
 
-        if (f[2*cid] == cid) {
+        if (f[ccid] == cid) {
             // Increment the summary values in the header object.
             vecmem::device_atomic_ref<unsigned int,
                                       vecmem::device_address_space::local>
@@ -297,7 +320,10 @@ TRACCC_DEVICE inline void ccl_kernel(
         max_cells_per_partition, &f[0]);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + threadId) < size; ++tst) {
-        if (f[2*cid] == cid) {
+
+        const index_t ccid = tst + threadId*MAX_CELLS_PER_THREAD;
+
+        if (f[ccid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.

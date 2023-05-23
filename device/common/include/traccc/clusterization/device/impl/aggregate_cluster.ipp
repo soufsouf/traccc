@@ -58,7 +58,13 @@ inline void aggregate_cluster(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (f[2*j] == cid) {
+
+        unsigned short thread = j % blockDim.x ; 
+        unsigned short test = j / blockDim.x ;
+        unsigned short ind = test + thread*12 ; 
+
+
+        if (f[ind] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;
