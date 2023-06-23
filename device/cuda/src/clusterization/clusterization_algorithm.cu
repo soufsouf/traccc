@@ -28,8 +28,8 @@ namespace {
 /// max_cells_per_partition, so we only need a short.
 using index_t = unsigned short;
 
-static constexpr int TARGET_CELLS_PER_THREAD = 8;
-static constexpr int MAX_CELLS_PER_THREAD = 12;
+static constexpr int TARGET_CELLS_PER_THREAD = 1;
+static constexpr int MAX_CELLS_PER_THREAD = 2;
 }  // namespace
 
 namespace kernels {
@@ -52,6 +52,15 @@ namespace kernels {
 /// @param[in] adjv     Vector of adjacent cells
 /// @param[in] tid      The thread index
 ///
+
+__device__ int warpReduceMin(int val)
+{
+    for (int offset = warpSize / 2; offset > 0; offset /= 2) {
+        int compareVal = __shfl_xor_sync(0xffffffff, val, offset);
+        val = min(val, compareVal);
+    }
+    return val;
+}
 __device__ void fast_sv_1(index_t* f, index_t* gf,
                           unsigned char adjc[MAX_CELLS_PER_THREAD],
                           index_t adjv[MAX_CELLS_PER_THREAD][8], index_t tid,
@@ -379,28 +388,80 @@ __global__ void ccl_kernel2(
          * the purpose of this is to ensure that we are not operating on any
          * cells that have been claimed by the previous block (if any).
          */
-        while (start != 0 &&
+       /* while (start != 0 &&
                cells_device[start - 1].module_link ==
                    cells_device[start].module_link &&
                cells_device[start].c.channel1 <=
                    cells_device[start - 1].c.channel1 + 1) {
             ++start;
-        }
+        }*/
 
         /*
          * Then, claim as many cells as we need past the naive end of the
          * current block to ensure that we do not end our partition on a cell
          * that is not a possible boundary!
          */
-        while (end < num_cells &&
+        /*while (end < num_cells &&
                cells_device[end - 1].module_link ==
                    cells_device[end].module_link &&
                cells_device[end].c.channel1 <=
                    cells_device[end - 1].c.channel1 + 1) {
             ++end;
-        }
+        }*/
     }
     __syncthreads();
+
+    unsigned short warpId = tid / warpSize;
+
+    if (warpId == 0)  {
+        unsigned short cell = 999;
+        unsigned short warp_min = 999 ; 
+        unsigned short iter = 0;
+        unsigned short cell_id;
+        while (warp_min == 999 && iter < 50 ) {
+            cell_id = iter * warpSize + tid;  
+            if ( start == 0 ) break;  /// no diverges because all threads of blocs 0 will break 
+            if ( cells_device[start + cell_id - 1].module_link !=
+                cells_device[start + cell_id].module_link ||
+                cells_device[start + cell_id].c.channel1 >
+                cells_device[start + cell_id - 1].c.channel1 + 1)  {
+                cell = cell_id;
+            }
+
+            warp_min = warpReduceMin(cell);
+            ++iter ;
+            //printf("blockIdx.x*blockDim.x + tid : %u iter : %u \n",blockIdx.x*blockDim.x + tid , iter);
+        }
+        if (tid == 0 && start != 0 ) { 
+            start = warp_min + start;
+            //printf(" start : %u  start1 : %u  start1 - warp_min : %u \n", start , start1 , start1 - warp_min);
+        }
+    } 
+    if (warpId == 1)  {
+
+        unsigned short cell = 999;
+        unsigned short warp_min = 999 ; 
+        unsigned short iter = 0;
+        unsigned short cell_id;
+        while (warp_min == 999 && iter<50) {
+            cell_id = iter * warpSize + tid - warpSize;  
+            if ( end < num_cells && (cells_device[end + cell_id - 1].module_link !=
+                    cells_device[end + cell_id].module_link ||
+                    cells_device[end + cell_id].c.channel1 >
+                    cells_device[end + cell_id - 1].c.channel1 + 1 )) {  
+                        cell = cell_id;
+                        } 
+            //__syncwarp();     
+            warp_min = warpReduceMin(cell);
+            ++iter;
+    }
+     if (tid == 33 && end < num_cells) {
+        end = warp_min + end;
+        //printf(" end : %u  end1 : %u  end1 - warp_min : %u \n", end , end1 , end1 - warp_min);
+     }
+    } 
+
+   __syncthreads(); 
 
     const index_t size = end - start;
     assert(size <= max_cells_per_partition);
