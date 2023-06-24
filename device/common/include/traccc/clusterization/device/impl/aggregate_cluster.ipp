@@ -113,13 +113,13 @@ TRACCC_HOST_DEVICE
 inline void aggregate_cluster2(
     const alt_cell_collection_types::const_device& cells,
     const cell_module_collection_types::const_device& modules,
-    unsigned short* id_fathers,
+    const vecmem::data::vector_view<unsigned short> f_view,
     const unsigned int start, const unsigned int end, const unsigned short cid,
     spacepoint_collection_types::device spacepoints_device,
      vecmem::data::vector_view<unsigned int> cell_links,
     const unsigned int link) {
 
-    //const vecmem::device_vector<unsigned short> f(f_view);
+    const vecmem::device_vector<unsigned short> f(f_view);
     vecmem::device_vector<unsigned int> cell_links_device(cell_links);
  //spacepoint_collection_types::device spacepoints_device(spacepoints_view);
     /*
@@ -154,7 +154,7 @@ inline void aggregate_cluster2(
          * is part of our cluster. In that case, we take its values
          * for position and add them to our accumulators.
          */
-        if (id_fathers[j] == cid) {
+        if (f[j] == cid) {
 
             if (this_cell.channel1 > maxChannel1) {
                 maxChannel1 = this_cell.channel1;

@@ -364,9 +364,9 @@ __global__ void ccl_kernel2(
      */
     __shared__ unsigned int outi;
     extern __shared__ index_t fathers[];
-    index_t* id_fathers = &fathers[0];
-   // index_t* f = &fathers[max_cells_per_partition];
-    //index_t* f_next = &fathers[2*max_cells_per_partition];
+    //index_t* id_fathers = &fathers[0];
+    index_t* f = &fathers[0];
+    index_t* f_next = &fathers[max_cells_per_partition];
     /*
      * First, we determine the exact range of cells that is to be examined by
      * this block of threads. We start from an initial range determined by the
@@ -488,104 +488,49 @@ __global__ void ccl_kernel2(
     // Number of adjacent cells
     unsigned char adjc[MAX_CELLS_PER_THREAD];
 
-/*#pragma unroll
+#pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
         adjc[tst] = 0;
     }
-    __syncthreads();*/
 
     //unsigned short old_id,new_id;
     
-bool gf_changed;
+
 #pragma unroll
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
         /*
          * Look for adjacent cells to the current one.
          */
-        device::reduce_problem_cell2(cells_device, cid, start, end, adjc[tst],
-                                    adjv[tst],id_fathers);
+        device::reduce_problem_cell(cells_device, cid, start, end, adjc[tst],
+                                    adjv[tst]);
       
        
     }
     
- __syncthreads();
-        /*for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-            for(int k = 0 ; k< 10;k++){
-            old_id = id_fathers[cid];
-            count = 0;
-            for(unsigned char i = 0; i< adjc[tst]; i ++) {
-                if(id_fathers[adjv[tst][i]] < old_id) {
-                    new_id = id_fathers[adjv[tst][i]];
-                } 
-                else if(new_id == old_id)  count ++; 
-            }
-            id_fathers[cid] = new_id;
-
-            if(count > 3) break;
-            //printf("hello 2\n");
-            }
-        }*/
-        
-   
-      do {
-        
-        gf_changed = false;
-              ///the father is the cell that has no small neighbors
-              for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; tst ++) {
-               // if my father is not a real father then i have to communicate with neighbors  tothe find the real fahter
-
-                for (index_t i = 0; i < adjc[tst]; i ++){    // neighbors communication
-                if (id_fathers[cid] > id_fathers[adjv[tst][i]]) 
-                {
-                    id_fathers[cid] = id_fathers[adjv[tst][i]];
-                    gf_changed = true; 
-                }
-                
-                }
-
-       } 
-    }while (__syncthreads_or(gf_changed));
-    
-            
-    //printf("hello \n");
-    
-__syncthreads();
-//printf(" hello after reduce \n");
-    /*
-     * These arrays are the meat of the pudding of this algorithm, and we
-     * will constantly be writing and reading from them which is why we
-     * declare them to be in the fast shared memory. Note that this places a
-     * limit on the maximum contiguous activations per module, as the amount of
-     * shared memory is limited. These could always be moved to global memory,
-     * but the algorithm would be decidedly slower in that case.
-     */
-    
-    
-/**
 #pragma unroll
     for (index_t tst = 0; tst < MAX_CELLS_PER_THREAD; ++tst) {
-        const index_t cid = tst * blckDim + tid;*/
+        const index_t cid = tst * blckDim + tid;
         /*
          * At the start, the values of f and f_next should be equal to the
          * ID of the cell.
          */
-        /*f[cid] = cid;
+        f[cid] = cid;
         f_next[cid] = cid;
     }
-*/
+
     /*
      * Now that the data has initialized, we synchronize again before we
      * move onto the actual processing part.
      */
-  //  __syncthreads();
+    __syncthreads();
 
     /*
      * Run FastSV algorithm, which will update the father index to that of the
      * cell belonging to the same cluster with the lowest index.
      */
-  //  fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
+    fast_sv_1(f, f_next, adjc, adjv, tid, blckDim);
 
-  //  __syncthreads();
+    __syncthreads();
     
 
     /*
@@ -594,7 +539,7 @@ __syncthreads();
      */
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
        // printf("f : %hu | id_fathers : %hu\n", f[cid],id_fathers[cid]);
-        if (id_fathers[cid] == cid) {
+        if (f[cid] == cid) {
             atomicAdd(&outi, 1);
         }
     }
@@ -628,17 +573,17 @@ __syncthreads();
 
     __syncthreads();*/
 
-   // vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
+   vecmem::data::vector_view<index_t> f_view(max_cells_per_partition, f);
 
     for (index_t tst = 0, cid; (cid = tst * blckDim + tid) < size; ++tst) {
-        if (id_fathers[cid] == cid) {
+        if (f[cid] == cid) {
             /*
              * If we are a cluster owner, atomically claim a position in the
              * output array which we can write to.
              */
             const unsigned int id = atomicAdd(&outi, 1);
             device::aggregate_cluster2(
-                cells_device, modules_device, id_fathers, start, end, cid,
+                cells_device, modules_device, f_view, start, end, cid,
                 spacepoints_device, cell_links, id);
         }
     }
@@ -796,7 +741,7 @@ clusterization_algorithm2::output_type clusterization_algorithm2::operator()(
     // Launch ccl kernel. Each thread will handle a single cell.
     kernels::
         ccl_kernel2<<<num_partitions, threads_per_partition,
-                      max_cells_per_partition * sizeof(index_t), stream>>>(
+                      2*max_cells_per_partition * sizeof(index_t), stream>>>(
             cells, modules, max_cells_per_partition,
             m_target_cells_per_partition, spacepoints_container,
             /**num_measurements_device,*/ cell_links);
